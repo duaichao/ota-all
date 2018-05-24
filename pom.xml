@@ -508,25 +508,25 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <env.jdbc.url>jdbc:oracle:thin:@125.76.226.41:1521:orcl</env.jdbc.url>
-                <env.jdbc.username>xsxlv</env.jdbc.username>
-                <env.jdbc.password>xsxlvora136</env.jdbc.password>
+                <env.jdbc.url></env.jdbc.url>
+                <env.jdbc.username></env.jdbc.username>
+                <env.jdbc.password></env.jdbc.password>
             </properties>
         </profile>
         <profile>
             <id>test</id>
             <properties>
-                <env.jdbc.url>jdbc:oracle:thin:@125.76.226.41:1521:orcl</env.jdbc.url>
-                <env.jdbc.username>xsxlv</env.jdbc.username>
-                <env.jdbc.password>xsxlvora136</env.jdbc.password>
+                <env.jdbc.url></env.jdbc.url>
+                <env.jdbc.username></env.jdbc.username>
+                <env.jdbc.password></env.jdbc.password>
             </properties>
         </profile>
         <profile>
             <id>pro</id>
             <properties>
-                <env.jdbc.url>jdbc:oracle:thin:@125.76.226.41:1521:orcl</env.jdbc.url>
-                <env.jdbc.username>xsxlvZS</env.jdbc.username>
-                <env.jdbc.password>xsxlvora136ZS</env.jdbc.password>
+                <env.jdbc.url></env.jdbc.url>
+                <env.jdbc.username></env.jdbc.username>
+                <env.jdbc.password></env.jdbc.password>
             </properties>
         </profile>
     </profiles>
