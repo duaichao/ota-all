@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="role">
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, a.ROLE_NAME, a.IS_USE, a.ROLE_TYPE FROM SD_ROLE a WHERE 1 = 1  and is_del = 0
+		   <isNotEmpty prepend=" and " property="IS_USE">
+		   		 a.IS_USE = #IS_USE#
+		   </isNotEmpty> 
+		   <isNotEmpty prepend=" and " property="NOT_EQUALS_ID">
+		   		 a.ID != #NOT_EQUALS_ID#
+		   </isNotEmpty> 
+		   <isNotEmpty prepend=" and " property="ROLE_TYPE">
+		   		 a.ROLE_TYPE = #ROLE_TYPE#
+		   </isNotEmpty> 
+		   order by a.ROLE_TYPE
+	</statement>
+	<statement id="existDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) from SD_ROLE a 
+			where 1=1
+			<isNotEmpty prepend=" and " property="ID">
+		   		 a.ID = #ID#
+		    </isNotEmpty> 
+			<isNotEmpty prepend=" and " property="ROLE_NAME">
+		   		 a.ROLE_NAME = #ROLE_NAME#
+		    </isNotEmpty> 
+	</statement>
+	<insert id="addDao" parameterClass="java.util.Map">
+		insert into SD_ROLE(
+		   ID,
+		   ROLE_NAME,
+		   IS_USE,
+		   ROLE_TYPE
+		)values(sys_guid(),#ROLE_NAME#,#IS_USE#, #ROLE_TYPE#)
+	</insert>
+	<update id="editDao" parameterClass="java.util.Map">
+		update SD_ROLE set 
+			ID = #ID#
+			<isNotEmpty prepend=" , " property="ROLE_NAME">
+		   		ROLE_NAME = #ROLE_NAME#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="IS_USE">
+		   		IS_USE = #IS_USE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="ROLE_TYPE">
+		   		ROLE_TYPE = #ROLE_TYPE#
+		    </isNotEmpty>
+		    where ID=#ID#
+	</update>
+	<delete id="delDao" parameterClass="java.lang.String">
+		update sd_role set is_del = 1 where id = #VALUE#
+	</delete>
+	
+	<delete id="clearModuleDao" parameterClass="java.lang.String">
+		delete from SD_ROLE_MODULE where ROLE_ID= #VALUE#
+	</delete>
+	<delete id="clearPowerDao" parameterClass="java.util.Map">
+		delete from SD_ROLE_POWER where ROLE_ID= #ROLE_ID# and POWER_ID in(select ID from SD_POWER where MODULE_ID = #MODULE_ID#)
+	</delete>
+	<insert id="setModuleDao" parameterClass="java.util.Map">
+		insert into SD_ROLE_MODULE values(sys_guid(),#ROLE_ID#,#MODULE_ID#)
+	</insert>
+	<insert id="setPowerDao" parameterClass="java.util.Map">
+		insert into SD_ROLE_POWER values(sys_guid(),#ROLE_ID#,#POWER_ID#)
+	</insert>
+	
+	<select id="userRoleDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+        select ROLE_ID  from SD_USER_ROLE where USER_ID=#VALUE#
+	</select>
+	
+</sqlMap>

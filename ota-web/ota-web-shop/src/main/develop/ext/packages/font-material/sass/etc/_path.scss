@@ -1,0 +1,38 @@
+/* FONT PATH
+ * -------------------------- */
+.svg-icon {
+   width: 1em; height: 1em;
+   vertical-align: -0.15em;
+   fill: currentColor;
+   overflow: hidden;
+   &.big{
+   	width:2.4em;
+   	height:2.4em;
+   }
+   &.list{
+   	margin:0 5px;
+   }
+}
+
+//# fashion -inline
+@font-face {
+  font-family: 'iconfont';  /* project id 212248 */
+  src: url('//at.alicdn.com/t/font_y150u7miev04fgvi.eot');
+  src: url('//at.alicdn.com/t/font_y150u7miev04fgvi.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_y150u7miev04fgvi.woff') format('woff'),
+  url('//at.alicdn.com/t/font_y150u7miev04fgvi.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_y150u7miev04fgvi.svg#iconfont') format('svg');
+  
+
+
+  /*
+  src: url('#{$fm-font-path}/iconfont.eot?v=#{$fm-version}');
+  //# fashion +inline:eot
+  //# fashion +inline:ttf
+  src: url('#{$fm-font-path}/iconfont.eot?#iefix&v=#{$fm-version}') format('embedded-opentype'),
+    url('#{$fm-font-path}/iconfont.woff2?v=#{$fm-version}') format('woff2'),
+    url('#{$fm-font-path}/iconfont.woff?v=#{$fm-version}') format('woff'),
+    url('#{$fm-font-path}/iconfont.ttf?v=#{$fm-version}') format('truetype'),
+    url('#{$fm-font-path}/iconfont.svg?v=#{$fm-version}#fontawesomeregular') format('svg');
+  */
+}

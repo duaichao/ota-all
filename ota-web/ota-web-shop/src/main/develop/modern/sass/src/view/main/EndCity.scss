@@ -1,0 +1,26 @@
+$left-tab-back-color:#f3f2f5;
+$left-tab-border-color:#e9e9e9;
+.left-tab{
+	box-shadow:none;
+	background:$left-tab-back-color;
+	& > .x-inner {
+	     min-height: 3rem;
+	     background:$left-tab-back-color;
+	     padding:0;
+	     .x-tab {
+		border-left:3px solid transparent;
+		border-bottom:1px solid $left-tab-border-color;
+		margin:0;
+		background:$left-tab-back-color;
+		&.x-tab-active{border-left-color:$base-color;box-shadow: 0 0 0 $base-color;background:#ffffff;}
+		.x-button-label {
+		    font-size:14px!important; 
+		}
+	     }
+	     .x-container{
+		background:$left-tab-back-color;
+		& > .x-inner {background:$left-tab-back-color;}
+	     }
+	}
+
+}

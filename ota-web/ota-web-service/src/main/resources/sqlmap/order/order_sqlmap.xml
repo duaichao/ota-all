@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="order">
+	
+	<update id="updateOrderAccountByIDS" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_ACCOUNT SET ACCOUNT_STATUS = #ACCOUNT_STATUS# WHERE ID = #ACCOUNT_ID#
+	</update>
+	
+	<statement id="searchOrderAccountPayFinish" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT c.account_id
+		FROM
+		  (SELECT COUNT(1)                     AS cnt,
+		    #ACCOUNT_ID# AS account_id
+		  FROM sd_order_base a
+		  WHERE a.is_del = 0 AND a.COMPANY_ID                          = #COMPANY_ID#
+		  AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME# 
+		  <![CDATA[ AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="ACCOUNT">
+		  	<isEqual property="ACCOUNT" compareValue="0">
+		  		and a.STATUS IN (0,1,2,3,4,5) and a.is_alone = 0 and a.sources = 0
+		  	</isEqual>
+		  	<isEqual property="ACCOUNT" compareValue="-1">
+		  		and a.STATUS IN (0,1,2,3,4,5) and (a.is_alone = 1 or a.sources = 1) and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  	</isEqual>
+		  </isNotEmpty>
+		  
+		  ) c,
+		  (SELECT COUNT(1)                     AS cnt,
+		    #ACCOUNT_ID# AS account_id
+		  FROM sd_order_base a
+		  WHERE a.is_del = 0 AND a.account_status                      = 2
+		  AND a.COMPANY_ID                          = #COMPANY_ID#
+		  AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME# 
+		  <![CDATA[ AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="ACCOUNT">
+		  	<isEqual property="ACCOUNT" compareValue="0">
+		  		and a.STATUS IN (0,1,2,3,4,5) and a.is_alone = 0 and a.sources = 0
+		  	</isEqual>
+		  	<isEqual property="ACCOUNT" compareValue="-1">
+		  		and a.STATUS IN (0,1,2,3,4,5) and (a.is_alone = 1 or a.sources = 1) and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  	</isEqual>
+		  </isNotEmpty>
+		  
+		  ) d
+		WHERE c.cnt      = d.cnt
+		AND c.account_id = d.account_id
+	</statement>
+	
+	<statement id="searchOrderAccount" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.START_DATE,
+		  a.END_DATE,
+		  a.COMPANY_ID,
+		  a.SITE_RELA_ID,
+		  a.ACCOUNT_STATUS
+		FROM SD_ORDER_ACCOUNT a
+		WHERE 1 = 1
+		
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+		AND a.START_DATE = #CREATE_BEGIN_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_END_TIME">
+		AND a.END_DATE       = #CREATE_END_TIME#
+		</isNotEmpty>
+						
+	  	<isNotEmpty property="START_BEGIN_DATE">
+		AND a.START_DATE = #START_BEGIN_DATE#
+		</isNotEmpty>
+		<isNotEmpty property="START_END_DATE">
+		AND a.END_DATE       = #START_END_DATE#
+		</isNotEmpty>
+		
+	  	<isNotEmpty property="COMPANY_ID">
+	  	AND a.COMPANY_ID     = #COMPANY_ID#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_TYPE">
+	  	AND a.ACCOUNT_TYPE     = #ACCOUNT_TYPE#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_COMPANY_ID">
+	  	AND a.ACCOUNT_COMPANY_ID     = #ACCOUNT_COMPANY_ID#
+	  	</isNotEmpty>
+	</statement>
+	
+	<insert id="saveOrderStepDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID,
+			REMARK)
+		values(
+			#ID#,
+			#ORDER_ID#,
+			sysdate,
+			#TITLE#,
+			#STEP_USER#,
+			#STEP_USER_ID#,
+			#REMARK#
+		)
+	</insert>
+	
+	<insert id="saveOrderContact" parameterClass="java.util.Map">
+		INSERT INTO SD_ORDER_CONTACT(
+			ID,
+			CHINA_NAME,
+			MOBILE,
+			ORDER_ID,
+			CREATE_TIME,
+			CREATE_USER_ID,
+			COMPANY_ID)
+		VALUES
+			(#ID#,
+			#CHINA_NAME#,
+			#MOBILE#,
+			#ORDER_ID#,
+			sysdate,
+			#CREATE_USER_ID#,
+			#COMPANY_ID#)
+	</insert>
+	
+	<statement id="listOrderContact" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+			t.CHINA_NAME,
+			t.MOBILE,
+			t.ORDER_ID,
+			t.CREATE_TIME,
+			t.CREATE_USER_ID,
+			t.COMPANY_ID 
+		from SD_ORDER_CONTACT t 
+		WHERE 1 = 1
+		<isNotEmpty property="ORDER_ID">
+			and t.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+	</statement>
+	
+	<update id="orderCancel" parameterClass="java.util.Map">
+		update SD_ORDER_BASE SET STATUS = 6 WHERE ID = #ORDER_ID#
+	</update>
+	
+	<delete id="delDiscountOrderDao" parameterClass="java.util.Map">
+		DELETE FROM SD_DISCOUNT_ORDER WHERE ORDER_ID = #ORDER_ID#
+	</delete>
+	
+	<update id="updateDiscountOrderDao" parameterClass="java.util.Map">
+		update SD_DISCOUNT_ORDER SET
+		DISCOUNT_RULE_ID = #DISCOUNT_RULE_ID#,
+		RULE_TYPE = #RULE_TYPE#,
+		MONEY = #MONEY#,
+		PAY_WAY = #PAY_WAY#,
+		PLATFROM = #PLATFROM#,
+		TOTAL_AMOUNT = #TOTAL_AMOUNT#
+		WHERE ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<statement id="listDiscountProductDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		    t.PRO_ID,
+		    t.PRO_TYPE,
+		    t.DISCOUNT_ID,
+		    t.DISCOUNT_RULE_ID,
+		    
+		    t1.RULE_TYPE,
+			t1.MONEY,
+			t1.PAY_WAY,
+			t1.PLATFROM,
+			
+			t2.TITLE
+			
+		FROM SD_DISCOUNT_PRODUCT t, SD_DISCOUNT_RULE t1, SD_DISCOUNT t2
+		where t.DISCOUNT_RULE_ID = t1.ID 
+		AND t.DISCOUNT_ID = t2.ID
+		<isNotEmpty property="PRO_ID">
+		AND t.PRO_ID          = #PRO_ID#
+		</isNotEmpty>
+		<isNotEmpty property="DISCOUNT_ID">
+		AND t.DISCOUNT_ID          = #DISCOUNT_ID#
+		</isNotEmpty>
+		<isNotEmpty property="DISCOUNT_RULE_ID">
+		AND t.DISCOUNT_RULE_ID          = #DISCOUNT_RULE_ID#
+		</isNotEmpty>
+		
+		<isNotEmpty property="RULE_TYPE">
+		AND t1.RULE_TYPE          = #RULE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="PAY_WAY">
+		AND t1.PAY_WAY          = #PAY_WAY#
+		</isNotEmpty>
+		<isNotEmpty property="PLATFROM">
+		AND t1.PLATFROM          = #PLATFROM#
+		</isNotEmpty>
+			
+		<isNotEmpty property="LIMIT_DATE">
+		<![CDATA[ AND t2.BEGIN_TIME <= sysdate and t2.END_TIME >= sysdate ]]>
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="listDiscountOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		    t.ORDER_ID,
+		    t.DISCOUNT_ID,
+		    t.IS_REFUND,
+		    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+		   
+		    t.RULE_TYPE,
+		    t.MONEY,
+		    t.PAY_WAY,
+		    t.PLATFROM,
+		    t.TOTAL_AMOUNT,
+   
+   			t1.TITLE
+		FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+		where 1 = 1
+		and t.DISCOUNT_ID = t1.ID
+		<isNotEmpty property="ORDER_ID">
+		AND t.ORDER_ID = #ORDER_ID#
+		</isNotEmpty> 
+	</statement>
+	
+	<statement id="listOrderPriceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ORDER_ID,
+			a.TYPE_ID,
+			a.TYPE_NAME,
+			a.ATTR_ID,
+			a.ATTR_NAME,
+			a.PRICE,
+			a.entity_id,
+			a.entity_type
+		from SD_ORDER_PRICE a 
+		where 1 = 1 
+		<isNotEmpty property="ORDER_ID">
+			and a.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_ID">
+			and a.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_TYPE">
+			and a.ENTITY_TYPE = #ENTITY_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE_ID">
+			and a.TYPE_ID = #TYPE_ID#
+		</isNotEmpty>
+		order by a.ORDER_ID, a.ENTITY_ID
+	</statement>
+	
+	<statement id="searchOrderBase" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+		 SELECT t.ID,
+		  t.NO,
+		  t.PRODUCE_ID,
+		  t.TRAFFIC_ID,
+		  t.PRODUCE_TYPE,
+		  t.COMPANY_ID,
+		  t.COMPANY_NAME,
+		  t.PORDUCE_CONCAT,
+		  t.PRODUCE_MOBILE,
+		  t.START_DATE,
+		  to_char(to_date(t.START_DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd') as startDate,
+		  to_char((to_date(t.START_DATE, 'yyyy-mm-dd') + t3.day_count - 1), 'yyyy-mm-dd') as backDate,
+		  t.MUSTER_TIME,
+		  t.MUSTER_PLACE,
+		  t.VISITOR_CONCAT,
+		  t.VISITOR_MOBILE,
+		  t.MAN_COUNT,
+		  t.CHILD_COUNT,
+		  t.STATUS,
+		  decode(t.STATUS, 1, '付款中', 2, '已付款', 3, '待退款', 4, '退款中', 5, '已退款', 6, '手动取消', 7, '系统自动取消', '待付款') as STATUS_TITLE,
+		  t.SALE_AMOUNT,
+		  t.PAY_TYPE,
+		  t.START_CITY,
+		  t.END_CITY,
+		  t.WAP_USER,
+		  t.WAP_USER_ID,
+		  t.INTER_AMOUNT,
+		  t.CREATE_USER,
+		  t.CREATE_USER_ID,
+		  to_char(t.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') as CREATE_TIME,
+		  
+		  t.RETAIL_SINGLE_ROOM,
+		  t.INTER_SINGLE_ROOM,
+		  t.SINGLE_ROOM_CNT,
+		  t.CON_NO,
+		  t.IS_ALONE,
+		  t.SOURCES,
+		  t.CREATE_COMPANY_ID,
+		  
+		  t1.MOBILE as SALE_PHONE,
+		  t2.COMPANY as BUY_COMPANY,
+		  t2.ADDRESS as BUY_COMPANY_ADDRESS,
+		  t2.PHONE as BUY_COMPANY_PHONE,
+		  t3.TITLE as PRODUCE_NAME,
+		  t3.TYPE as PRODUCETYPE,
+		  t3.DAY_COUNT,
+		  
+		  t4.CHINA_NAME as BUY_USER_NAME,
+		  t4.MOBILE as BUY_PHONE,
+		  to_char(t5.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		  
+		  t6.USER_NAME as COUNSELOR_USER_NAME,
+		  t6.CHINA_NAME as COUNSELOR_CHINA_NAME,
+		    
+		  NVL(t12.TOTAL_AMOUNT, 0) as DISCOUNT_TOTAL_AMOUNT,
+		  DECODE(t12.IS_REFUND, null, 1, '', 1, 0, 0, 1) as IS_REFUND
+		 
+		FROM SD_ORDER_BASE t,
+		SD_USER t1,
+		(select a.id, a.company, decode(a.pid, '-1', a.id, a.pid) as pid, a.PHONE, a.ADDRESS from sd_user_company a) t2,
+		sd_pro_route t3,
+		sd_user t4,
+		(SELECT a.order_id funds_order_id,
+	        max(a.create_time) pay_time
+	      FROM sd_order_funds a
+	      WHERE a.type = 2
+	      group by a.order_id) t5,
+	      sd_user t6,
+		(SELECT t.ID,
+		    t.ORDER_ID,
+		    t.DISCOUNT_ID,
+		    t.IS_REFUND,
+		    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+		    t.RULE_TYPE,
+		    t.MONEY,
+		    t.PAY_WAY,
+		    t.PLATFROM,
+		    t.TOTAL_AMOUNT,
+   			t1.TITLE
+		FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+		where 1 = 1
+		and t.DISCOUNT_ID = t1.ID) t12
+		WHERE 1  = 1
+		and t.PRODUCE_USER_ID = t1.ID
+		and t.CREATE_COMPANY_ID = t2.ID
+		and t.PRODUCE_ID = t3.ID
+		and t.CREATE_USER_ID = t4.ID
+		and t.id = t5.funds_order_id(+)
+		and t.COUNSELOR_ID = t6.id(+)
+		and t.ID = t12.ORDER_ID(+)
+		<isNotEmpty property="ID">
+			AND t.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="STATUS">
+			AND t.STATUS in ($STATUS$)
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			AND t.NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="WAP_USER_ID">
+			AND t.WAP_USER_ID = #WAP_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="query">
+			AND ( t3.TITLE like '%$query$%' or t.NO like '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="BEGIN_DATE">
+			AND to_char(t.CREATE_TIME, 'yyyy-mm-dd') >= #BEGIN_DATE#
+		</isNotEmpty>
+		<isNotEmpty property="END_DATE">
+			<![CDATA[ AND to_char(t.CREATE_TIME, 'yyyy-mm-dd') <= #END_DATE# ]]>
+		</isNotEmpty>
+		ORDER BY t.CREATE_TIME DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countOrderBase" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		 SELECT count(1) as cnt
+		FROM SD_ORDER_BASE t,
+		SD_USER t1,
+		(select a.id, a.company, decode(a.pid, '-1', a.id, a.pid) as pid from sd_user_company a) t2,
+		sd_pro_route t3,
+		sd_user t4,
+		(SELECT a.order_id funds_order_id,
+	        max(a.create_time) pay_time
+	      FROM sd_order_funds a
+	      WHERE a.type = 2
+	      group by a.order_id) t5,
+		(SELECT t.ID,
+		    t.ORDER_ID,
+		    t.DISCOUNT_ID,
+		    t.IS_REFUND,
+		    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+		    t.RULE_TYPE,
+		    t.MONEY,
+		    t.PAY_WAY,
+		    t.PLATFROM,
+		    t.TOTAL_AMOUNT,
+   			t1.TITLE
+		FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+		where 1 = 1
+		and t.DISCOUNT_ID = t1.ID) t12
+		WHERE 1  = 1
+		and t.PRODUCE_USER_ID = t1.ID
+		and t.CREATE_COMPANY_ID = t2.ID
+		and t.PRODUCE_ID = t3.ID
+		and t.CREATE_USER_ID = t4.ID
+		and t.id = t5.funds_order_id(+)
+		and t.ID = t12.ORDER_ID(+)
+		<isNotEmpty property="ID">
+			AND t.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="STATUS">
+			AND t.STATUS in ($STATUS$)
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			AND t.NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="WAP_USER_ID">
+			AND t.WAP_USER_ID = #WAP_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="query">
+			AND (t3.TITLE like '%$query$%' or t.NO like '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="BEGIN_DATE">
+			AND to_char(t.CREATE_TIME, 'yyyy-mm-dd') >= #BEGIN_DATE#
+		</isNotEmpty>
+		<isNotEmpty property="END_DATE">
+			<![CDATA[ AND to_char(t.CREATE_TIME, 'yyyy-mm-dd') <= #END_DATE# ]]>
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveOrderPrice" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_PRICE(
+			ID,
+			ORDER_ID,
+			TYPE_ID,
+			TYPE_NAME,
+			ATTR_ID,
+			ATTR_NAME,
+			PRICE,
+			ENTITY_ID,
+			ENTITY_TYPE)
+		select sys_guid(), #ORDER_ID#, a.TYPE_ID, a.TYPE_NAME, a.ATTR_ID, a.ATTR_NAME, a.PRICE, a.ENTITY_ID, #ENTITY_TYPE#  
+		from sd_pro_base_price a
+		where 1 = 1 and a.entity_id in ($ENTITY_ID$) 
+	</insert>
+	
+	<insert id="saveOrderPriceMain" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_PRICE_MAIN(
+			ID,
+			ORDER_ID,
+			TYPE_ID,
+			TYPE_NAME,
+			ATTR_ID,
+			ATTR_NAME,
+			PRICE,
+			IS_DEL
+		)VALUES(
+			#ID#,
+			#ORDER_ID#,
+			#TYPE_ID#,
+			#TYPE_NAME#,
+			#ATTR_ID#,
+			#ATTR_NAME#,
+			#PRICE#,
+			0
+		)
+	</insert>
+	
+	<insert id="saveOrderTraffic" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_ROUTE_TRAFFIC
+		  (
+			ID,
+			ORDER_ID,
+			ROUTE_ID,
+			NO,
+			IS_DEL,
+			TITLE,
+			BEFORE_ID
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ORDER_ID#,
+			#ROUTE_ID#,
+			#NO#,
+			0,
+			#TITLE#,
+			#BEFORE_ID#
+		  )
+	</insert>
+	
+	<insert id="saveOrderTrafficDetail" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_ROUTE_TRAFFIC_DETAIL
+		  (
+			ID,
+			ORDER_ID,
+			PLAN_ID,
+			ORDER_BY,
+			BEGIN_CITY_ID,
+			BEGIN_CITY_NAME,
+			END_CITY_ID,
+			END_CITY_NAME,
+			TRAFFIC_ID,
+			TRAFFIC_NAME,
+			STAY_CNT,
+			IS_DEL,
+			BEFORE_DETAIL_ID,
+			BEFORE_PLAN_ID,
+			BEGIN_STATION,
+			END_STATION,
+			TYPE,
+			IS_SINGLE
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ORDER_ID#,
+			#PLAN_ID#,
+			#ORDER_BY#,
+			#BEGIN_CITY_ID#,
+			#BEGIN_CITY_NAME#,
+			#END_CITY_ID#,
+			#END_CITY_NAME#,
+			#TRAFFIC_ID#,
+			#TRAFFIC_NAME#,
+			#STAY_CNT#,
+			0,
+			#BEFORE_DETAIL_ID#,
+			#BEFORE_PLAN_ID#,
+			#BEGIN_STATION#,
+			#END_STATION#,
+			#TYPE#,
+			#IS_SINGLE#
+		  )
+	</insert>
+	
+	<insert id="saveOrderStep" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID,
+			REMARK)
+		values(
+			#ID#,
+			#ORDER_ID#,
+			sysdate,
+			#TITLE#,
+			#STEP_USER#,
+			#STEP_USER_ID#,
+			#REMARK#
+		)
+	</insert>
+	
+		
+	<insert id="saveOrder" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_BASE(
+			ID,
+			NO,
+			PRODUCE_ID,
+			TRAFFIC_ID,
+			PRODUCE_TYPE,
+			COMPANY_ID,
+			COMPANY_NAME,
+			PORDUCE_CONCAT,
+			PRODUCE_MOBILE,
+			START_DATE,
+			MUSTER_TIME,
+			MUSTER_PLACE,
+			VISITOR_CONCAT,
+			VISITOR_MOBILE,
+			MAN_COUNT,
+			CHILD_COUNT,
+			STATUS,
+			SALE_AMOUNT,
+			INTER_AMOUNT,
+			PAY_TYPE,
+			ACCOUNT_STATUS,
+			CREATE_USER,
+			CREATE_USER_ID,
+			CREATE_COMPANY_ID,
+			CREATE_DEPART_ID,
+			CREATE_TIME,
+			SITE_RELA_ID,
+			VISITOR_EMAIL,
+			RULE_ID,
+			PRODUCE_USER_ID,
+			IS_ALONE,
+			START_CITY,
+			END_CITY,
+			SOURCES,
+			WAP_USER,
+			WAP_USER_ID,
+			COUNSELOR_ID,
+			RETAIL_SINGLE_ROOM,
+			INTER_SINGLE_ROOM,
+			SINGLE_ROOM_CNT,
+			ACCOUNT_WAY,
+			PLAT_FROM)
+		values(
+			#ID#,
+			#NO#,
+			#PRODUCE_ID#,
+			#TRAFFIC_ID#,
+			#PRODUCE_TYPE#,
+			#COMPANY_ID#,
+			#COMPANY_NAME#,
+			#PORDUCE_CONCAT#,
+			#PRODUCE_MOBILE#,
+			#START_DATE#,
+			#MUSTER_TIME#,
+			#MUSTER_PLACE#,
+			#VISITOR_CONCAT#,
+			#VISITOR_MOBILE#,
+			#MAN_COUNT#,
+			#CHILD_COUNT#,
+			#STATUS#,
+			#SALE_AMOUNT#,
+			#INTER_AMOUNT#,
+			#PAY_TYPE#,
+			#ACCOUNT_STATUS#,
+			#CREATE_USER#,
+			#CREATE_USER_ID#,
+			#CREATE_COMPANY_ID#,
+			#CREATE_DEPART_ID#,
+			sysdate,
+			#SITE_RELA_ID#,
+			#VISITOR_EMAIL#,
+			#RULE_ID#,
+			#PRODUCE_USER_ID#,
+			#IS_ALONE#,
+			#START_CITY#,
+			#END_CITY#,
+			1,
+			#WAP_USER#,
+			#WAP_USER_ID#,
+			#COUNSELOR_ID#,
+			#RETAIL_SINGLE_ROOM#,
+			#INTER_SINGLE_ROOM#,
+			#SINGLE_ROOM_CNT#,
+			#ACCOUNT_WAY#,
+			#PLAT_FROM#
+		)
+	</insert>
+	
+	<update id="orderLost" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_BASE SET LOST_TIME = sysdate, IS_LOST = 1 WHERE ID = #ID#
+	</update>
+	
+	<delete id="reSeatByEntityIdDao" parameterClass="java.lang.String">
+		delete from sd_pro_traffic_seat where entity_id = #VALUE#
+	</delete>
+	
+	<update id="reSeatStatusByEntityIdDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 7, IS_LOST = 0, LOST_TIME = null 
+		where id = #VALUE#
+	</update>
+	
+	<statement id="reSeatStatusByEntityIdListDao" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select IS_ALONE,SOURCES,COMPANY_ID,to_char(CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME from sd_order_base 
+		where id = #VALUE#
+	</statement>
+	
+	<insert id="reSeatStepByEntityIdDao" parameterClass="java.util.Map">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID,
+			REMARK)
+		select sys_guid(),id,sysdate,'系统自动取消',#CREATE_USER#,#CREATE_USER_ID#,'在线支付失败' from sd_order_base where id = #ID#
+	</insert>
+	
+	<update id="updateOrderStatus" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_BASE SET STATUS = #STATUS#
+		<isNotEmpty property="PAY_TYPE">
+		,PAY_TYPE = #PAY_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="PLATFORM_PAY">
+		,PLATFORM_PAY = #PLATFORM_PAY#
+		</isNotEmpty>		
+		WHERE ID = #ID#
+	</update>
+	
+	<insert id="saveOrderFundsDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_FUNDS(
+			ID,
+			ORDER_ID,
+			TYPE,
+			AMOUNT,
+			REMARKS,
+			ACCOUNT_TYPE,
+			ACCOUNT_COMPANY_ID,
+			SITE_RELA_ID,
+			ENTITY_TYPE,
+			CREATE_TIME,
+			CREATE_USER,
+			CREATE_USER_ID,
+			ENTITY_ID,
+			PID)
+		values(
+			#ID#,
+			#ORDER_ID#,
+			#TYPE#,
+			#AMOUNT#,
+			#REMARKS#,
+			#ACCOUNT_TYPE#,
+			#ACCOUNT_COMPANY_ID#,
+			#SITE_RELA_ID#,
+			#ENTITY_TYPE#,
+			sysdate,
+			#CREATE_USER#,
+			#CREATE_USER_ID#,
+			#ENTITY_ID#,
+			#PID#
+		)
+	</insert>
+	
+	<statement id="listVisitorGroupByTrafficAttrDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select c.entity_id,c.entity_type,sum(price*num) as price from (
+		select a.*,nvl(b.num,0) as num from (
+		SELECT b.traffic_id as entity_id,
+		  a.entity_type,
+		  a.price,
+		  a.attr_name,
+		  a.attr_id
+		FROM sd_order_price a,sd_pro_traffic_rule b
+		WHERE a.order_id         =#ORDER_ID#
+		AND a.entity_type= 1
+    and a.entity_id = b.id
+		AND a.type_id    = '0FA5123749D38C87E050007F0100BCAD'
+		) a,(
+		SELECT count(b.id) as num,
+			  c.PID
+			FROM sd_order_visitor a,
+			  sd_visitor b,
+			  (select id,decode(pid,'-1',id,pid) as pid from sd_pro_price_attr) c
+			WHERE a.visitor_id = b.id
+			and a.order_id = #ORDER_ID#
+			and b.ATTR_ID = c.id
+			group by c.PID
+		) b where a.attr_id = b.pid(+)
+		) c group by c.entity_id,c.entity_type
+
+	</statement>
+	
+	<statement id="listOrderAccountDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.START_DATE,
+		  a.END_DATE,
+		  a.COMPANY_ID,
+		  a.SITE_RELA_ID,
+		  a.ACCOUNT_STATUS
+		FROM SD_ORDER_ACCOUNT a
+		WHERE 1 = 1
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+		AND a.START_DATE = #CREATE_BEGIN_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_END_TIME">
+		AND a.END_DATE       = #CREATE_END_TIME#
+		</isNotEmpty>
+	  	<isNotEmpty property="COMPANY_ID">
+	  	AND a.COMPANY_ID     = #COMPANY_ID#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_TYPE">
+	  	AND a.ACCOUNT_TYPE     = #ACCOUNT_TYPE#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_COMPANY_ID">
+	  	AND a.ACCOUNT_COMPANY_ID     = #ACCOUNT_COMPANY_ID#
+	  	</isNotEmpty>
+	</statement>
+	
+	<statement id="listOrderAccountPayFinishDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT c.account_id
+		FROM
+		  (SELECT COUNT(1)                     AS cnt,
+		    #ACCOUNT_ID# AS account_id
+		  FROM sd_order_base a
+		  WHERE a.COMPANY_ID                          = #COMPANY_ID#
+		  AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME# 
+		  <![CDATA[ AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="ACCOUNT">
+		  	<isEqual property="ACCOUNT" compareValue="0">
+		  		and a.STATUS IN (0,1,2,3,4,5) and a.is_alone = 0 and a.sources = 0
+		  	</isEqual>
+		  	<isEqual property="ACCOUNT" compareValue="-1">
+		  		and a.STATUS IN (0,1,2,3,4,5) and (a.is_alone = 1 or a.sources = 1) and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  	</isEqual>
+		  </isNotEmpty>
+		  
+		  ) c,
+		  (SELECT COUNT(1)                     AS cnt,
+		    #ACCOUNT_ID# AS account_id
+		  FROM sd_order_base a
+		  WHERE a.account_status                      = 2
+		  AND a.COMPANY_ID                          = #COMPANY_ID#
+		  AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME# 
+		  <![CDATA[ AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="ACCOUNT">
+		  	<isEqual property="ACCOUNT" compareValue="0">
+		  		and a.STATUS IN (0,1,2,3,4,5) and a.is_alone = 0 and a.sources = 0
+		  	</isEqual>
+		  	<isEqual property="ACCOUNT" compareValue="-1">
+		  		and a.STATUS IN (0,1,2,3,4,5) and (a.is_alone = 1 or a.sources = 1) and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  	</isEqual>
+		  </isNotEmpty>
+		  
+		  ) d
+		WHERE c.cnt      = d.cnt
+		AND c.account_id = d.account_id
+	</statement>
+	
+	<update id="updateOrderAccountByIDSDao" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_ACCOUNT SET ACCOUNT_STATUS = #ACCOUNT_STATUS# WHERE ID = #ACCOUNT_ID#
+	</update>
+	
+	<statement id="searchOrderRouteTraffic" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT TO_CHAR(to_date(t.START_DATE,'yyyy-mm-dd')+(SUM(t.exca) over(partition BY t.ORDER_ID order by t.ORDER_BY)),'yyyy-mm-dd') AS exca,
+		  t.STAY_CNT,
+		  t.BEGIN_CITY_NAME,
+		  t.END_CITY_NAME,
+		  t.PRODUCE_NAME,
+		  t.ORDER_BY,
+		  t.START_DATE,
+		  t.ORDER_ID,
+		  t.IS_FULL_PRICE
+		FROM
+		  (SELECT DECODE(t1.order_by,1,0,first_value(t1.STAY_CNT) over(partition BY c.ID order by t1.ORDER_BY rows BETWEEN 1 preceding AND 1 following)) AS exca,
+		    c.ID                                                                                                                                         AS ORDER_ID,
+		    t1.BEGIN_CITY_NAME,
+		    t1.END_CITY_NAME,
+		    t1.ORDER_BY,
+		    c.START_DATE,
+		    t3.PRODUCE_NAME,
+		    t1.STAY_CNT,
+		    t3.IS_FULL_PRICE
+		  FROM sd_order_base c,
+		    sd_order_route_traffic t,
+		    sd_order_route_traffic_detail t1,
+		    (SELECT b.id,
+		      '100' AS type,
+		      b.CREATE_USER_ID,
+		      b.TITLE AS PRODUCE_NAME,
+		      b.is_full_price
+		    FROM sd_pro_traffic b
+		    ) t3
+		  WHERE c.id        = t.order_id
+		  AND c.id          = t1.order_id
+		  AND t1.traffic_id = t3.id
+		  AND t1.IS_DEL = 0
+  		  AND t.IS_DEL = 0
+		  AND c.ID         = #ORDER_ID#
+		  ) t
+	  </statement>
+</sqlMap>

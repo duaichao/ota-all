@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="account">
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (
+		    select a.*,rownum as myrownum from (
+		        select 
+		            distinct
+      				DECODE(a.type,7,SUM(money) OVER(PARTITION BY a.note order by a.opet_time),a.showmoney)   AS money,
+		            sum(money) over(ORDER  BY a.opet_time) as yemoney,
+		            a.op_time_ss,
+		            a.op_time_dd,
+		            a.des,
+		            a.CERTIFY_ATTR,
+		           	a.user_name,
+		           	a.text,
+		           	a.note
+		        from (
+		            select 
+		              a.money as showmoney,
+		              a.type,
+		              decode(a.type,5,0,decode(nvl(a.money,0),0,0,a.oper||a.money) ) as money,
+		           	  a.CERTIFY_ATTR,
+		           	  c.user_name,
+		           	  d.text,
+		              a.opet_time,
+		              a.note,
+		              to_char(a.opet_time,'yyyy-mm-dd hh24:mi:ss') as op_time_ss,
+		              to_char(a.opet_time,'yyyy-mm-dd') as op_time_dd,
+		              CASE 
+			              WHEN TYPE = 1 THEN decode(a.THIRD_TYPE,'1','支付宝充值','2','财付通充值','3','网银充值')
+			              WHEN TYPE = 2 THEN '手动充值'
+			              WHEN TYPE = 3 THEN '充值退款'
+			              WHEN TYPE = 4 THEN '透支'
+			              WHEN TYPE = 5 THEN '还款'
+			              WHEN TYPE = 6 THEN decode(a.PRODUCE_TYPE,'1','余额支付-交通','2','余额支付-线路','3','余额支付-酒店','4','余额支付-景点','5','余额支付-保险')
+			              WHEN TYPE = 7 THEN decode(a.PRODUCE_TYPE,'1','订单退款-交通','2','订单退款-线路','3','订单退款-酒店','4','订单退款-景点','5','订单退款-保险')
+		              end des
+		            from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b,sd_user c,sd_user_depart d
+		            where b.ID = a.ACCOUNT_ID and a.USER_ID = c.id and c.depart_id = d.id(+) and b.DEPART_ID = #DEPART_ID#
+		        ) a order by op_time_ss 
+		    ) a where 1 = 1
+		    <isNotEmpty property="OP_TIME_BEGIN">
+				 <![CDATA[ and op_time_dd >=#OP_TIME_BEGIN# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="OP_TIME_END">
+				 <![CDATA[ and op_time_dd <=#OP_TIME_END# ]]>
+			</isNotEmpty>
+		) a where  <![CDATA[ a.myrownum >= #start# and a.myrownum <= #end# ]]>
+		
+
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		
+		    select count(1) as cnt from (
+		        select 
+		            distinct
+      				DECODE(a.type,7,SUM(money) OVER(PARTITION BY a.note order by a.opet_time),a.showmoney)   AS money,
+		            sum(money) over(ORDER  BY a.opet_time) as yemoney,
+		            a.op_time_ss,
+		            a.op_time_dd,
+		            a.des,
+		            a.CERTIFY_ATTR,
+		           	a.user_name,
+		           	a.text,
+		           	a.note
+		        from (
+		            select 
+		              a.money as showmoney,
+		              a.type,
+		              decode(a.type,5,0,decode(nvl(a.money,0),0,0,a.oper||a.money) ) as money,
+		           	  a.CERTIFY_ATTR,
+		           	  c.user_name,
+		           	  d.text,
+		              a.opet_time,
+		              a.note,
+		              to_char(a.opet_time,'yyyy-mm-dd hh24:mi:ss') as op_time_ss,
+		              to_char(a.opet_time,'yyyy-mm-dd') as op_time_dd,
+		              CASE 
+			              WHEN TYPE = 1 THEN decode(a.THIRD_TYPE,'1','支付宝充值','2','财付通充值','3','网银充值')
+			              WHEN TYPE = 2 THEN '手动充值'
+			              WHEN TYPE = 3 THEN '充值退款'
+			              WHEN TYPE = 4 THEN '透支'
+			              WHEN TYPE = 5 THEN '还款'
+			              WHEN TYPE = 6 THEN decode(a.PRODUCE_TYPE,'1','余额支付-交通','2','余额支付-线路','3','余额支付-酒店','4','余额支付-景点','5','余额支付-保险')
+			              WHEN TYPE = 7 THEN decode(a.PRODUCE_TYPE,'1','订单退款-交通','2','订单退款-线路','3','订单退款-酒店','4','订单退款-景点','5','订单退款-保险')
+		              end des
+		            from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b,sd_user c,sd_user_depart d
+		            where b.ID = a.ACCOUNT_ID and a.USER_ID = c.id and c.depart_id = d.id(+) and b.DEPART_ID = #DEPART_ID#
+		        ) a order by op_time_ss 
+		    ) a where 1 = 1
+		    <isNotEmpty property="OP_TIME_BEGIN">
+				 <![CDATA[ and op_time_dd >=#OP_TIME_BEGIN# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="OP_TIME_END">
+				 <![CDATA[ and op_time_dd <=#OP_TIME_END# ]]>
+			</isNotEmpty>
+	</statement>
+
+	<statement id="statDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.*,a.tz-a.hk as wh,a.zxcz+a.sdcz-a.sdtk+a.tz-a.yezf+a.ddtk as ye from (
+			select decode(is_use,'0','启用','禁用') as zhzt,
+			       sum(decode(TYPE,1,a.money,0)) as zxcz, 
+			       sum(decode(TYPE,2,a.money,0)) as sdcz, 
+			       sum(decode(TYPE,3,a.money,0)) as sdtk, 
+			       sum(decode(TYPE,4,a.money,0)) as tz, 
+			       sum(decode(TYPE,5,a.money,0)) as hk, 
+			       sum(decode(TYPE,6,a.money,0)) as yezf,
+			       sum(decode(TYPE,7,a.money,0)) as ddtk
+			from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b
+			where b.ID = a.ACCOUNT_ID and b.DEPART_ID = #DEPART_ID#
+			group by b.is_use
+		) a	
+	</statement>
+	<!-- 获得账户 -->
+	<statement id="getAccountIdDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select id from SD_USER_ACOUNT where depart_id = #VALUE#
+	</statement>
+	<insert id="createAccountDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACOUNT(
+		   ID,
+		   IS_USE,
+		   COMPANY_ID,
+		   DEPART_ID,
+		   USER_ID,
+		   OPET_TIME
+		)values(
+		   #ID#,
+		   '0',
+		   #COMPANY_ID#,
+		   #DEPART_ID#,
+		   #USER_ID#,
+		   sysdate
+		)
+	</insert>
+	<update id="updateStateDao" parameterClass="java.util.Map">
+		update SD_USER_ACOUNT set is_use=#IS_USE#,USER_ID=#USER_ID#,OPET_TIME=sysdate where depart_id = #DEPART_ID#
+	</update>
+	
+	
+	<!-- 余额总额 -->
+	<statement id="yeStatDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select a.zxcz+a.sdcz-a.sdtk+a.tz-a.yezf+a.ddtk as ye from (
+			select sum(decode(TYPE,1,a.money,0)) as zxcz, 
+			       sum(decode(TYPE,2,a.money,0)) as sdcz, 
+			       sum(decode(TYPE,3,a.money,0)) as sdtk, 
+			       sum(decode(TYPE,4,a.money,0)) as tz, 
+			       sum(decode(TYPE,5,a.money,0)) as hk, 
+			       sum(decode(TYPE,6,a.money,0)) as yezf,
+			       sum(decode(TYPE,7,a.money,0)) as ddtk
+			from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b
+			where b.ID = a.ACCOUNT_ID and b.DEPART_ID = #DEPART_ID#
+		) a	
+	</statement>
+	<!-- 账户禁用状态 -->
+	<statement id="accountStateDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select decode(is_use,'0','启用','禁用') as zhzt
+		from SD_USER_ACOUNT b
+		where b.DEPART_ID = #DEPART_ID#
+	</statement>
+	
+	<!-- 在线充值-->
+	<insert id="addOnLineRechargeDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   NO,
+		   THIRD_NO,
+		   THIRD_TYPE,
+		   SITE_RELA_ID,
+		   ACCOUNT_WAY
+		)values(
+		   sys_guid(),
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '+',
+		   '1',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   #NO#,
+		   #THIRD_NO#,
+		   #THIRD_TYPE#,
+		   #SITE_RELA_ID#,
+		   #ACCOUNT_WAY#
+		)
+	</insert>
+	
+	<!-- 余额支付 -->
+	<insert id="addBalancePayDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   
+		   ORDER_NO,
+		   PRODUCE_TYPE
+		)values(
+		   sys_guid(),
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '-',
+		   '6',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   
+		   #ORDER_NO#,
+		   #PRODUCE_TYPE#
+		)
+	</insert>
+	
+	<!-- 订单退款 -->
+	<insert id="orderRefundDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   ORDER_NO,
+		   PRODUCE_TYPE
+		)values(
+		   sys_guid(),
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '+',
+		   '7',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   #ORDER_NO#,
+		   #PRODUCE_TYPE#
+		)
+	</insert>
+	
+	<statement id="isBalancePayDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select a.zxcz+a.sdcz-a.sdtk+a.tz-a.yezf+a.ddtk-$MONEY$ as ye from (
+			select sum(decode(TYPE,1,a.money,0)) as zxcz, 
+			       sum(decode(TYPE,2,a.money,0)) as sdcz, 
+			       sum(decode(TYPE,3,a.money,0)) as sdtk, 
+			       sum(decode(TYPE,4,a.money,0)) as tz, 
+			       sum(decode(TYPE,6,a.money,0)) as yezf,
+			       sum(decode(TYPE,7,a.money,0)) as ddtk
+			from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b
+			where b.ID = a.ACCOUNT_ID and b.DEPART_ID = #DEPART_ID#
+		) a
+	</statement>
+	
+	<!-- 充值 -->
+	<insert id="addLineRechargeDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   CERTIFY_ATTR,
+		   ACCOUNT_WAY
+		)values(
+		   #ID#,
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '+',
+		   '2',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   #CERTIFY_ATTR#,
+		   #ACCOUNT_WAY#)
+	</insert>
+	<!-- 退款 -->
+	<insert id="addRefundDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   
+		   CERTIFY_ATTR
+		)values(
+		   sys_guid(),
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '-',
+		   '3',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   
+		   #CERTIFY_ATTR#
+		)
+	</insert>
+	<!-- 
+		先判断ye 再判断yecz
+	 -->
+	<statement id="isRefundDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.zxcz+a.sdcz-a.sdtk+a.tz-a.yezf+a.ddtk-$MONEY$ as ye,
+			   a.zxcz+a.sdcz-a.sdtk-$MONEY$ as yecz
+		 from (
+			select sum(decode(TYPE,1,a.money,0)) as zxcz, 
+			       sum(decode(TYPE,2,a.money,0)) as sdcz, 
+			       sum(decode(TYPE,3,a.money,0)) as sdtk, 
+			       sum(decode(TYPE,4,a.money,0)) as tz, 
+			       sum(decode(TYPE,6,a.money,0)) as yezf,
+			       sum(decode(TYPE,7,a.money,0)) as ddtk
+			from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b
+			where b.ID = a.ACCOUNT_ID and b.DEPART_ID = #DEPART_ID#
+		) a
+	</statement>
+	
+	<!-- 透支 -->
+	<insert id="addOverdraftDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   
+		   CERTIFY_ATTR
+		)values(
+		   sys_guid(),
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '+',
+		   '4',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   
+		   #CERTIFY_ATTR#
+		)
+	</insert>
+	
+	<!-- 还款 -->
+	<insert id="addOverdraftRefundDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACCOUNT_DETAIL(
+		   ID,
+		   ACCOUNT_ID,
+		   MONEY,
+		   OPER,
+		   TYPE,
+		   USER_ID,
+		   OPET_TIME,
+		   NOTE,
+		   
+		   CERTIFY_ATTR
+		)values(
+		   sys_guid(),
+		   #ACCOUNT_ID#,
+		   $MONEY$,
+		   '-',
+		   '5',
+		   #USER_ID#,
+		   sysdate,
+		   #NOTE#,
+		   
+		   #CERTIFY_ATTR#
+		)
+	</insert>
+	
+	<statement id="isOverdraftRefundDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select a.tz-a.hk-$MONEY$ as ye
+		 from ( 
+		 	select 
+			       sum(decode(TYPE,4,a.money,0)) as tz, 
+			       sum(decode(TYPE,5,a.money,0)) as hk
+			from SD_USER_ACCOUNT_DETAIL a,SD_USER_ACOUNT b
+			where b.ID = a.ACCOUNT_ID and b.DEPART_ID = #DEPART_ID#
+		) a
+	</statement>
+	
+	<statement id="getCompanyIdDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select company_id from sd_user_depart where id = #VALUE#
+	</statement>
+	
+	<insert id="saveAccountLogDao" parameterClass="java.util.Map">
+		INSERT INTO SD_ACCOUNT_LOG (
+		ID,
+		NO,
+		PAY_TYPE,
+		THIRD_NO,
+		STATUS,
+		CREATE_TIME,
+		CREATE_USER,
+		CREATE_USER_ID,
+		AMOUNT,
+		DEPART_ID,
+		ACCOUNT_WAY)
+		VALUES
+		(#ID#,
+		#NO#,
+		#PAY_TYPE#,
+		#THIRD_NO#,
+		#STATUS#,
+		sysdate,
+		#CREATE_USER#,
+		#CREATE_USER_ID#,
+		#AMOUNT#,
+		#DEPART_ID#,
+		#ACCOUNT_WAY#
+		)
+	</insert>
+	
+	<statement id="listAccountLogDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.NO,
+			a.PAY_TYPE,
+			a.THIRD_NO,
+			a.STATUS,
+			a.CREATE_TIME,
+			a.CREATE_USER,
+			a.CREATE_USER_ID,
+			a.AMOUNT,
+			a.DEPART_ID,
+			a.CONTENT,
+			a.ACCOUNT_WAY
+		FROM SD_ACCOUNT_LOG a WHERE 1 = 1
+		<isNotEmpty property="ID"> 
+			AND a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="NO"> 
+			AND a.NO = #NO#
+		</isNotEmpty>
+	</statement>
+  	
+  	<update id="updateAccountLogDao" parameterClass="java.util.Map">
+  		UPDATE SD_ACCOUNT_LOG SET PAY_TYPE = #PAY_TYPE#, THIRD_NO = #THIRD_NO#,STATUS = #STATUS#, CONTENT = #CONTENT#, PAY_TIME = SYSDATE WHERE NO = #NO#
+  	</update>
+  	
+  	<update id="updateAccountLogStatusDao" parameterClass="java.util.Map">
+  		UPDATE SD_ACCOUNT_LOG SET STATUS = #STATUS# WHERE ID = #ID#
+  	</update>
+		
+  	<statement id="listAccountDetailDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+  		select a.* from (select a.*, rownum as myrownum from ( 
+			  	SELECT t.money, t2.text, t3.company, to_char(t.OPET_TIME, 'yyyy-mm-dd HH24:mi:ss') as OPET_TIME
+				FROM SD_USER_ACCOUNT_DETAIL t,
+				  SD_USER_ACOUNT t1,
+				  sd_user_depart t2,
+				  sd_user_company t3
+				WHERE t.ACCOUNT_ID = t1.ID
+				AND t1.depart_id   = t2.id
+				AND t2.COMPANY_ID  = t3.id
+				<isNotEmpty property="TYPE">
+				AND t.type         = #TYPE#
+				</isNotEmpty>
+				<isNotEmpty property="START_DATE">
+				AND to_char(t.OPET_TIME, 'yyyy-mm-dd')   >= #START_DATE#
+				</isNotEmpty>
+				<isNotEmpty property="END_DATE">
+				<![CDATA[ AND to_char(t.OPET_TIME, 'yyyy-mm-dd')   <= #END_DATE# ]]>
+				</isNotEmpty>
+				<isNotEmpty property="CITY_ID">
+				AND t3.city_id = #CITY_ID#
+				</isNotEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="sumAccountDetailMoneyDao" parameterClass="java.util.Map" resultClass="java.lang.Double">
+	  	SELECT nvl(sum(t.MONEY), 0) as MONEY
+		FROM SD_USER_ACCOUNT_DETAIL t,
+		  SD_USER_ACOUNT t1,
+		  sd_user_depart t2,
+		  sd_user_company t3
+		WHERE t.ACCOUNT_ID = t1.ID
+		AND t1.depart_id   = t2.id
+		AND t2.COMPANY_ID  = t3.id
+		<isNotEmpty property="TYPE">
+		AND t.type         = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+		AND t3.city_id = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_IDS">
+		AND t3.city_id in ($CITY_IDS$)
+		</isNotEmpty>
+	</statement>
+</sqlMap>

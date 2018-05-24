@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>136旅游网供应商账户使用说明</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/docs.min.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/help.css" />
+		<script type="text/javascript" src="js/jquery.min.js" ></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="js/docs.min.js" ></script>
+	</head>
+	<body>
+	<!-- 头部 -->
+	<header class="navbar navbar-static-top bs-docs-nav headerSpace" id="top" role="banner">
+		<div class="container">
+		    <div class="navbar-header headerWrap">
+		      	<a href="javascript:;" target="_self">
+					<img src="img/logo.png" height="75" alt="136旅游" title="136旅游">
+				</a>
+				<div class="contact">
+					<span class="num"><i class="icon-phone-sign"></i> 029-88898185</span>
+					<span class="time">周一至周日 <i class="icon-time"></i>8:00-18:00</span>
+					<a target="“blank”" class="qq" href="http://wpa.qq.com/msgrd?V=3&amp;uin=3187200277&amp;Site=QQ客服&amp;Menu=yes">
+						<img border="0" src="http://wpa.qq.com/pa?p=1:3187200277:3" alt="点击这里给我发消息">
+					</a>
+				</a>
+			</div>
+		    </div>
+		</div>
+	</header>
+    
+	<div class="container bs-docs-container">
+      	<div class="row">
+	      	<!-- 快捷菜单 -->
+	        <div class="col-md-3">
+	          	<div class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix-top treenav" role="complementary">
+		            <ul class="nav bs-docs-sidenav">
+		            	<li class="active">
+						  	<a href="#gys-manage">一、公司管理</a>
+						  	<ul class="nav">
+							    <li><a href="#gys-manage-role">1.1 创建角色</a></li>
+							    <li>
+							    	<a href="#gys-manage-department">1.2 部门管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#gys-manage-department-d1">1.2.1 添加和修改部门</a></li>
+							    		<li><a href="#gys-manage-department-d2">1.2.2 删除和启用/禁用部门</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							     	<a href="#gys-manage-staff">1.3 员工管理</a>
+							     	<ul class="nav">
+							    		<li><a href="#gys-manage-staff-s1">1.3.1 添加和修改员工</a></li>
+							    		<li><a href="#gys-manage-staff-s2">1.3.2 删除和启用/禁用员工</a></li>
+							    		<li>
+							    			<a href="#gys-manage-staff-s3">1.3.3 设置员工账户权限</a>
+							    			<ul class="nav">
+									    		<li><a href="#gys-manage-staff-s3-one">1.3.3.1 设置员工权限</a></li>
+									    		<li><a href="#gys-manage-staff-s3-two">1.3.3.2 分配角色</a></li>
+								    		</ul>
+							    		</li>
+							    		<li><a href="#gys-manage-staff-s4">1.3.4 员工设为经理</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#gys-manage-modify">1.4 修改密码</a></li>
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="help_gys2.html" target="_self">二、线路发布</a>
+						  	<ul class="nav">
+							    <li>
+							    	<a href="#gys-route-price">2.1 地接、交通价格独立发布</a>
+							    	<ul class="nav">
+							    		<li>
+							    			<a href="#gys-route-price-p1">2.1.1 发布地接</a>
+							    			<ul class="nav">
+									    		<li><a href="#gys-route-price-p1-one">2.1.1.1 地接线路设计</a></li>
+									    		<li><a href="#gys-route-price-p1-two">2.1.1.2 复制行程</a></li>
+									    		<li><a href="#gys-route-price-p1-three">2.1.1.3 线路图片的上传和封面的设置</a></li>
+									    		<li><a href="#gys-route-price-p1-four">2.1.1.4 配置单房差和上传源形程</a></li>
+									    		<li><a href="#gys-route-price-p1-five">2.1.1.5 配置地接价和单卖地接</a></li>
+								    		</ul>
+							    		</li>
+							    		<li>
+									    	<a href="#gys-route-price-p2">2.1.2 发布交通</a>
+									    	<ul class="nav">
+									    		<li><a href="#gys-route-price-p2-one">2.1.2.1 发布出行交通</a></li>
+									    		<li><a href="#gys-route-price-p2-two">2.1.2.2 更新出行交通日期、价格及座位</a></li>
+									    	</ul>
+									    </li>
+									    <li><a href="#gys-route-price-p3">2.1.3 线路搭配交通</a></li>
+									    <li><a href="#gys-route-price-p4">2.1.4 线路产品发布、停售和删除</a></li>
+							    	</ul>
+							    </li>
+							    <li>
+							     	<a href="#gys-route-together">2.2 地接、交通价格打包发布</a>
+							     	<ul class="nav">
+							    		<li><a href="#gys-route-together-t1">2.2.1 打包线路设计</a></li>
+							    		<li><a href="#gys-route-together-t2">2.2.2 复制行程</a></li>
+							    		<li><a href="#gys-route-together-t3">2.2.3 设置打包价</a></li>
+							    		<li><a href="#gys-route-together-t4">2.2.4 线路图片的上传和封面的设置</a></li>
+							    		<li><a href="#gys-route-together-t5">2.2.5 配置单房差和上传源行程</a></li>
+							    		<li><a href="#gys-route-together-t6">2.2.6 线路产品的发布、停售和删除</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#gys-route-contact">2.3 设置产品联系人</a></li>
+							    <li><a href="#gys-route-money">2.4 设置定金</a></li>
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="help_gys3.html" target="_self">三、审核订单</a>
+						  	<ul class="nav">
+							    <li>
+							    	<a href="#gys-order-route">3.1 线路订单</a>
+							    	<ul class="nav">
+							    		<li><a href="#gys-order-route-r1">3.1.1 附加费用订单审核</a></li>
+							    		<li><a href="#gys-order-route-r2">3.1.2 同行议价订单审核</a></li>
+							    		<li><a href="#gys-order-route-r3">3.1.3 退款订单审核</a></li>
+							    		<li><a href="#gys-order-route-r4">3.1.4 出团确认</a></li>
+							    		<li><a href="#gys-order-route-r5">3.1.5 余款确认</a></li>
+							    	</ul>
+							    </li>
+							    <li>
+							     	<a href="#gys-order-review">3.2 线路补单和退款审核</a>
+							     	<ul class="nav">
+							    		<li><a href="#gys-order-review-r1">3.2.1 补单和退款审核</a></li>
+							    		<li><a href="#gys-order-review-r2">3.2.2 出团确认</a></li>
+						    		</ul>
+							    </li>
+						  	</ul>
+						</li>
+		            </ul>
+		            <a class="back-to-top" href="#top"><i class="icon-circle-arrow-up"></i> 返回顶部</a>       
+	          	</div>
+	        </div>
+	        
+	        <!-- 右侧内容 -->
+	        <div class="col-md-9" role="main">
+		        <div class="bs-docs-section">
+				  	<div class="bs-callout bs-callout-info bs-list">
+				  		<h1 id="gys-manage">一、供应商账户公司管理</h1>
+				      	<h3>公司管理分为管理员、部门、经理和员工四级管理，层级管理有助于细化员工权限,方便管理。</h3>
+				 	</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-manage-role">1.1 创建角色</h3>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NTc4OA==' frameborder=0 'allowfullscreen'></iframe>
+						</div>
+					</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-manage-department">1.2 部门管理</h3>
+						<b id="gys-manage-department-d1">1.2.1 添加和修改部门</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NTc5Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<b id="gys-manage-department-d2">1.2.2 删除和启用/禁用部门</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NTc5Ng==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、删除部门，必须先删除部门下属的员工账户</p>
+    					<p>2、部门禁用后,其下属的所有员工账户都不能登录</p>
+					</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-manage-staff">1.3 员工管理</h3>
+						<b id="gys-manage-staff-s1">1.3.1 添加和修改员工</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NjUxMg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、登录名设置成功后,后期是不能修改的</p>
+   						<p>2、员工的姓名、座机和QQ三项为必填项</p>
+						<b id="gys-manage-staff-s2">1.3.2 删除和启用/禁用员工</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NTc5Ng==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、员工账户删除成功后,相应的订单以及销售数据只能通过经理账户来操作和查看；后期系统会做账户数据交接功能，即删除的员工账户的数据可以导入到其他员工账户</p>
+    					<p>2、禁用后的员工账户不能再登录</p>
+    					<b id="gys-manage-staff-s3">1.3.3 设置员工账户权限</b>
+    					<span id="gys-manage-staff-s3-one">1.3.3.1 设置员工权限</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NjkzMg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<span id="gys-manage-staff-s3-two">1.3.3.2 分配角色</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NzM1Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、根据不同员工的工作性质设置不同的员工操作权限</p>
+    					<p>2、员工账户的操作权限为设置员工权限和分配角色权限的并集</p>
+    					<b id="gys-manage-staff-s4">1.3.4 员工设为经理</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NzM0OA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：设为经理的账户,比同一部门下其他员工账户的数据权限更大,它可以查看和操作部门下所有的订单数据、销售报表等。</p>
+					</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-manage-modify">1.4 修改密码</h3>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3NzQ5Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+        </div>
+    </div>
+    
+    <!-- 尾部 -->
+	<footer class="bs-docs-footer" role="contentinfo">
+	  	<div class="container">
+	    	<p>Copyright © 2012-2017 All Rights Reserved 陕ICP备14012052号 版权所有</p>
+	  	</div>
+	</footer>
+	</body>
+</html>

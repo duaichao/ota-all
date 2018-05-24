@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AD">
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select t.* from (select t.*, rownum as myrownum from (
+			SELECT a.ID,
+			  REPLACE(a.PATH,'\','/') as PATH,
+			  a.HREF,
+			  a.TITLE,
+			  a.ORDER_BY,
+			  a.TYPE,
+			  a.SUB_TYPE,
+			  a.CITY_ID,
+			  a.CITY_NAME,
+			  (SELECT e.text FROM sd_city e WHERE e.id = d.pid)|| '/' || a.city_name AS SUB_AREA
+			FROM SD_AD a,
+			  sd_city d
+			WHERE 1       = 1
+			AND d.id      = a.city_id
+		   <isNotEmpty property="TYPE">
+		       and a.TYPE = #TYPE#
+		   </isNotEmpty>
+		   <isNotEmpty property="SUB_TYPE">
+		       and a.SUB_TYPE = #SUB_TYPE#
+		   </isNotEmpty>
+		   <isNotEmpty property="ID">
+		       and a.ID = #ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="CITY_ID">
+		       and a.CITY_ID = #CITY_ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="CITY_IDS">
+		       and a.CITY_ID in ($CITY_IDS$)
+		   </isNotEmpty>
+		   <isNotEmpty property="CITY_NAME">
+		       and a.CITY_NAME = #CITY_NAME#
+		   </isNotEmpty>
+		   <isNotEmpty property="USER_ID">
+		       and c.USER_ID = #USER_ID#
+		   </isNotEmpty>
+		   )t)t where 1=1 <![CDATA[  and t.myrownum >= #start# and t.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(a.ID) s
+			FROM SD_AD a,
+			  sd_city d
+			WHERE 1       = 1
+			AND d.id      = a.city_id
+		   <isNotEmpty property="TYPE">
+		       and a.TYPE = #TYPE#
+		   </isNotEmpty>
+		   <isNotEmpty property="SUB_TYPE">
+		       and a.SUB_TYPE = #SUB_TYPE#
+		   </isNotEmpty>
+		   <isNotEmpty property="ID">
+		       and a.ID = #ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="CITY_ID">
+		       and a.CITY_ID = #CITY_ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="CITY_NAME">
+		       and a.CITY_NAME = #CITY_NAME#
+		   </isNotEmpty>
+		   <isNotEmpty property="USER_ID">
+		       and c.USER_ID = #USER_ID#
+		   </isNotEmpty>
+	</statement>
+	
+	<insert id="saveDao" parameterClass="java.util.Map">
+		insert into SD_AD(
+		    ID,
+			PATH,
+			HREF,
+			TITLE,
+			ORDER_BY,
+			TYPE,
+			SUB_TYPE,
+			CITY_ID,
+			CITY_NAME
+		)values(
+			#ID#,
+			#PATH#,
+			#HREF#,
+			#TITLE#,
+			0,
+			#TYPE#,
+			#SUB_TYPE#,
+			#CITY_ID#,
+			#CITY_NAME#
+		)
+	</insert>
+	
+	<delete id="delDao" parameterClass="java.util.Map">
+		delete from SD_AD where ID = #ID#
+	</delete>
+</sqlMap>

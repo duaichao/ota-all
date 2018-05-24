@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>136旅游网供应商账户使用说明</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/docs.min.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/help.css" />
+		<script type="text/javascript" src="js/jquery.min.js" ></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="js/docs.min.js" ></script>
+	</head>
+	<body>
+	<!-- 头部 -->
+	<header class="navbar navbar-static-top bs-docs-nav headerSpace" id="top" role="banner">
+		<div class="container">
+		    <div class="navbar-header headerWrap">
+		      	<a href="javascript:;" target="_self">
+					<img src="img/logo.png" height="75" alt="136旅游" title="136旅游">
+				</a>
+				<div class="contact">
+					<span class="num"><i class="icon-phone-sign"></i> 029-88898185</span>
+					<span class="time">周一至周日 <i class="icon-time"></i>8:00-18:00</span>
+					<a target="“blank”" class="qq" href="http://wpa.qq.com/msgrd?V=3&amp;uin=3187200277&amp;Site=QQ客服&amp;Menu=yes">
+						<img border="0" src="http://wpa.qq.com/pa?p=1:3187200277:3" alt="点击这里给我发消息">
+					</a>
+				</a>
+			</div>
+		    </div>
+		</div>
+	</header>
+    
+	<div class="container bs-docs-container">
+      	<div class="row">
+	      	<!-- 快捷菜单 -->
+	        <div class="col-md-3">
+	          	<div class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix-top treenav" role="complementary">
+		            <ul class="nav bs-docs-sidenav">
+		            	<li>
+						  	<a href="help_gys1.html" target="_self">一、公司管理</a>
+						  	<ul class="nav">
+							    <li><a href="#gys-manage-role">1.1 创建角色</a></li>
+							    <li>
+							    	<a href="#gys-manage-department">1.2 部门管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#gys-manage-department-d1">1.2.1 添加和修改部门</a></li>
+							    		<li><a href="#gys-manage-department-d2">1.2.2 删除和启用/禁用部门</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							     	<a href="#gys-manage-staff">1.3 员工管理</a>
+							     	<ul class="nav">
+							    		<li><a href="#gys-manage-staff-s1">1.3.1 添加和修改员工</a></li>
+							    		<li><a href="#gys-manage-staff-s2">1.3.2 删除和启用/禁用员工</a></li>
+							    		<li>
+							    			<a href="#gys-manage-staff-s3">1.3.3 设置员工账户权限</a>
+							    			<ul class="nav">
+									    		<li><a href="#gys-manage-staff-s3-one">1.3.3.1 设置员工权限</a></li>
+									    		<li><a href="#gys-manage-staff-s3-two">1.3.3.2 分配角色</a></li>
+								    		</ul>
+							    		</li>
+							    		<li><a href="#gys-manage-staff-s4">1.3.4 员工设为经理</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#gys-manage-modify">1.4 修改密码</a></li>
+						  	</ul>
+						</li>
+						<li class="active">
+						  	<a href="#gys-route">二、线路发布</a>
+						  	<ul class="nav">
+							    <li>
+							    	<a href="#gys-route-price">2.1 地接、交通价格独立发布</a>
+							    	<ul class="nav">
+							    		<li>
+							    			<a href="#gys-route-price-p1">2.1.1 发布地接</a>
+							    			<ul class="nav">
+									    		<li><a href="#gys-route-price-p1-one">2.1.1.1 地接线路设计</a></li>
+									    		<li><a href="#gys-route-price-p1-two">2.1.1.2 复制行程</a></li>
+									    		<li><a href="#gys-route-price-p1-three">2.1.1.3 线路图片的上传和封面的设置</a></li>
+									    		<li><a href="#gys-route-price-p1-four">2.1.1.4 配置单房差和上传源形程</a></li>
+									    		<li><a href="#gys-route-price-p1-five">2.1.1.5 配置地接价和单卖地接</a></li>
+								    		</ul>
+							    		</li>
+							    		<li>
+									    	<a href="#gys-route-price-p2">2.1.2 发布交通</a>
+									    	<ul class="nav">
+									    		<li><a href="#gys-route-price-p2-one">2.1.2.1 发布出行交通</a></li>
+									    		<li><a href="#gys-route-price-p2-two">2.1.2.2 更新出行交通日期、价格及座位</a></li>
+									    	</ul>
+									    </li>
+									    <li><a href="#gys-route-price-p3">2.1.3 线路搭配交通</a></li>
+									    <li><a href="#gys-route-price-p4">2.1.4 线路产品发布、停售和删除</a></li>
+							    	</ul>
+							    </li>
+							    <li>
+							     	<a href="#gys-route-together">2.2 地接、交通价格打包发布</a>
+							     	<ul class="nav">
+							    		<li><a href="#gys-route-together-t1">2.2.1 打包线路设计</a></li>
+							    		<li><a href="#gys-route-together-t2">2.2.2 复制行程</a></li>
+							    		<li><a href="#gys-route-together-t3">2.2.3 设置打包价</a></li>
+							    		<li><a href="#gys-route-together-t4">2.2.4 线路图片的上传和封面的设置</a></li>
+							    		<li><a href="#gys-route-together-t5">2.2.5 配置单房差和上传源行程</a></li>
+							    		<li><a href="#gys-route-together-t6">2.2.6 线路产品的发布、停售和删除</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#gys-route-contact">2.3 设置产品联系人</a></li>
+							    <li><a href="#gys-route-money">2.4 设置定金</a></li>
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="help_gys3.html" target="_self">三、审核订单</a>
+						  	<ul class="nav">
+							    <li>
+							    	<a href="#gys-order-route">3.1 线路订单</a>
+							    	<ul class="nav">
+							    		<li><a href="#gys-order-route-r1">3.1.1 附加费用订单审核</a></li>
+							    		<li><a href="#gys-order-route-r2">3.1.2 同行议价订单审核</a></li>
+							    		<li><a href="#gys-order-route-r3">3.1.3 退款订单审核</a></li>
+							    		<li><a href="#gys-order-route-r4">3.1.4 出团确认</a></li>
+							    		<li><a href="#gys-order-route-r5">3.1.5 余款确认</a></li>
+							    	</ul>
+							    </li>
+							    <li>
+							     	<a href="#gys-order-review">3.2 线路补单和退款审核</a>
+							     	<ul class="nav">
+							    		<li><a href="#gys-order-review-r1">3.2.1 补单和退款审核</a></li>
+							    		<li><a href="#gys-order-review-r2">3.2.2 出团确认</a></li>
+						    		</ul>
+							    </li>
+						  	</ul>
+						</li>
+		            </ul>
+		            <a class="back-to-top" href="#top"><i class="icon-circle-arrow-up"></i> 返回顶部</a>       
+	          	</div>
+	        </div>
+	        
+	        <!-- 右侧内容 -->
+	        <div class="col-md-9" role="main">
+		        <div class="bs-docs-section">
+					
+					<div class="bs-callout bs-callout-info bs-list">
+				  		<h1 id="gys-route">二、供应商线路发布</h1>
+				 	</div>
+				 	<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-route-price">2.1 地接、交通价格独立发布</h3>
+						<b id="gys-route-price-p1">2.1.1 发布地接</b>
+						<span id="gys-route-price-p1-one">2.1.1.1 地接线路设计 </span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3Nzc1Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、出发城市的选择范围是由站长设置的</p>
+					   	<p>2、价格方式保存成功后，后期是不能修改的</p>
+					   	<p>3、销售须知和产品推荐字数限制在200字以内</p>
+					   	<p>4、每天的行程填写完成后，必须点击右上角的“保存”按钮</p>
+					   	<p>5、日程可以上下拖动，改变行程内容顺序</p>
+					   	<p>6、其他费用：用户自定义标题、备注，必须备注清楚产生费用的条件及金额</p>
+					   	<p>7、费用包含、费用不含、出行须知、温馨提示为必填项：系统提供标准说明，用户也可以根据需要修改内容, 内容为600字符</p><br />
+						<span id="gys-route-price-p1-two">2.1.1.2 复制行程</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3ODAyOA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<span id="gys-route-price-p1-three">2.1.1.3 线路图片的上传和封面的设置</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3OTAwMA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、线路图片可以上传多张</p>
+					   	<p>2、选择一张图片设为封面图片</p>
+					   	<p>3、可以随时更改封面图片(一个线路产品可以不定期的更换不同的封面图片,达到吸引客户的效果)</p><br />
+					   	<span id="gys-route-price-p1-four">2.1.1.4 配置单房差和上传源形程</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MDA2OA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、单房差是指组团社的团队，到异地旅游住宿宾馆或饭店标准房时，团队分配住房之后出现奇数，也就是出现一张单床时，组团社应向接团社付空床费用</p>
+					   	<p>2、供应商想多个角度展示自己的线路行程时，在线路设计完成后，可以上传源行程WORD版，组团社可以根据需求下载源行程WORD版</p><br />
+					   	<span id="gys-route-price-p1-five">2.1.1.5 配置地接价和单卖地接</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MDIzNg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、地接价是指不包含往返大交通的地接产品价格</p>
+					   	<p>2、单卖地接是指单卖不包含往返大交通的地接产品，即目的地旅游</p>
+					   	<b id="gys-route-price-p2">2.1.2 发布交通</b>
+						<span id="gys-route-price-p2-one">2.1.2.1 发布出行交通</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MTEzNg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、交通的提前报名天数和提前报名时间会影响出行交通的实际班期.报名日期+提前报名天数=最早的出发班期（例如：出行交通的起止日期为20160520-------20160527,提前报名天数为3天,提前报名时间为8:30.假设报名日期为5月20号8:00,则最早的出发班期为5月23号;假设报名日期为5月20号9:00,则最早的出发班期为5月24号）</p>
+						<p>2、五种更新价格方式：</p>
+				      	<p>1）全部日期：更新价格时，可以选择全部日期更新，例如：供应商想更新5.20-5.27的全部价格，日期范围选择5.20-5.27,更新价格方式选择“全部日期”即可</p>
+				      	<p>2）排除星期X：更新价格时，可以选择排除星期X来更新。如：供应商想更新周日到周四的价格，勾选排除周五、周六即可</p>
+				      	<p>3）只发星期X：更新价格时，可以选择只发星期X来更新.如：供应商只发布周五、周六的价格，勾选周五、周六即可</p>
+				      	<p>4）排除日期X：更新价格时，可以选择排除日期X来更新.如: 供应商日期范围选择5.20-5.27，只发布5.20-5.25的价格,在左侧日历中勾选5.26、5.27即可</p>
+				      	<p>5）只发日期X：更新价格时，可以选择只发布某一日期来更新.如: 供应商日期范围选择5.20-5.27，只发布5.26-5.27的价格,在左侧日历中勾选5.26-5.27即可</p>
+				    	<p>3、团期的日期范围不能重复</p>
+				    	<p>4、未发布状态下的交通基本信息可以修改</p>
+				    	<p>5、已发布状态下的出行交通可以停售</p>
+				    	<p>6、集合时间和地点为可选项</p>
+				   		<p>7、始发站、到站点：填写交通具体的出发地和目的地范围比较大，可以具体到始发站点和到站点，供客户查询 </p><br />
+						<span id="gys-route-price-p2-two">2.1.2.2 更新出行交通日期、价格及座位</span>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MTIzMg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、座位数必须是实时有效的</p>
+					   	<p>2、团期的日期范围不能重复</p>
+					   	<p>3、修改团期时，若扩大团期范围，必须先修改结束日期，再修改开始日期</p>
+					   	<b id="gys-route-price-p3">2.1.3 线路搭配交通</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MTQxMg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>1、可以添加多个交通方案，方案1为优先选择方案</p>
+					   	<p>2、序号1的交通班期为该线路（方案1）的实际出发班期</p>
+					   	<p>3、停留天数的计算：若只有1条交通，停留天数为0；若有两条及以上出行交通，停留天数=出行交通2 的日期-出行交通1的日期。例如：去程交通日期为2016.5.26，返程交通日期为2016.5.27,则出行交通1的停留天数为1天，出行交通2的停留天数为0天</p>
+					   	<b id="gys-route-price-p4">2.1.4 线路产品发布、停售和删除</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MjE5Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>1、共享给同行：是指供应商产品可以共享到平台上，供平台上其他非协议组团社购买（供应商出发城市与组团社的预订城市相同的共享产品）</p>
+					   	<p>2、指定销售：是指供应商产品指定销售给协议组团社（供应商与协议组团社的合作关系由站长设置，可跨站设置，即与线路出发城市相同的合作商户作为指定旅行社的指定范围；跨站订单属于组团社及其所属站,供应商订单不受站限制），未设置合作关系的非协议组团社看不见供应商指定销售的产品</p>
+					   	<p>3、共享和指定销售：供应商产品既可以共享给同行，也可以指定销售</p>
+					   	<p>4、未发布状态下的线路产品才可以删除</p>
+					</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-route-together">2.2 地接、交通价格打包发布</h3>
+						<b id="gys-route-together-t1">2.2.1 打包线路设计</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MjQ0NA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、出发城市的选择范围是由站长设置的</p>
+						<p>2、价格方式保存成功后，后期是不能修改的</p>
+						<p>3、提前报名天数和提前报名时间会影响出行实际班期.报名日期+提前报名天数=最早的出发班期（例如：出行的起止日期为20160520-------20160527,提前报名天数为3天,提前报名时间为8:30.假设报名日期为5月20号8:00,则最早的出发班期为5月23号;假设报名日期为5月20号9:00,则最早的出发班期为5月24号）</p>
+						<p>4、销售须知和产品推荐字数限制在200字以内</p>
+						<p>5、每天的行程填写完成后，必须点击右上角的“保存”按钮</p>
+						<p>6、日程可以上下拖动，改变行程内容顺序</p>
+						<p>7、其他费用：用户自定义标题、备注，必须备注清楚产生费用的条件及金额</p>
+						<p>8、费用包含、费用不含、出行须知、温馨提示为必填项：系统提供标准说明，用户也可以根据需要修改内容, 内容为600字符</p>
+						<b id="gys-route-together-t2">2.2.2 复制行程</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3ODAyOA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<b id="gys-route-together-t3">2.2.3 设置打包价</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MzE1Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、打包价为地接和大交通的综合报价</p>
+				   		<p>2、五种更新价格方式：</p>
+				      	<p>1）全部日期：更新价格时，可以选择全部日期更新，例如：供应商想更新5.20-5.27的全部价格，日期范围选择5.20-5.27,更新价格方式选择“全部日期”即可</p>
+				      	<p>2）排除星期X：更新价格时，可以选择排除星期X来更新。如：供应商想更新周日到周四的价格，勾选排除周五、周六即可</p>
+				      	<p>3）只发星期X：更新价格时，可以选择只发星期X来更新.如：供应商只发布周五、周六的价格，勾选周五、周六即可</p>
+				      	<p>4）排除日期X：更新价格时，可以选择排除日期X来更新.如: 供应商日期范围选择5.20-5.27，只发布5.20-5.25的价格,在左侧日历中勾选5.26、5.27即可</p>
+				      	<p>5）只发日期X：更新价格时，可以选择只发布某一日期来更新.如: 供应商日期范围选择5.20-5.27，只发布5.26-5.27的价格,在左侧日历中勾选5.26-5.27即可</p>
+				   		<p>3、团期的日期范围不能重复</p>
+				   		<b id="gys-route-together-t4">2.2.4 线路图片的上传和封面的设置</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg3OTAwMA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<b id="gys-route-together-t5">2.2.5 配置单房差和上传源行程</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MDA2OA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<b id="gys-route-together-t6">2.2.6 线路产品的发布、停售和删除</b>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzg4MjE5Mg==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、共享给同行：是指供应商产品可以共享到平台上，供平台上其他非协议组团社购买（供应商出发城市与组团社的预订城市相同的共享产品）</p>
+						<p>2、指定销售：是指供应商产品指定销售给协议组团社（供应商与协议组团社的合作关系由站长设置，可跨站设置，即与线路出发城市相同的合作商户作为指定旅行社的指定范围；跨站订单属于组团社及其所属站,供应商订单不受站限制），未设置合作关系的非协议组团社看不见供应商指定销售的产品</p>
+						<p>3、未发布状态下的线路产品才可以删除</p>
+						<p>3、共享和指定销售：供应商产品既可以共享给同行，也可以指定销售</p>
+					   	<p>4、未发布状态下的线路产品才可以删除</p>
+					</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-route-contact">2.3 设置产品联系人</h3>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzk5MjA0OA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、一个产品可以设置多个产品联系人</p>
+						<p>2、只能设置一个短信提示联系人</p>
+					</div>
+					<div class="bs-callout bs-callout-info bs-list">
+						<h3 id="gys-route-money">2.4 设置定金</h3>
+						<div class="embed-responsive embed-responsive-4by3">
+							<iframe class="embed-responsive-item" src='http://player.youku.com/embed/XMTcxMzk5MjA0MA==' frameborder=0 'allowfullscreen'></iframe>
+						</div><br />
+						<p>注：1、选择支付方式：一日游选择待收款最晚确认天数；其他的选择余款提前支付天数</p>
+						<p>2、设置天数：待收款最晚确认天数 = 待收款截止确认日期 - 出团日期</p>
+                		<p>余款提前支付天数 = 出团日期 - 余款截止支付日期</p>
+					</div>
+					
+				</div>
+			</div>
+        </div>
+    </div>
+    
+    <!-- 尾部 -->
+	<footer class="bs-docs-footer" role="contentinfo">
+	  	<div class="container">
+	    	<p>Copyright © 2012-2017 All Rights Reserved 陕ICP备14012052号 版权所有</p>
+	  	</div>
+	</footer>
+	</body>
+</html>

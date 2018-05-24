@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="area">
+
+	<resultMap id="areaEntityResult" class="cn.sd.entity.site.AreaEntity">
+	   	<result column="ID" property="id" jdbcType="VARCHAR" />
+	   	<result column="TEXT" property="text" jdbcType="VARCHAR" />
+	   	<result column="TYPE" property="type" jdbcType="VARCHAR" />
+	   	<result column="ORDER_BY" property="order_by" jdbcType="VARCHAR" />
+	   	<result column="IS_USE" property="isUse" jdbcType="VARCHAR" />
+	   	<result column="ICONCLS"  property="iconCls" jdbcType="VARCHAR" />
+	   	<result column="GLYPH"  property="glyph" jdbcType="VARCHAR" />
+	   	<result column="LEAF"  property="leaf" jdbcType="VARCHAR" />
+	   	
+	</resultMap>
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.TEXT,
+		  a.TYPE,
+		  a.ORDER_BY,
+		  to_number(a.IS_USE) IS_USE,
+		  a.ICONCLS,
+		  a.GLYPH,
+		  (select 1 from dual)leaf
+		FROM SD_LABEL a
+		WHERE 1 = 1 
+		<isNotEmpty property="TEXT">
+			and a.TEXT = #TEXT#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and a.type = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="unExistID">
+			and a.ID != #unExistID#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="addDao" parameterClass="java.util.Map">
+		insert into SD_LABEL(
+		  ID,
+		  TEXT,
+		  TYPE,
+		  ORDER_BY,
+		  IS_USE,
+		  ICONCLS,
+		  GLYPH
+		)values(
+		  #ID#,
+		  #TEXT#,
+		  #TYPE#,
+		  #ORDER_BY#,
+		  #IS_USE#,
+		  #ICONCLS#,
+		  #GLYPH#)
+	</insert>
+	
+	<update id="editDao" parameterClass="java.util.Map">
+		update SD_LABEL set ID = #ID#
+			<isNotEmpty prepend=" , " property="TEXT">
+		   		TEXT = #TEXT#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="TYPE">
+		   		TYPE = #TYPE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="ORDER_BY">
+		   		ORDER_BY = #ORDER_BY#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="IS_USE">
+		   		IS_USE = #IS_USE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="ICONCLS">
+		   		ICONCLS = #ICONCLS#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="GLYPH">
+		   		GLYPH = #GLYPH#
+		    </isNotEmpty>
+		    where ID=#ID#
+	</update>
+	
+	<delete id="delDao" parameterClass="java.lang.String">
+		delete from SD_LABEL where ID = #VALUE#
+	</delete>
+	
+	<update id="editAreaNameDao" parameterClass="java.util.Map">
+		update sd_city_label set ENTITY_NAME = #TEXT# where ENTITY_ID = #ID#
+	</update>
+	
+	<statement id="listCityLabelDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.ENTITY_ID,
+		  a.ENTITY_NAME,
+		  a.LABEL_ID,
+		  a.TYPE
+		FROM SD_CITY_LABEL a
+		WHERE 1 = 1 
+		<isNotEmpty property="ENTITY_ID">
+			and a.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_NAME">
+			and a.ENTITY_NAME = #ENTITY_NAME#
+		</isNotEmpty>
+		<isNotEmpty property="LABEL_ID">
+			and a.LABEL_ID = #LABEL_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and a.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+	
+	<delete id="delCityLabelDao" parameterClass="java.util.Map">
+		delete from SD_CITY_LABEL where 1 = 1 and ENTITY_ID = #ENTITY_ID# and LABEL_ID = #LABEL_ID#
+	</delete>
+	
+	<insert id="addCityLabelDao" parameterClass="java.util.Map">
+		insert into SD_CITY_LABEL(
+		  ID,
+		  ENTITY_ID,
+		  ENTITY_NAME,
+		  LABEL_ID,
+		  TYPE
+		)values(
+		  #ID#,
+		  #ENTITY_ID#,
+		  #ENTITY_NAME#,
+		  #LABEL_ID#,
+		  #TYPE#)
+	</insert>
+	
+	<statement id="listCityAndCountryDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select a.* from (
+				select a.* from (
+					SELECT a.ID,
+						a.PID, 
+						a.TEXT, 
+						a.CITY_NO, 
+						a.ORDER_BY,
+						a.JIANPIN,
+						a.PINYIN,
+						nvl(b.text, c.text) as PTEXT,
+				        nvl(b.pinyin , c.pinyin) as ppinyin,
+				        nvl(b.jianpin,c.jianpin) as  pjianpin
+					FROM sd_city a,sd_city b, SD_COUNTRY c
+					WHERE a.pid = b.id(+)
+					and a.pid = c.id(+)
+				)a 
+				where 1 = 1 
+				<isNotEmpty property="NotEqualsPID">
+					and a.PID != #NotEqualsPID#
+				</isNotEmpty>
+				<isNotEmpty property="PID">
+					and a.PID = #PID#
+				</isNotEmpty>
+				<isNotEmpty property="TEXT">
+					and a.TEXT = #TEXT#
+				</isNotEmpty>
+				<isNotEmpty property="query">
+					and (a.TEXT like '%$query$%' or a.pinyin like '$query$%' or a.jianpin like '$query$%' or a.PTEXT like '%$query$%' or a.ppinyin like '$query$%' or a.pjianpin like '$query$%') and a.CITY_NO is not null
+				</isNotEmpty>
+				<isNotEmpty property="CITY_NO">
+					and a.CITY_NO = #CITY_NO#
+				</isNotEmpty>
+				<isNotEmpty property="ID">
+					and a.ID = #ID#
+				</isNotEmpty>
+				union all  
+				select * from (
+					SELECT a.ID,
+						a.PID, 
+						a.TEXT, 
+						a.ORDER_BY,
+						a.IS_USE,
+						a.pinyin,
+						a.jianpin,
+						b.text as ptext,
+						b.pinyin as ppinyin,
+						b.jianpin as pjianpin
+					FROM SD_COUNTRY a,SD_COUNTRY b
+					WHERE a.pid = b.id(+) ) a 
+				where 1 = 1
+				<isNotEmpty property="NotCountryEqualsPID">
+					and a.PID != #NotCountryEqualsPID#
+				</isNotEmpty>
+				<isNotEmpty property="PID">
+					and a.PID = #PID#
+				</isNotEmpty>
+				<isNotEmpty property="TEXT">
+					and a.TEXT = #TEXT#
+				</isNotEmpty>
+				<isNotEmpty property="query">
+					and (a.TEXT like '%$query$%' or a.PINYIN like '$query$%' or a.JIANPIN like '$query$%' or a.PTEXT like '%$query$%' or a.PPINYIN like '$query$%' or a.PJIANPIN like '$query$%')
+				</isNotEmpty>
+				<isNotEmpty property="IS_USE">
+					and a.IS_USE = #IS_USE#
+				</isNotEmpty>
+				<isNotEmpty property="ID">
+					and a.ID = #ID#
+				</isNotEmpty>
+				) a
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countCityAndCountryDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(a.id) s from (
+			select a.* from (
+				SELECT a.ID,
+					a.PID, 
+					a.TEXT, 
+					a.CITY_NO, 
+					a.ORDER_BY,
+					a.JIANPIN,
+					a.PINYIN,
+					b.text as PTEXT,
+				    b.pinyin as ppinyin,
+				    b.jianpin as  pjianpin
+					FROM sd_city a,sd_city b
+					WHERE a.pid = b.id(+)
+			)a 
+			where 1 = 1 
+			<isNotEmpty property="NotEqualsPID">
+				and a.PID != #NotEqualsPID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (a.TEXT like '%$query$%' or a.pinyin like '$query$%' or a.jianpin like '$query$%' or a.PTEXT like '%$query$%' or a.ppinyin like '$query$%' or a.pjianpin like '$query$%') and a.CITY_NO is not null
+			</isNotEmpty>
+			<isNotEmpty property="CITY_NO">
+				and a.CITY_NO = #CITY_NO#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			union all  
+			select * from (
+				SELECT a.ID,
+					a.PID, 
+					a.TEXT, 
+					a.ORDER_BY,
+					a.IS_USE,
+					a.pinyin,
+					a.jianpin,
+					b.text as ptext,
+					b.pinyin as ppinyin,
+					b.jianpin as pjianpin
+					FROM SD_COUNTRY a,SD_COUNTRY b
+					WHERE a.pid = b.id(+) ) a 
+			where 1 = 1
+			<isNotEmpty property="NotCountryEqualsPID">
+				and a.PID != #NotCountryEqualsPID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (a.TEXT like '%$query$%' or a.PINYIN like '$query$%' or a.JIANPIN like '$query$%' or a.PTEXT like '%$query$%' or a.PPINYIN like '$query$%' or a.PJIANPIN like '$query$%')
+			</isNotEmpty>
+			<isNotEmpty property="IS_USE">
+				and a.IS_USE = #IS_USE#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>) a
+	</statement>
+	
+	<statement id="listCityDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select a.* from (
+				SELECT a.ID,
+					a.PID, 
+					a.TEXT, 
+					a.CITY_NO, 
+					a.ORDER_BY,
+					a.JIANPIN,
+					a.PINYIN,
+					b.text as PTEXT,
+			        b.pinyin as ppinyin,
+			        b.jianpin as  pjianpin
+			      FROM sd_city a,sd_city b
+				WHERE a.pid = b.id(+)
+			)a 
+			where 1 = 1 
+			<isNotEmpty property="NotEqualsPID">
+				and a.PID != #NotEqualsPID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				and a.PID = (select PID from sd_city where id = #CITY_ID#)
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (a.TEXT like '%$query$%' or a.pinyin like '$query$%' or a.jianpin like '$query$%' or a.PTEXT like '%$query$%' or a.ppinyin like '$query$%' or a.pjianpin like '$query$%') and a.CITY_NO is not null
+			</isNotEmpty>
+			<isNotEmpty property="CITY_NO">
+				and a.CITY_NO = #CITY_NO#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			order by a.ORDER_BY, a.PID
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countCityDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(a.id) from (
+			SELECT a.ID,
+				a.PID, 
+				a.TEXT, 
+				a.CITY_NO, 
+				a.ORDER_BY,
+				a.JIANPIN,
+				a.PINYIN,
+				b.text as PTEXT,
+			    b.pinyin as ppinyin,
+			    b.jianpin as  pjianpin
+			FROM sd_city a,sd_city b
+			WHERE a.pid = b.id(+) ) a where 1 = 1
+			<isNotEmpty property="NotEqualsPID">
+				and a.PID != #NotEqualsPID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				and a.PID = (select PID from sd_city where id = #CITY_ID#)
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (a.TEXT like '%$query$%' or a.PINYIN like '$query$%' or a.JIANPIN like '$query$%' or a.PTEXT like '%$query$%' or a.PPINYIN like '$query$%' or a.PJIANPIN like '$query$%') and a.CITY_NO is not null
+			</isNotEmpty>
+			<isNotEmpty property="CITY_NO">
+				and a.CITY_NO = #CITY_NO#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+	</statement>
+	
+	<statement id="listCountryDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select * from (
+				SELECT a.ID,
+					a.PID, 
+					a.TEXT, 
+					a.ORDER_BY,
+					a.IS_USE,
+					a.pinyin,
+					a.jianpin,
+					b.text as ptext,
+					b.pinyin as ppinyin,
+					b.jianpin as pjianpin
+					FROM SD_COUNTRY a,SD_COUNTRY b
+					WHERE a.pid = b.id(+) ) a 
+			where 1 = 1
+			<isNotEmpty property="NotEqualsPID">
+				and a.PID != #NotEqualsPID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (a.TEXT like '%$query$%' or a.PINYIN like '$query$%' or a.JIANPIN like '$query$%' or a.PTEXT like '%$query$%' or a.PPINYIN like '$query$%' or a.PJIANPIN like '$query$%')
+			</isNotEmpty>
+			<isNotEmpty property="IS_USE">
+				and a.IS_USE = #IS_USE#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			order by a.ORDER_BY, a.PID
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countCountryDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(a.id) from (
+			SELECT a.ID,
+				a.PID, 
+				a.TEXT, 
+				a.ORDER_BY,
+				a.IS_USE,
+				a.pinyin,
+				a.jianpin,
+				b.text as ptext,
+				b.pinyin as ppinyin,
+				b.jianpin as pjianpin
+				FROM SD_COUNTRY a,SD_COUNTRY b
+				WHERE a.pid = b.id(+)) a where 1 = 1
+			<isNotEmpty property="NotEqualsPID">
+				and a.PID != #NotEqualsPID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (a.TEXT like '%$query$%' or a.PINYIN like '$query$%' or a.JIANPIN like '$query$%' or a.PTEXT like '%$query$%' or a.PPINYIN like '$query$%' or a.PJIANPIN like '$query$%')
+			</isNotEmpty>
+			<isNotEmpty property="IS_USE">
+				and a.IS_USE = #IS_USE#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+	</statement>
+	
+	<statement id="listScenicDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID,
+				a.PID, 
+				a.TEXT, 
+				a.ORDER_BY,
+				a.IS_USE
+			FROM SD_SCENIC a
+			WHERE 1 = 1 
+			<isNotEmpty property="PID">
+				and a.PID = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and a.TEXT like '%$query$%'
+			</isNotEmpty>
+			<isNotEmpty property="IS_USE">
+				and a.IS_USE = #IS_USE#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			order by a.ORDER_BY, PID
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countScenicDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1)
+		FROM SD_SCENIC a
+		WHERE 1 = 1
+		<isNotEmpty property="PID">
+			and a.PID = #PID#
+		</isNotEmpty>
+		<isNotEmpty property="TEXT">
+			and a.TEXT = #TEXT#
+		</isNotEmpty>
+		<isNotEmpty property="query">
+			and a.TEXT like '%$query$%'
+		</isNotEmpty>
+		<isNotEmpty property="IS_USE">
+			and a.IS_USE = #IS_USE#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="listCityLabelEntityIDDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		SELECT a.ENTITY_ID
+		FROM SD_CITY_LABEL a
+		WHERE 1 = 1 
+		<isNotEmpty property="ENTITY_ID">
+			and a.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_NAME">
+			and a.ENTITY_NAME = #ENTITY_NAME#
+		</isNotEmpty>
+		<isNotEmpty property="LABEL_ID">
+			and a.LABEL_ID = #LABEL_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and a.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+	
+</sqlMap>

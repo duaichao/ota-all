@@ -1,0 +1,54 @@
+{
+    "namespace": "Ext",
+
+    "name": "font-material",
+    "type": "code",
+
+    "framework": "ext",
+    "toolkit": "classic",
+    "theme": "theme-neptune",
+    //"requires": [
+    //    ...
+    //],
+
+    "creator": "Sencha",
+    "summary": "Package wrapper for iconfont material",
+    "detailedDescription": "Sencha Cmd package wrapper for iconfont",
+
+    "version": "6.2.0.981",
+    "compatVersion": "1.0.0",
+    "format": "1",
+
+    "output": "${framework.dir}/build/packages/${package.name}",
+    "local": true,
+
+    "resource": {
+        "paths": ""
+    },
+
+    "resources": [
+        {
+            "path": "${package.dir}/resources",
+            "output": "shared"
+        }
+    ],
+
+    "sass": {
+        "namespace": "Ext",
+
+        "etc": "${package.dir}/sass/etc/all.scss",
+
+        "var": "${package.dir}/sass/var",
+
+        "src": [
+            "${package.dir}/sass/src",
+            "${package.dir}/sass/src/all.scss"
+        ]
+    },
+
+    "classpath": "${package.dir}/src",
+
+    "overrides": "${package.dir}/overrides",
+
+    "slicer": null
+}

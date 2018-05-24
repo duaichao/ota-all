@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ota-admin/ota-admin.iml" filepath="$PROJECT_DIR$/ota-admin/ota-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-all.iml" filepath="$PROJECT_DIR$/ota-all.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-common/ota-common.iml" filepath="$PROJECT_DIR$/ota-common/ota-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-config/ota-config.iml" filepath="$PROJECT_DIR$/ota-config/ota-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-web/ota-web.iml" filepath="$PROJECT_DIR$/ota-web/ota-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-web/ota-web-service/ota-web-service.iml" filepath="$PROJECT_DIR$/ota-web/ota-web-service/ota-web-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-web/ota-web-shop/ota-web-shop.iml" filepath="$PROJECT_DIR$/ota-web/ota-web-shop/ota-web-shop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ota-web/ota-web-site/ota-web-site.iml" filepath="$PROJECT_DIR$/ota-web/ota-web-site/ota-web-site.iml" />
+    </modules>
+  </component>
+</project>

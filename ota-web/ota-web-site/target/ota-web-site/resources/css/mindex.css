@@ -1,0 +1,194 @@
+/* 产品推荐 */
+.trv-toolbar{
+	width: 100%;
+	margin-bottom: 15px;
+}
+.trv-tabbox{
+	height: auto;
+}
+.trv-tabbox a{
+	text-decoration: none;
+}
+.trv-tabbox a.tour-img img{
+	max-height: 230px;
+	display: block;
+	max-width: 100%;
+	overflow: hidden;
+}
+.nav-pills li.active{
+	background: transparent;
+}
+.nav-pills li.active a, .nav-pills li.active a:focus{
+	color: #333333;
+	font-weight: bold;
+	background: transparent;
+}
+.nav-pills li.active a:hover{
+	color: #333333;
+	background: transparent;	
+}
+.nav-pills li.trv-tooldef a{
+	font-size: 14px;
+	color: #333333;
+}
+.trv-box{
+	cursor: pointer;
+	padding-top: 4px;
+	margin-bottom: 10px;
+}
+.trv-box:hover{
+	box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+	-moz-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+    -webkit-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+}
+.trv-img{
+	margin: 0 auto;
+	position: relative;
+}
+.trv-img img{
+	max-width: 100%;
+}
+.trv-title{
+	height: 36px;
+	margin-bottom: 5px;
+	overflow: hidden;
+}
+.trv-title a.trv-boxtit{
+	color: #333333;
+	font-size: 12px;
+}
+.trv-title a.trv-boxtit:hover{
+	text-decoration: none;
+}
+.trv-info{
+	height: 18px;
+	line-height: 18px;
+	overflow: hidden;
+}
+.trv-info .trv-price{
+	font-family: 'Microsoft YaHei';
+	color: #ff5741;
+	float: right;
+}
+.trv-info .trv-price em{
+	font-size: 16px;
+}
+.trv-info .trv-order{
+	font-size: 12px;
+	color: #999999;
+}
+
+/* 导游 */
+.trver-box{
+	cursor: pointer;
+	padding-top: 10px;
+	margin-bottom: 0;
+	position: relative;
+}
+.trver-box:hover{
+	box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+	-moz-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+    -webkit-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+}
+.trver-box .trver-img{
+	max-width: 100%;
+	width: 140px;
+	height: 140px;
+}
+.trver-title{
+	margin-bottom: 5px;
+	overflow: hidden;
+	border-bottom: 1px dotted #d0d0d0;
+}
+.trver-title p{
+	margin-bottom: 5px;
+	overflow: hidden;
+}
+.trver-title p img{
+	margin: 0;
+}
+.trver-title a{
+	color: #333;
+}
+.trver-name{
+	font-size: 14px;
+	color: #333;
+	font-weight: bold;
+}
+.trver-price{
+	font-family: 'Microsoft YaHei';
+ 	font-size: 14px;
+	color: #ff5741;
+}
+.trver-con{
+	height: 68px;
+	color: #999;
+	overflow: hidden;
+}
+
+/* 旅游 */
+.tab-title{
+	height: 30px;
+	margin-bottom: 5px;
+	overflow: hidden;
+}
+.tab-title h2{
+	font-size: 20px;
+	line-height: 30px;
+	padding-left: 35px;
+	background: url(../images/tour-icon.png) no-repeat;
+	height: 30px;
+}
+.tab-title h2.tag-gn{
+	background-position: 0 0;
+	color: #1569ec;
+}
+.tab-title h2.tag-zb{
+	background-position: 0 -30px;
+	color: #f39c12;
+}
+.tab-title h2.tag-zyx{
+	background-position: 0 -60px;
+	color: #27ae60;
+}
+.tab-title h2.tag-cj{
+	background-position: 0 -90px;
+	color: #8e44ad;
+}
+.tab-title h2.tag-hot{
+	background-position: 0 -240px;
+	color: #f32222;
+}
+.tab-title a.a-gn{
+	color: #1569ec;
+}
+.tab-title a.a-zb{
+	color: #f39c12;
+}
+.tab-title a.a-zyx{
+	color: #27ae60;
+}
+.tab-title a.a-cj{
+	color: #8e44ad;
+}
+.tab-title a.a-hot{
+	color: #f32222;
+}
+.tag-city{
+	height: 30px;
+	overflow: hidden;
+	margin-right: 0;
+	border-bottom-color: #1569EC;
+}
+.tag-city li.active a, .tag-city li.active a:focus, .tag-city li.active a:hover {
+	background: #1569EC;
+	color: #ffffff;
+	border: 0;
+	margin-right: 0;
+}
+.tag-city li a{
+	padding: 0 15px;
+	border: 0;
+	line-height: 30px;
+	color: #333333;
+}

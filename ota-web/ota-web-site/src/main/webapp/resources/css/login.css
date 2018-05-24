@@ -1,0 +1,172 @@
+/*登录背景*/
+
+.fullscreen-bg-login {
+	background: url(../images/full_page_background02.jpg);
+	background-position: 50% 50%;
+	background-size: cover;
+	bottom: 0;
+	right: 0;
+	position: fixed;
+	overflow: hidden;
+	left: 0;
+	top: 0;
+	z-index: -1;
+}
+.fullscreen-bg-reg {
+	background: url(../images/full_page_background01.jpg);
+	background-position: 50% 50%;
+	background-size: cover;
+	bottom: 0;
+	right: 0;
+	position: fixed;
+	overflow: hidden;
+	left: 0;
+	top: 0;
+	z-index: -1;
+}
+.fullscreen-bg-error {
+	background: url(../images/full_page_background04.jpg);
+	background-position: 50% 50%;
+	background-size: cover;
+	bottom: 0;
+	right: 0;
+	position: fixed;
+	overflow: hidden;
+	left: 0;
+	top: 0;
+	z-index: -1;
+}
+.fullscreen-bg img {
+	display: none;
+	display: block\9;
+	-ms-interpolation-mode: bicubic;
+	filter: progid: DXImageTransform.Microsoft.Fade(duration=0.3);
+}
+
+.contain{
+	max-width: 380px;
+    margin: 60px auto 0;
+}
+.contain a.login-logo{
+	width: 128px;
+    height: 128px;
+    display: block;
+    margin: 0 auto;
+}
+.contain .sign-form{
+	background: #fff;
+	padding: 30px 30px 20px;
+	border-radius: 5px;
+	box-shadow: 0 3px 3px rgba(0,0,0,.4);
+}
+
+.contain-reg{
+	max-width: 960px;
+    margin: 60px auto 0;
+}
+.contain-reg a.login-logo{
+	width: 128px;
+    height: 90px;
+    display: block;
+    margin: 0 auto;
+}
+.contain-reg .reg-top{
+	text-align: right;
+	font-size: 14px;
+	color: #fff;
+	padding-bottom: 15px;
+}
+.contain-reg .reg-top a.reg-topbtn{
+	border: 1px solid #fff;
+    margin-left: 10px;
+    padding: 2px 12px;
+    background: #fff;
+    color: #333;
+}
+.contain-reg .reg-top a.reg-topbtn:hover{
+	text-decoration: none;
+	background: transparent;
+	color: #fff;
+}
+.contain-reg .reg-form{
+	max-width: 960px;
+	overflow: hidden;
+	position: relative;
+	box-shadow: 0 3px 3px rgba(0,0,0,.4);
+}
+.contain-reg .reg-form .reg-formtit{
+	font-size: 16px;
+	color: #fff;
+	text-align: center;
+	background: #1569EC;
+	padding: 15px 0;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+.contain-reg .reg-form .reg-formcon{
+	background: #fff;
+	padding: 20px;
+	min-height: 400px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+.contain-reg .reg-form .reg-formcon a.reg-agree{
+	color: #1569EC;
+	text-decoration: underline;
+}
+.form-group{
+	line-height: 20px;
+}
+
+/* 404 */
+.sign-form p{
+	font-size: 16px;
+	padding-bottom: 5px;
+	text-align: center;
+}
+.sign-form p.error-num{
+	font-family: "microsoft yahei";
+	font-size: 96px;
+	text-align: center;
+}
+.sign-form p.error-tit{
+	font-family: arial;
+	font-size: 48px;
+	text-align: center;
+	text-decoration: underline;
+	margin-bottom: 10px;
+}
+.sign-form a.error-index{
+	background: #1569ec;
+	color: #fff;
+	font-size: 14px;
+	text-align: center;
+	display: block;
+	padding: 12px 0;
+	border-radius: 3px;
+	margin-top: 10px;
+}
+.sign-form a.error-index:hover{
+	filter:alpha(opacity=80);
+	-moz-opacity:0.80;
+	opacity:0.80;
+	text-decoration: none;
+}
+
+/* 弹出登录 */
+.btn-success{
+	display: block;
+}
+.alert-box{
+	padding: 20px 20px 10px 20px;
+}
+.nav-tabs>li>a{
+	color: #1569EC;
+}
+.nav-tabs>li>a.alert-tab{
+	font-size: 14px;
+	font-weight: bold;
+}
+.alert-close{
+	margin: 10px 10px 0 0;
+}

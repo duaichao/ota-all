@@ -1,0 +1,2220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="latest_statistics">
+	
+	
+	<statement id="totalOrderRetailDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		SELECT COUNT(1) AS CNT,
+		  NVL(SUM(a.MAN_COUNT+a.CHILD_COUNT), 0) AS PERSON_COUNT,
+		  NVL(SUM(a.MAN_COUNT), 0) AS MAN_COUNT,
+		  NVL(SUM(a.CHILD_COUNT), 0) AS CHILD_COUNT,
+		  NVL(SUM(a.SALE_AMOUNT), 0) AS SALE_AMOUNT,
+		  NVL(SUM(a.INTER_AMOUNT), 0) AS INTER_AMOUNT,
+		  (NVL(SUM(a.SALE_AMOUNT), 0) - NVL(SUM(a.INTER_AMOUNT), 0) + NVL(SUM(a.REFUND_AMOUNT), 0)) as  PROFIT_AMOUNT,
+		  NVL(COUNT(DISTINCT a.PRODUCE_ID), 0) AS PRODUCE_CNT,
+		  NVL(SUM(DECODE(a.status, 6, 0, 7, 0, 0, 0, 1, 0, (a.INTER_AMOUNT + NVL(l.T_REFUND_AMOUNT, 0) - NVL(m.T_MARKETING_AMOUNT, 0)))), 0) AS ACTUAL_AMOUNT,
+		  
+		  <isEqual property="ctype" compareValue="0">
+			a.BUY_COMPANY_ID, a.buy_company as COMPANY_NAME
+		  </isEqual>
+		  <isEqual property="ctype" compareValue="1">
+			a.SALE_COMPANY_ID, a.sale_company as COMPANY_NAME
+  		  </isEqual>
+		  
+		FROM
+		  (
+		  
+		  $base_sql$
+		  
+		  <isNotEmpty property="STATUS">
+		  AND a.status                    = #STATUS#
+		  </isNotEmpty> 
+		  <isNotEmpty property="STATUSES">
+		  AND a.status                    in ($STATUSES$)
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND a.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  AND t5.depart_id                        = #CREATE_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_DEPART_IDS">
+		  and (
+		  <iterate property="CREATE_DEPART_IDS" conjunction=" or " open=" "  close="  ">
+				t5.depart_id = #CREATE_DEPART_IDS[]#
+	      </iterate>
+	      <isNotEmpty property="buyUserId">
+			or a.CREATE_USER_ID = #buyUserId#
+		  </isNotEmpty>
+		  )
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID"> 
+		  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		   
+		  <isNotEmpty property="PID"> 
+		  AND t4.pid = #PID#
+		  </isNotEmpty>
+		  
+		  
+		  <isNotEmpty property="CITY_ID">
+		  AND t11.city_id = #CITY_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CITY_IDS">
+		  AND t11.CITY_ID in ($CITY_IDS$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SITE_USER_ID">
+		  AND t10.user_id = #SITE_USER_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_IDS">
+			  <iterate property="SUPPLY_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+				t8.depart_id = #SUPPLY_DEPART_IDS[]#
+			  </iterate>
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="ROUTE_TYPE">
+		  and t3.type = #ROUTE_TYPE# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+	  	  </isNotEmpty>
+	  	  
+	  	  <isNotEmpty property="CT_START_TIME">
+			<![CDATA[  AND a.start_date >= #CT_START_TIME#   ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="CT_END_TIME">
+			<![CDATA[  AND a.start_date <= #CT_END_TIME#  ]]>
+	  	  </isNotEmpty>
+			
+		  ) a,
+		  (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		    where 1 = 1
+		    AND a.ID                = l.ORDER_ID(+)
+		    AND a.ID                = m.ORDER_ID(+)
+		  GROUP BY 
+		  <isEqual property="ctype" compareValue="0">
+			a.BUY_COMPANY_ID, a.buy_company
+		  </isEqual>
+		  <isEqual property="ctype" compareValue="1">
+			a.SALE_COMPANY_ID, a.sale_company
+  		  </isEqual>
+	</statement>
+	
+	<statement id="totalCompanyOfOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		SELECT COUNT(1) AS CNT,
+		  NVL(SUM(a.MAN_COUNT+a.CHILD_COUNT), 0) AS PERSON_COUNT,
+		  NVL(SUM(a.MAN_COUNT), 0) AS MAN_COUNT,
+		  NVL(SUM(a.CHILD_COUNT), 0) AS CHILD_COUNT,
+		  NVL(SUM(a.SALE_AMOUNT), 0) AS SALE_AMOUNT,
+		  NVL(SUM(a.INTER_AMOUNT), 0) AS INTER_AMOUNT,
+		  (NVL(SUM(a.SALE_AMOUNT), 0) - NVL(SUM(a.INTER_AMOUNT), 0) + NVL(SUM(a.REFUND_AMOUNT), 0)) as  PROFIT_AMOUNT,
+		  NVL(COUNT(DISTINCT a.PRODUCE_ID), 0) AS PRODUCE_CNT,
+		  
+		  <isEqual property="ctype" compareValue="0">
+			a.BUY_COMPANY_ID, a.buy_company as COMPANY_NAME
+		  </isEqual>
+		  <isEqual property="ctype" compareValue="1">
+			a.SALE_COMPANY_ID, a.sale_company as COMPANY_NAME
+  		  </isEqual>
+		  
+		FROM
+		  (
+		  
+		  $base_sql$
+		  
+		  <isNotEmpty property="STATUS">
+		  AND a.status                    = #STATUS#
+		  </isNotEmpty> 
+		  <isNotEmpty property="STATUSES">
+		  AND a.status                    in ($STATUSES$)
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND a.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  AND t5.depart_id                        = #CREATE_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID"> 
+		  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		   
+		  <isNotEmpty property="PID"> 
+		  AND t4.pid = #PID#
+		  </isNotEmpty>
+		  
+		  
+		  <isNotEmpty property="CITY_ID">
+		  AND t11.city_id = #CITY_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CITY_IDS">
+		  AND t11.CITY_ID in ($CITY_IDS$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SITE_USER_ID">
+		  AND t10.user_id = #SITE_USER_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="ROUTE_TYPE">
+		  and t3.type = #ROUTE_TYPE# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+	  	  </isNotEmpty>
+			
+		  ) a,
+		  SD_PRO_ROUTE_CITY b
+		  where 1 = 1 and a.PRODUCE_ID = b.ROUTE_ID(+)
+		  <isNotEmpty property="ccityId">
+			AND b.CITY_ID = #ccityId#
+		  </isNotEmpty>
+		  <isNotEmpty property="cityType">
+			<isEqual property="cityType" compareValue="0">
+				and b.TYPE = 1
+			</isEqual>
+			<isEqual property="cityType" compareValue="1">
+				and b.TYPE = 2
+			</isEqual>
+		</isNotEmpty>
+		  
+		  GROUP BY 
+		  <isEqual property="ctype" compareValue="0">
+			a.BUY_COMPANY_ID, a.buy_company
+		  </isEqual>
+		  <isEqual property="ctype" compareValue="1">
+			a.SALE_COMPANY_ID, a.sale_company
+  		  </isEqual>
+	</statement>
+	
+	<statement id="totalCityOfOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1) AS CNT,
+		  b.CITY_ID,
+		  b.CITY_NAME,
+		  NVL(SUM(a.MAN_COUNT+a.CHILD_COUNT), 0) AS PERSON_COUNT,
+		  NVL(SUM(a.MAN_COUNT), 0) AS MAN_COUNT,
+		  NVL(SUM(a.CHILD_COUNT), 0) AS CHILD_COUNT,
+		  NVL(SUM(a.SALE_AMOUNT), 0) AS SALE_AMOUNT,
+		  NVL(SUM(a.INTER_AMOUNT), 0) AS INTER_AMOUNT,
+		  (NVL(SUM(a.SALE_AMOUNT), 0) - NVL(SUM(a.INTER_AMOUNT), 0) + NVL(SUM(a.REFUND_AMOUNT), 0)) as  PROFIT_AMOUNT,
+		  NVL(COUNT(DISTINCT a.PRODUCE_ID), 0) AS PRODUCE_CNT
+		FROM
+		  (
+		  
+		  $base_sql$
+		  
+		  <isNotEmpty property="STATUS">
+		  AND a.status                    = #STATUS#
+		  </isNotEmpty> 
+		  <isNotEmpty property="STATUSES">
+		  AND a.status                    in ($STATUSES$)
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND a.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  AND t5.depart_id                        = #CREATE_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID"> 
+		  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		   
+		  <isNotEmpty property="PID"> 
+		  AND t4.pid = #PID#
+		  </isNotEmpty>
+		  
+		  
+		  <isNotEmpty property="CITY_ID">
+		  AND t11.city_id = #CITY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CITY_IDS">
+		  AND t11.CITY_ID in ($CITY_IDS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="SITE_USER_ID">
+		  AND t10.user_id = #SITE_USER_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_IDS">
+			  <iterate property="SUPPLY_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+				t8.depart_id = #SUPPLY_DEPART_IDS[]#
+			  </iterate>
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="ROUTE_TYPE">
+		  and t3.type = #ROUTE_TYPE# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+	  	  </isNotEmpty>
+			
+		  ) a,
+		  SD_PRO_ROUTE_CITY b
+		  WHERE a.PRODUCE_ID = b.ROUTE_ID(+)
+		  <isNotEmpty property="cityType">
+			<isEqual property="cityType" compareValue="0">
+				and b.TYPE = 1
+			</isEqual>
+			<isEqual property="cityType" compareValue="1">
+				and b.TYPE = 2
+			</isEqual>
+		</isNotEmpty>
+		  GROUP BY b.CITY_ID, b.CITY_NAME
+	</statement>
+	
+	<statement id="companyProduceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+		SELECT a.ID,
+		  a.NO,
+		  a.TITLE,
+		  a.COMPANY_ID,
+		  h7.COMPANY,
+		  h7.PHONE
+		FROM SD_PRO_ROUTE a,
+		  sd_user c,
+		  (SELECT a.route_id,
+		    a.rq,
+		    a.actual_price,
+		    a.actual_inter_price,
+		    a.planid,
+		    a.rn,
+		    b.route_price,
+		    b.route_inter_price,
+		    (a.actual_price       + b.route_price) sum_price,
+		    (a.actual_inter_price + b.route_inter_price) sum_inter_price
+		  FROM
+		    (SELECT a.route_id,
+		      a.rq,
+		      a.actual_price,
+		      a.actual_inter_price,
+		      a.planid,
+		      a.rn
+		    FROM
+		      (SELECT a.route_id,
+		        a.rq,
+		        a.actual_price,
+		        a.actual_inter_price,
+		        a.planid,
+		        ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+		      FROM SD_PRO_ROUTE_CALENDAR a
+		      <![CDATA[	WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq ]]>
+		        ||' '
+		        || a.END_TIME
+		      ) a
+		    WHERE rn = 1
+		    ) a,
+		    (SELECT a.entity_id,
+		      SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+		      SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+		    FROM sd_pro_base_price a
+		    WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+		    GROUP BY a.entity_id
+		    ) b
+		  WHERE a.route_id = b.entity_id
+		  ) b,
+		  (SELECT a.entity_id,
+		    SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+		    SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+		  FROM sd_pro_base_price a
+		  WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+		  GROUP BY a.entity_id
+		  ) d,
+		  (SELECT COUNT(b.id) AS ROUTE_TRAFFIC_CNT ,
+		    b.route_id
+		  FROM sd_pro_route_traffic b,
+		    sd_pro_route_traffic_detail c
+		  WHERE b.id   = c.plan_id
+		  AND b.is_del = 0
+		  AND c.is_del = 0
+		  GROUP BY b.route_id
+		  ) h,
+		  (SELECT COUNT(b.id) AS BASE_PRICE_CNT,
+		    b.entity_id
+		  FROM SD_PRO_BASE_PRICE b
+		  GROUP BY b.entity_id
+		  ) h1,
+		  (SELECT route_id,
+		    LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+		  FROM
+		    (SELECT tag_name,
+		      route_id,
+		      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+		    FROM sd_pro_route_tag
+		    )
+		    START WITH RN     = 1
+		    CONNECT BY RN - 1 = PRIOR RN
+		  AND route_id        = PRIOR route_id
+		  GROUP BY route_id
+		  )h2,
+		  
+		  SD_PRO_ROUTE_CITY h3,
+		  
+		  (SELECT t.PRO_ID,
+		  t.DISCOUNT_ID,
+		  t.title||'('||MAX(SYS_CONNECT_BY_PATH(t.discount_info, ' 套餐*：'))||')' as discount_info
+		FROM
+		  (SELECT t.PRO_ID,
+		    t.DISCOUNT_ID,
+		    t1.title,
+		    DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: ' || t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') || <![CDATA[ decode((CASE WHEN (t1.END_TIME - SYSDATE) < 0 THEN '已过期' ELSE '' END), null, '', ' 此优惠活动已过期 ') ]]> as discount_info,
+		    ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+		  FROM SD_DISCOUNT_PRODUCT t,
+		    SD_DISCOUNT t1,
+		    sd_discount_rule t2
+		  WHERE t.discount_id    = t1.id
+		  AND t.discount_rule_id = t2.id
+		  AND t1.is_use          = 0
+		  AND t2.is_use          = 0
+		  ) t
+		  START WITH t.RN     = 1
+		  CONNECT BY t.RN - 1 = PRIOR t.RN
+		AND t.PRO_ID          = PRIOR t.PRO_ID
+		GROUP BY t.PRO_ID,
+		  t.DISCOUNT_ID,
+		  t.title) h5,
+		  (SELECT COUNT(1) AS web_recommend_cnt,
+		  route_id
+		FROM sd_web_recommend
+		WHERE is_top = 1
+		GROUP BY route_id)h6,
+		SD_USER_COMPANY h7
+		WHERE a.create_user_id = c.id
+		AND a.id           = b.route_id(+)
+		AND a.id             = d.entity_id(+)
+		AND a.id             = h.route_id(+)
+		AND a.id             = h1.entity_id(+)
+		AND a.id             = h2.route_id(+)
+		AND a.id             = h3.route_id
+		and a.id             = h5.pro_id(+)
+		and a.id             = h6.route_id(+)
+		and a.company_id     = h7.id
+		AND a.IS_DEL         = 0
+		AND a.IS_PUB         = 1
+		and b.RQ is not null
+		<isNotEmpty property="ccityId">
+		AND h3.CITY_ID = #ccityId#
+		</isNotEmpty>
+	    <isNotEmpty property="CITY_ID">
+	    AND a.city_id = #CITY_ID#
+	    </isNotEmpty>
+	    <isNotEmpty property="CITY_IDS">
+	    AND a.CITY_ID in ($CITY_IDS$)
+	    </isNotEmpty>
+		<isNotEmpty property="cityType">
+			<isEqual property="cityType" compareValue="0">
+				and h3.TYPE = 1
+			</isEqual>
+			<isEqual property="cityType" compareValue="1">
+				and h3.TYPE = 2
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="type">
+			AND a.TYPE = #type#
+		</isNotEmpty>
+		<isNotEmpty property="companyId">
+			AND a.COMPANY_ID = #companyId#
+		</isNotEmpty>
+		<isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		</isNotEmpty>
+		<isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+		</isNotEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	
+	<statement id="cntCompanyProduceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                          AS PRODUCE_CNT,
+			a.COMPANY_ID as SUPPLY_ID,
+			a.PHONE,
+			a.company as SUPPLY_NAME, 
+			COUNT(DISTINCT a.NO) as PRODUCT_CNT
+		FROM
+		  (
+			SELECT a.ID,
+			  a.NO,
+			  a.TITLE,
+			  a.COMPANY_ID,
+			  h7.COMPANY,
+			  h7.PHONE
+			FROM SD_PRO_ROUTE a,
+			  sd_user c,
+			  (SELECT a.route_id,
+			    a.rq,
+			    a.actual_price,
+			    a.actual_inter_price,
+			    a.planid,
+			    a.rn,
+			    b.route_price,
+			    b.route_inter_price,
+			    (a.actual_price       + b.route_price) sum_price,
+			    (a.actual_inter_price + b.route_inter_price) sum_inter_price
+			  FROM
+			    (SELECT a.route_id,
+			      a.rq,
+			      a.actual_price,
+			      a.actual_inter_price,
+			      a.planid,
+			      a.rn
+			    FROM
+			      (SELECT a.route_id,
+			        a.rq,
+			        a.actual_price,
+			        a.actual_inter_price,
+			        a.planid,
+			        ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+			      FROM SD_PRO_ROUTE_CALENDAR a
+			      <![CDATA[	WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq ]]>
+			        ||' '
+			        || a.END_TIME
+			      ) a
+			    WHERE rn = 1
+			    ) a,
+			    (SELECT a.entity_id,
+			      SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+			      SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+			    FROM sd_pro_base_price a
+			    WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+			    GROUP BY a.entity_id
+			    ) b
+			  WHERE a.route_id = b.entity_id
+			  ) b,
+			  (SELECT a.entity_id,
+			    SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+			    SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+			  FROM sd_pro_base_price a
+			  WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+			  GROUP BY a.entity_id
+			  ) d,
+			  (SELECT COUNT(b.id) AS ROUTE_TRAFFIC_CNT ,
+			    b.route_id
+			  FROM sd_pro_route_traffic b,
+			    sd_pro_route_traffic_detail c
+			  WHERE b.id   = c.plan_id
+			  AND b.is_del = 0
+			  AND c.is_del = 0
+			  GROUP BY b.route_id
+			  ) h,
+			  (SELECT COUNT(b.id) AS BASE_PRICE_CNT,
+			    b.entity_id
+			  FROM SD_PRO_BASE_PRICE b
+			  GROUP BY b.entity_id
+			  ) h1,
+			  (SELECT route_id,
+			    LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+			  FROM
+			    (SELECT tag_name,
+			      route_id,
+			      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+			    FROM sd_pro_route_tag
+			    )
+			    START WITH RN     = 1
+			    CONNECT BY RN - 1 = PRIOR RN
+			  AND route_id        = PRIOR route_id
+			  GROUP BY route_id
+			  )h2,
+			  
+			  SD_PRO_ROUTE_CITY h3,
+			  
+			  (SELECT t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title||'('||MAX(SYS_CONNECT_BY_PATH(t.discount_info, ' 套餐*：'))||')' as discount_info
+			FROM
+			  (SELECT t.PRO_ID,
+			    t.DISCOUNT_ID,
+			    t1.title,
+			    DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: ' || t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') || <![CDATA[ decode((CASE WHEN (t1.END_TIME - SYSDATE) < 0 THEN '已过期' ELSE '' END), null, '', ' 此优惠活动已过期 ') ]]> as discount_info,
+			    ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+			  FROM SD_DISCOUNT_PRODUCT t,
+			    SD_DISCOUNT t1,
+			    sd_discount_rule t2
+			  WHERE t.discount_id    = t1.id
+			  AND t.discount_rule_id = t2.id
+			  AND t1.is_use          = 0
+			  AND t2.is_use          = 0
+			  ) t
+			  START WITH t.RN     = 1
+			  CONNECT BY t.RN - 1 = PRIOR t.RN
+			AND t.PRO_ID          = PRIOR t.PRO_ID
+			GROUP BY t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title) h5,
+			  (SELECT COUNT(1) AS web_recommend_cnt,
+			  route_id
+			FROM sd_web_recommend
+			WHERE is_top = 1
+			GROUP BY route_id)h6,
+			SD_USER_COMPANY h7
+			WHERE a.create_user_id = c.id
+			AND a.id           = b.route_id(+)
+			AND a.id             = d.entity_id(+)
+			AND a.id             = h.route_id(+)
+			AND a.id             = h1.entity_id(+)
+			AND a.id             = h2.route_id(+)
+			AND a.id             = h3.route_id
+			and a.id             = h5.pro_id(+)
+			and a.id             = h6.route_id(+)
+			and a.company_id     = h7.id
+			AND a.IS_DEL         = 0
+			AND a.IS_PUB         = 1
+			and b.RQ is not null
+			<isNotEmpty property="ccityId">
+			AND h3.CITY_ID = #ccityId#
+			</isNotEmpty>
+		    <isNotEmpty property="CITY_ID">
+		    AND a.city_id = #CITY_ID#
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_IDS">
+		    AND a.CITY_ID in ($CITY_IDS$)
+		    </isNotEmpty>
+			<isNotEmpty property="cityType">
+				<isEqual property="cityType" compareValue="0">
+					and h3.TYPE = 1
+				</isEqual>
+				<isEqual property="cityType" compareValue="1">
+					and h3.TYPE = 2
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="type">
+				AND a.TYPE = #type#
+			</isNotEmpty>
+			<isNotEmpty property="startDate">
+				<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+			</isNotEmpty>
+			<isNotEmpty property="endDate">
+				<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+			</isNotEmpty>
+		  ) a
+		  group by a.COMPANY_ID, a.PHONE, a.company 
+	</statement>
+	
+	<statement id="totalCompanyRouteCityDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                          AS PRODUCE_CNT,
+			a.CITY_NAME,
+			a.CITY_ID,
+			NVL(COUNT(DISTINCT DECODE(a.TYPE, 1, a.COMPANY_ID, null)), 0) as ZB_SUPPLY_CNT,
+			NVL(COUNT(DISTINCT DECODE(a.TYPE, 2, a.COMPANY_ID, null)), 0) as GN_SUPPLY_CNT,
+			NVL(COUNT(DISTINCT DECODE(a.TYPE, 3, a.COMPANY_ID, null)), 0) as CJ_SUPPLY_CNT,
+			
+			NVL(COUNT(DECODE(a.TYPE, 1, a.ID, null)), 0) as ZB_PRODUCE_CNT,
+			NVL(COUNT(DECODE(a.TYPE, 2, a.ID, null)), 0) as GN_PRODUCE_CNT,
+			NVL(COUNT(DECODE(a.TYPE, 3, a.ID, null)), 0) as CJ_PRODUCE_CNT
+			
+		FROM
+		  (
+			SELECT a.ID,
+			  h3.CITY_NAME,
+			  h3.CITY_ID,
+			  a.COMPANY_ID,
+			  a.TYPE
+			FROM SD_PRO_ROUTE a,
+			  sd_user c,
+			  (SELECT a.route_id,
+			    a.rq,
+			    a.actual_price,
+			    a.actual_inter_price,
+			    a.planid,
+			    a.rn,
+			    b.route_price,
+			    b.route_inter_price,
+			    (a.actual_price       + b.route_price) sum_price,
+			    (a.actual_inter_price + b.route_inter_price) sum_inter_price
+			  FROM
+			    (SELECT a.route_id,
+			      a.rq,
+			      a.actual_price,
+			      a.actual_inter_price,
+			      a.planid,
+			      a.rn
+			    FROM
+			      (SELECT a.route_id,
+			        a.rq,
+			        a.actual_price,
+			        a.actual_inter_price,
+			        a.planid,
+			        ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+			      FROM SD_PRO_ROUTE_CALENDAR a
+			      <![CDATA[	WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq ]]>
+			        ||' '
+			        || a.END_TIME
+			      ) a
+			    WHERE rn = 1
+			    ) a,
+			    (SELECT a.entity_id,
+			      SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+			      SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+			    FROM sd_pro_base_price a
+			    WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+			    GROUP BY a.entity_id
+			    ) b
+			  WHERE a.route_id = b.entity_id
+			  ) b,
+			  (SELECT a.entity_id,
+			    SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+			    SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+			  FROM sd_pro_base_price a
+			  WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+			  GROUP BY a.entity_id
+			  ) d,
+			  (SELECT COUNT(b.id) AS ROUTE_TRAFFIC_CNT ,
+			    b.route_id
+			  FROM sd_pro_route_traffic b,
+			    sd_pro_route_traffic_detail c
+			  WHERE b.id   = c.plan_id
+			  AND b.is_del = 0
+			  AND c.is_del = 0
+			  GROUP BY b.route_id
+			  ) h,
+			  (SELECT COUNT(b.id) AS BASE_PRICE_CNT,
+			    b.entity_id
+			  FROM SD_PRO_BASE_PRICE b
+			  GROUP BY b.entity_id
+			  ) h1,
+			  (SELECT route_id,
+			    LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+			  FROM
+			    (SELECT tag_name,
+			      route_id,
+			      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+			    FROM sd_pro_route_tag
+			    )
+			    START WITH RN     = 1
+			    CONNECT BY RN - 1 = PRIOR RN
+			  AND route_id        = PRIOR route_id
+			  GROUP BY route_id
+			  )h2,
+			  
+			  SD_PRO_ROUTE_CITY h3,
+			  
+			  (SELECT t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title||'('||MAX(SYS_CONNECT_BY_PATH(t.discount_info, ' 套餐*：'))||')' as discount_info
+			FROM
+			  (SELECT t.PRO_ID,
+			    t.DISCOUNT_ID,
+			    t1.title,
+			    DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: ' || t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') || <![CDATA[ decode((CASE WHEN (t1.END_TIME - SYSDATE) < 0 THEN '已过期' ELSE '' END), null, '', ' 此优惠活动已过期 ') ]]> as discount_info,
+			    ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+			  FROM SD_DISCOUNT_PRODUCT t,
+			    SD_DISCOUNT t1,
+			    sd_discount_rule t2
+			  WHERE t.discount_id    = t1.id
+			  AND t.discount_rule_id = t2.id
+			  AND t1.is_use          = 0
+			  AND t2.is_use          = 0
+			  ) t
+			  START WITH t.RN     = 1
+			  CONNECT BY t.RN - 1 = PRIOR t.RN
+			AND t.PRO_ID          = PRIOR t.PRO_ID
+			GROUP BY t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title) h5,
+			  (SELECT COUNT(1) AS web_recommend_cnt,
+			  route_id
+			FROM sd_web_recommend
+			WHERE is_top = 1
+			GROUP BY route_id)h6
+			WHERE a.create_user_id = c.id
+			AND a.id           = b.route_id(+)
+			AND a.id             = d.entity_id(+)
+			AND a.id             = h.route_id(+)
+			AND a.id             = h1.entity_id(+)
+			AND a.id             = h2.route_id(+)
+			AND a.id             = h3.route_id
+			and a.id             = h5.pro_id(+)
+			and a.id             = h6.route_id(+)
+			AND a.IS_DEL         = 0
+			AND a.IS_PUB         = 1
+			and b.RQ is not null
+			<isNotEmpty property="cityType">
+				<isEqual property="cityType" compareValue="0">
+					and h3.TYPE = 1
+				</isEqual>
+				<isEqual property="cityType" compareValue="1">
+					and h3.TYPE = 2
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="CITY_IDS">
+				AND a.CITY_ID in ($CITY_IDS$)
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				AND a.CITY_ID = #CITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="startDate">
+				<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+			</isNotEmpty>
+			<isNotEmpty property="endDate">
+				<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+			</isNotEmpty>
+		  ) a
+		  group by a.CITY_NAME,a.CITY_ID
+	</statement>
+	
+	<statement id="companyOfCityDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.COMPANY,
+		  TO_CHAR(t.create_time, 'yyyy-mm-dd HH24:mi:ss') AS create_time,
+		  t.AUDIT_STATUS,
+		  t.CITY_ID,
+		  t.CITY_NAME,
+		  t.TYPE,
+		  t.AUDIT_STATUS,
+		  NVL(t2.USER_NAME, '') AS CREATE_USER,
+		  NVL(t2.CREATE_DEPART, '') AS CREATE_DEPART,
+		  NVL(t2.CREATE_COMPANY, '') AS CREATE_COMPANY
+		FROM SD_USER_COMPANY t,
+		  SD_USER t1,
+		  (SELECT t.ID,
+		    t.USER_NAME,
+		    t1.TEXT    AS CREATE_DEPART,
+		    t2.COMPANY AS CREATE_COMPANY
+		  FROM SD_USER t,
+		    SD_USER_DEPART t1,
+		    SD_USER_COMPANY t2
+		  WHERE t.DEPART_ID = t1.ID(+)
+		  AND t.COMPANY_ID  = t2.ID
+		  )t2
+		WHERE t.USER_ID    = t1.ID
+		AND t1.CREATE_USER = t2.ID(+)
+		AND t.TYPE        IS NOT NULL
+		AND t.TYPE        != 0
+		AND t.CITY_ID      = #ccityId#  
+		<isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(t.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		</isNotEmpty>
+		<isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(t.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="totalCompanyOfCityDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT * FROM (
+		SELECT COUNT(1)                                                           AS cnt,
+		  NVL(COUNT(DECODE(a.TYPE, 2, a.ID, NULL)), 0)                            AS GROUP_COMPANY_CNT,
+		  NVL(COUNT(DECODE(a.TYPE, 6, a.ID, NULL)), 0)                            AS GW_COMPANY_CNT,
+		  NVL(COUNT(DECODE(a.TYPE, 1, a.ID, NULL)), 0)                            AS SUPPLY_COMPANY_CNT,
+		  NVL(COUNT(DECODE(a.TYPE, 0, NULL, 1, NULL, 2, NULL, 6, NULL, a.ID)), 0) AS SMALL_COMPANY_CNT,
+		  NVL(COUNT(DECODE(a.TYPE, 2, a.ID, NULL)), 0) + NVL(COUNT(DECODE(a.TYPE, 6, a.ID, NULL)), 0) + NVL(COUNT(DECODE(a.TYPE, 0, NULL, 1, NULL, 2, NULL, 6, NULL, a.ID)), 0) as SUM_COMPANY_CNT, 
+		  a.CITY_ID,
+		  a.CITY_NAME
+		FROM SD_USER_COMPANY a
+		<isNotEmpty property="SITE_MANAGER_ID">
+			,(SELECT t1.CITY_ID
+			FROM SD_SITE_MANAGER t,
+			  SD_SITE t1,
+			  SD_USER_COMPANY t2,
+			  SD_USER t3
+			WHERE t.SITE_ID = t1.ID
+			AND t.USER_ID   = t2.USER_ID
+			AND t2.ID       = t3.COMPANY_ID
+			AND t3.ID       = #SITE_MANAGER_ID#
+			)t
+		</isNotEmpty>
+		WHERE 1 = 1 
+		AND a.TYPE IS NOT NULL 
+		AND a.TYPE != 0
+		<isNotEmpty property="CITY_ID">
+			AND a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		</isNotEmpty>
+		<isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+		</isNotEmpty>
+		<isNotEmpty property="cityId">
+			AND a.CITY_ID = #cityId# 
+		</isNotEmpty>
+		GROUP BY a.CITY_ID,
+		  a.CITY_NAME ) a
+		  ORDER BY a.SUM_COMPANY_CNT DESC
+	</statement>
+
+	<!-- 汇总明细 -->
+	<statement id="totalInfoDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                          AS cnt,
+		  NVL(SUM(a.MAN_COUNT+a.CHILD_COUNT), 0) AS person_count,
+		  NVL(SUM(a.MAN_COUNT), 0)               AS MAN_COUNT,
+		  NVL(SUM(a.CHILD_COUNT), 0)             AS CHILD_COUNT,
+		  NVL(SUM(a.SALE_AMOUNT), 0)             AS SALE_AMOUNT,
+		  NVL(SUM(a.INTER_AMOUNT), 0)            AS INTER_AMOUNT,
+		  COUNT(DISTINCT a.sale_company_id)      AS sale_company_cnt,
+		  COUNT(DISTINCT a.buy_company_id)       AS buy_company_cnt,
+		  
+		  NVL(SUM(DECODE(a.PAY_TYPE, 0, a.INTER_AMOUNT, 0)), 0) AS YE_AMOUNT,
+		  NVL(SUM(DECODE(a.PAY_TYPE, 0, 0, a.INTER_AMOUNT)), 0) AS ZX_AMOUNT,
+		  NVL(COUNT(DISTINCT a.PRODUCE_ID), 0) AS PRODUCE_CNT,
+		  NVL(COUNT(DISTINCT a.SALE_COMPANY_ID), 0) AS SALE_COMPANY_CNT,
+		  NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 2, a.BUY_COMPANY_ID, NULL)), 0) AS GROUP_COMPANY_CNT,
+		  NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 6, a.BUY_COMPANY_ID, NULL)), 0) AS GW_COMPANY_CNT,
+		  (NVL(COUNT(DISTINCT a.BUY_COMPANY_ID), 0) - NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 2, a.BUY_COMPANY_ID, NULL)), 0) - NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 6, a.BUY_COMPANY_ID, NULL)), 0)) AS SMALL_COMPANY_CNT,
+		  
+		  nvl(SUM(DECODE(a.route_type, 1, a.SALE_AMOUNT, 0)), 0) zb_SALE_AMOUNT,
+  		  nvl(SUM(DECODE(a.route_type, 1, a.INTER_AMOUNT, 0)), 0) zb_INTER_AMOUNT,
+		  nvl(SUM(DECODE(a.route_type, 1, 1, 0)), 0) zb_order_cnt,
+		  nvl(SUM(DECODE(a.route_type, 1, a.MAN_COUNT, 0)), 0) zb_man_cnt,
+		  nvl(SUM(DECODE(a.route_type, 1, a.CHILD_COUNT, 0)), 0) zb_child_cnt,
+		  COUNT(DISTINCT DECODE(a.route_type, 1, a.sale_company_id, NULL)) AS zb_sale_company_cnt,
+		  COUNT(DISTINCT DECODE(a.route_type, 1, a.buy_company_id, NULL))  AS zb_buy_company_cnt,
+		  
+		  nvl(SUM(DECODE(a.route_type, 2, a.SALE_AMOUNT, 0)), 0) gn_SALE_AMOUNT,
+  		  nvl(SUM(DECODE(a.route_type, 2, a.INTER_AMOUNT, 0)), 0) gn_INTER_AMOUNT,
+		  nvl(SUM(DECODE(a.route_type, 2, 1, 0)), 0) gn_order_cnt,
+		  nvl(SUM(DECODE(a.route_type, 2, a.MAN_COUNT, 0)), 0) gn_man_cnt,
+		  nvl(SUM(DECODE(a.route_type, 2, a.CHILD_COUNT, 0)), 0) gn_child_cnt,
+		  COUNT(DISTINCT DECODE(a.route_type, 2, a.sale_company_id, NULL)) AS gn_sale_company_cnt,
+		  COUNT(DISTINCT DECODE(a.route_type, 2, a.buy_company_id, NULL))  AS gn_buy_company_cnt,
+		  
+		  nvl(SUM(DECODE(a.route_type, 3, a.SALE_AMOUNT, 0)), 0) cj_SALE_AMOUNT,
+          nvl(SUM(DECODE(a.route_type, 3, a.INTER_AMOUNT, 0)), 0) cj_INTER_AMOUNT,
+		  nvl(SUM(DECODE(a.route_type, 3, 1, 0)), 0) cj_order_cnt,
+		  nvl(SUM(DECODE(a.route_type, 3, a.MAN_COUNT, 0)), 0) cj_man_cnt,
+		  nvl(SUM(DECODE(a.route_type, 3, a.CHILD_COUNT, 0)), 0) cj_child_cnt,
+		  COUNT(DISTINCT DECODE(a.route_type, 3, a.sale_company_id, NULL)) AS cj_sale_company_cnt,
+		  COUNT(DISTINCT DECODE(a.route_type, 3, a.buy_company_id, NULL))  AS cj_buy_company_cnt,
+		  
+		  nvl(SUM(DECODE(a.status, 0, 1, 0)), 0) wait_pay_cnt, 
+		  nvl(SUM(DECODE(a.status, 3, 1, 0)), 0) wait_refund_cnt,
+		  nvl(SUM(DECODE(a.status, 4, 1, 0)), 0) wait_refunding_cnt,
+		  
+		  (NVL(SUM(a.SALE_AMOUNT), 0) - NVL(SUM(a.INTER_AMOUNT), 0) + NVL(SUM(a.REFUND_AMOUNT), 0)) as  PROFIT_AMOUNT,
+		  
+		  NVL(SUM(DECODE(a.status, 6, 0, 7, 0, 0, 0, 1, 0, (a.INTER_AMOUNT + NVL(l.T_REFUND_AMOUNT, 0) - NVL(m.T_MARKETING_AMOUNT, 0)))), 0) AS ACTUAL_AMOUNT
+		  
+		FROM
+		  (
+		  $base_sql$
+		  
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND a.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  AND t5.depart_id                        = #CREATE_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_DEPART_IDS">
+		  and (
+		  <iterate property="CREATE_DEPART_IDS" conjunction=" or " open=" "  close="  ">
+				t5.depart_id = #CREATE_DEPART_IDS[]#
+	      </iterate>
+	      <isNotEmpty property="buyUserId">
+			or a.CREATE_USER_ID = #buyUserId#
+		  </isNotEmpty>
+		  )
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID"> 
+		  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="PRODUCE_TYPES"> 
+		  AND a.PRODUCE_TYPE in($PRODUCE_TYPES$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="STATUSES"> 
+		  AND a.status in($STATUSES$)		  
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="PID">
+		  AND t4.pid = #PID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CITY_ID">
+		  AND t11.city_id = #CITY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SITE_USER_ID">
+		  AND t10.user_id = #SITE_USER_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_IDS">
+			  <iterate property="SUPPLY_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+				t8.depart_id = #SUPPLY_DEPART_IDS[]#
+			  </iterate>
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="ROUTE_TYPE">
+		  and t3.type = #ROUTE_TYPE# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="startDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #startDate#   ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="endDate">
+			<![CDATA[  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #endDate#  ]]>
+	  	  </isNotEmpty>
+	  	  
+	  	  <isNotEmpty property="CT_START_TIME">
+			<![CDATA[  AND a.start_date >= #CT_START_TIME#   ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="CT_END_TIME">
+			<![CDATA[  AND a.start_date <= #CT_END_TIME#  ]]>
+	  	  </isNotEmpty>
+		  
+		  ) a,
+		  (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		    where 1 = 1
+		    AND a.ID                = l.ORDER_ID(+)
+		    AND a.ID                = m.ORDER_ID(+)
+	</statement>
+	
+	<!-- 今日汇总明细 -->
+	<statement id="todayTotalInfoDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1) AS CNT,
+		  NVL(SUM(a.MAN_COUNT+a.CHILD_COUNT), 0) AS PERSON_COUNT,
+		  NVL(SUM(a.MAN_COUNT), 0) AS MAN_COUNT,
+		  NVL(SUM(a.CHILD_COUNT), 0) AS CHILD_COUNT,
+		  NVL(SUM(a.SALE_AMOUNT), 0) AS SALE_AMOUNT,
+		  NVL(SUM(a.INTER_AMOUNT), 0) AS INTER_AMOUNT,
+		  NVL(COUNT(DISTINCT a.SALE_COMPANY_ID), 0) AS SALE_COMPANY_CNT,
+		  NVL(COUNT(DISTINCT a.BUY_COMPANY_ID), 0) AS BUY_COMPANY_CNT,
+		  
+		  
+		  NVL(SUM(DECODE(a.PAY_TYPE, 0, a.INTER_AMOUNT, 0)), 0) AS YE_AMOUNT,
+		  NVL(SUM(DECODE(a.PAY_TYPE, 0, 0, a.INTER_AMOUNT)), 0) AS ZX_AMOUNT,
+		  NVL(COUNT(DISTINCT a.PRODUCE_ID), 0) AS PRODUCE_CNT,
+		  NVL(COUNT(DISTINCT a.SALE_COMPANY_ID), 0) AS SALE_COMPANY_CNT,
+		  NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 2, a.BUY_COMPANY_ID, NULL)), 0) AS GROUP_COMPANY_CNT,
+		  NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 6, a.BUY_COMPANY_ID, NULL)), 0) AS GW_COMPANY_CNT,
+		  (NVL(COUNT(DISTINCT a.BUY_COMPANY_ID), 0) - NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 2, a.BUY_COMPANY_ID, NULL)), 0) - NVL(COUNT(DISTINCT DECODE(a.BUY_TYPE, 6, a.BUY_COMPANY_ID, NULL)), 0)) AS SMALL_COMPANY_CNT,
+		  
+		  
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 1, a.SALE_AMOUNT, 0)), 0) ZB_SALE_AMOUNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 1, a.INTER_AMOUNT, 0)), 0) ZB_INTER_AMOUNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 1, 1, 0)), 0) ZB_ORDER_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 1, a.MAN_COUNT, 0)), 0) ZB_MAN_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 1, a.CHILD_COUNT, 0)), 0) ZB_CHILD_CNT,
+		  COUNT(DISTINCT DECODE(a.ROUTE_TYPE, 1, a.SALE_COMPANY_ID, NULL)) AS ZB_SALE_COMPANY_CNT,
+		  COUNT(DISTINCT DECODE(a.ROUTE_TYPE, 1, a.BUY_COMPANY_ID, NULL))  AS ZB_BUY_COMPANY_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 2, a.SALE_AMOUNT, 0)), 0) GN_SALE_AMOUNT,
+		  NVL(SUM(DECODE( a.ROUTE_TYPE, 2, a.INTER_AMOUNT, 0)), 0) GN_INTER_AMOUNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 2, 1, 0)), 0) GN_ORDER_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 2, a.MAN_COUNT, 0)), 0) GN_MAN_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 2, a.CHILD_COUNT, 0)), 0) GN_CHILD_CNT,
+		  COUNT(DISTINCT DECODE(a.ROUTE_TYPE, 2, a.SALE_COMPANY_ID, NULL)) AS GN_SALE_COMPANY_CNT,
+		  COUNT(DISTINCT DECODE(a.ROUTE_TYPE, 2, a.BUY_COMPANY_ID, NULL))  AS GN_BUY_COMPANY_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 3, a.SALE_AMOUNT, 0)), 0) CJ_SALE_AMOUNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 3, a.INTER_AMOUNT, 0)), 0) CJ_INTER_AMOUNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 3, 1, 0)), 0) cj_order_cnt,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 3, a.MAN_COUNT, 0)), 0) CJ_MAN_CNT,
+		  NVL(SUM(DECODE(a.ROUTE_TYPE, 3, a.CHILD_COUNT, 0)), 0) CJ_CHILD_CNT,
+		  COUNT(DISTINCT DECODE(a.ROUTE_TYPE, 3, a.SALE_COMPANY_ID, NULL)) AS CJ_SALE_COMPANY_CNT,
+		  COUNT(DISTINCT DECODE(a.ROUTE_TYPE, 3, a.BUY_COMPANY_ID, NULL))  AS CJ_BUY_COMPANY_CNT,
+		  
+		  (NVL(SUM(a.SALE_AMOUNT), 0) - NVL(SUM(a.INTER_AMOUNT), 0) + NVL(SUM(a.REFUND_AMOUNT), 0)) as  PROFIT_AMOUNT,
+		  
+		  NVL(SUM(DECODE(a.status, 6, 0, 7, 0, 0, 0, 1, 0, (a.INTER_AMOUNT + NVL(l.T_REFUND_AMOUNT, 0) - NVL(m.T_MARKETING_AMOUNT, 0)))), 0) AS ACTUAL_AMOUNT
+		  
+		FROM
+		  (
+		  
+		  $base_sql$
+		  
+		  <isNotEmpty property="STATUS">
+		  AND a.status                    = #STATUS#
+		  </isNotEmpty> 
+		  <isNotEmpty property="STATUSES">
+		  AND a.status                    in ($STATUSES$)
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND a.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  AND t5.depart_id                        = #CREATE_DEPART_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CREATE_DEPART_IDS">
+		  and (
+		  <iterate property="CREATE_DEPART_IDS" conjunction=" or " open=" "  close="  ">
+				t5.depart_id = #CREATE_DEPART_IDS[]#
+	      </iterate>
+	      <isNotEmpty property="buyUserId">
+			or a.CREATE_USER_ID = #buyUserId#
+		  </isNotEmpty>
+		  )
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CREATE_COMPANY_ID"> 
+		  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		   
+		  <isNotEmpty property="PID"> 
+		  AND t4.pid = #PID#
+		  </isNotEmpty>
+		  
+		  
+		  <isNotEmpty property="CITY_ID">
+		  AND t11.city_id = #CITY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SITE_USER_ID">
+		  AND t10.user_id = #SITE_USER_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_IDS">
+			  <iterate property="SUPPLY_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+				t8.depart_id = #SUPPLY_DEPART_IDS[]#
+			  </iterate>
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="ROUTE_TYPE">
+		  and t3.type = #ROUTE_TYPE# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="STATUSES"> 
+		  AND a.status in($STATUSES$)		  
+		  </isNotEmpty>
+			  
+		  and to_char(a.create_time, 'yyyy-mm-dd') = #NOW_DATE#
+		  
+		  ) a,
+		  (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		    where 1 = 1
+		    AND a.ID                = l.ORDER_ID(+)
+		    AND a.ID                = m.ORDER_ID(+)
+	</statement>
+	
+	<!-- 今日总计供应商 -->
+	<statement id="todaySupplyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		select a.* from ( 
+			SELECT
+			  count(1) CNT, 
+			  
+			  <isNotEmpty property="GROUP_TYPE">
+				<isNotEqual property="GROUP_TYPE" compareValue="1">
+					a.SALE_COMPANY,
+				    a.SALE_BRAND_NAME,
+				    a.SALE_BRAND_PY,
+				    a.SALE_BRAND_JP
+				</isNotEqual>
+				<isEqual property="GROUP_TYPE" compareValue="1">
+					a.BUY_COMPANY,
+					a.BUY_BRAND_NAME,
+				    a.BUY_BRAND_PY,
+				    a.BUY_BRAND_JP
+				</isEqual>
+			  </isNotEmpty>
+			  
+			  
+			FROM
+			  (
+			  
+			  $base_sql$
+			  
+			  <isNotEmpty property="CREATE_USER_ID">
+			  AND a.create_user_id                    = #CREATE_USER_ID#
+			  </isNotEmpty> 
+			  <isNotEmpty property="CREATE_DEPART_ID">
+			  AND t5.depart_id                        = #CREATE_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_COMPANY_ID"> 
+			  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+			  </isNotEmpty> 
+			  
+			  <isNotEmpty property="PID"> 
+			  AND t4.pid = #PID#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CITY_ID">
+			  AND t11.city_id = #CITY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SITE_USER_ID">
+			  AND t10.user_id = #SITE_USER_ID#
+			  </isNotEmpty>
+			  
+			  
+			  <isNotEmpty property="SUPPLY_USER_ID">
+			  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+			  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+			  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="NOW_DATE">
+			  and to_char(a.create_time, 'yyyy-mm-dd') = #NOW_DATE#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="ROUTE_TYPE">
+			  and t3.type = #ROUTE_TYPE# 
+			  </isNotEmpty>
+			  
+			  ) a
+			  group by 
+			  
+			  <isNotEmpty property="GROUP_TYPE">
+				<isNotEqual property="GROUP_TYPE" compareValue="1">
+					a.SALE_COMPANY,
+				    a.SALE_BRAND_NAME,
+				    a.SALE_BRAND_PY,
+				    a.SALE_BRAND_JP
+				</isNotEqual>
+				<isEqual property="GROUP_TYPE" compareValue="1">
+					a.BUY_COMPANY,
+					a.BUY_BRAND_NAME,
+				    a.BUY_BRAND_PY,
+				    a.BUY_BRAND_JP
+				</isEqual>
+			  </isNotEmpty>
+		  ) a
+		  order by a.cnt desc 
+	</statement>
+	
+	<!-- 今日/明日出团总计 -->
+	<statement id="startDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		
+		SELECT 
+		
+			nvl(sum(DECODE(a.start_date, to_char(sysdate,'yyyy-mm-dd'), 1, 0)), 0)  AS today_out_cnt,
+			nvl(sum(DECODE(a.start_date, to_char(sysdate+1,'yyyy-mm-dd'), 1, 0)), 0)  AS tomorrow_out_cnt
+			  
+			FROM
+			  (
+			  
+			  $base_sql$
+			  
+			  <isNotEmpty property="STATUS">
+			  AND a.status                    = #STATUS#
+			  </isNotEmpty>
+		  
+			  <isNotEmpty property="CREATE_USER_ID">
+			  AND a.create_user_id                    = #CREATE_USER_ID#
+			  </isNotEmpty> 
+			  <isNotEmpty property="CREATE_DEPART_ID">
+			  AND t5.depart_id                        = #CREATE_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_COMPANY_ID"> 
+			  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+			  </isNotEmpty> 
+			  
+			  <isNotEmpty property="PID"> 
+			  AND t4.pid = #PID#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CITY_ID">
+			  AND t11.city_id = #CITY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SITE_USER_ID">
+			  AND t10.user_id = #SITE_USER_ID#
+			  </isNotEmpty>
+			  
+			  
+			  <isNotEmpty property="SUPPLY_USER_ID">
+			  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+			  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+			  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+			  </isNotEmpty>
+		  
+			  and a.start_date in (to_char(sysdate,'yyyy-mm-dd'), to_char(sysdate+1,'yyyy-mm-dd'))
+			  
+			  ) a
+  
+	</statement>
+	
+	<!-- 旅行社公司数据统计 -->
+	<statement id="companyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		
+		SELECT COUNT(1)                  AS CNT,
+		  SUM(DECODE(a.STATUS, 2, 1, 0)) AS SUCCESS_CNT,
+		  (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+		  SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+		  SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+		  SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+		  SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+		  
+		  SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+		  SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT,
+		  
+		  <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		  substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		  </isEqual>
+		  
+		  <isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		  $WEIDU$ as WEIDU
+		  </isNotEqual>
+		  
+		  <isNotEmpty property="GROUP_TYPE">
+			<isNotEqual property="GROUP_TYPE" compareValue="1">,SALE_COMPANY</isNotEqual>
+			<isEqual property="GROUP_TYPE" compareValue="1">,BUY_COMPANY</isEqual>
+		  </isNotEmpty>
+		FROM
+		  (
+		  
+		  $base_sql$
+		  
+		  <isNotEmpty property="START_YEAR">
+		  AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+		  </isNotEmpty>
+		  <isNotEmpty property="END_YEAR">
+		  <![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="START_MONTH">
+		  AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+		  </isNotEmpty>
+		  <isNotEmpty property="END_MONTH">
+		  <![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="START_DAY">
+		  AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+		  </isNotEmpty>
+		  <isNotEmpty property="END_DAY">
+		 <![CDATA[  AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="START_QUARTER">
+		  AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+		  </isNotEmpty>
+		  <isNotEmpty property="END_QUARTER">
+		  <![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+		  </isNotEmpty>
+		    
+		  <isNotEmpty property="YEARS">
+		  AND TO_CHAR(a.create_time, 'yyyy')       IN ($YEARS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="MONTHS">
+		  AND TO_CHAR(a.create_time, 'yyyy-mm')    IN ($MONTHS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="DAYS">
+		  AND TO_CHAR(a.create_time, 'yyyy-mm-dd') IN ($DAYS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="QUARTERS">
+		  AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') IN ($QUARTERS$)
+		  </isNotEmpty>
+		    
+		  
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND a.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  AND t5.depart_id                        = #CREATE_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID"> 
+		  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+		  </isNotEmpty> 
+			  
+		  
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty>
+		    
+		  ) a
+		GROUP BY $WEIDU$
+		<isNotEmpty property="GROUP_TYPE">
+			<isNotEqual property="GROUP_TYPE" compareValue="1">,SALE_COMPANY</isNotEqual>
+			<isEqual property="GROUP_TYPE" compareValue="1">,BUY_COMPANY</isEqual>
+		</isNotEmpty>
+		order by $WEIDU$
+	</statement>
+	
+	<!-- 旅行社总公司统计 -->
+	<statement id="parentCompanyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.company, 
+			a.id as company_id,
+		    NVL(b.cnt,0) as cnt,
+			NVL(b.success_cnt,0) as success_cnt,
+			NVL(b.OTHER_CNT,0) as OTHER_CNT,
+			NVL(b.SALE_AMOUNT,0) as SALE_AMOUNT,
+			NVL(b.INTER_AMOUNT,0) as INTER_AMOUNT,
+			NVL(b.TRUE_BUY_AMOUNT,0) as TRUE_BUY_AMOUNT,
+			NVL(b.TRUE_SALE_AMOUNT,0) as TRUE_SALE_AMOUNT,
+			NVL(b.REFUND_AMOUNT,0) as REFUND_AMOUNT,
+			NVL(b.WEIDU, '无') WEIDU
+			
+		FROM
+		  (SELECT a.id,
+		    a.company,
+		    DECODE(a.pid, '-1', a.id, a.pid) AS pid
+		  FROM sd_user_company a
+		  ) a,
+		  (SELECT COUNT(1)                 AS cnt,
+		    SUM(DECODE(a.STATUS, 2, 1, 0)) AS success_cnt,
+		    (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT  - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+		    
+		    SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT
+		    
+		    ,buy_company
+		    ,a.pid
+		    ,a.buy_company_id
+		    
+		  <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		  ,substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		  </isEqual>
+		  
+		  <isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		  ,$WEIDU$ as WEIDU
+		  </isNotEqual>
+		  
+		  FROM
+		    (
+		    
+		    $base_sql$
+		    
+		    AND t4.pid                                = #PID#
+		    
+		    <isNotEmpty property="START_YEAR">
+			AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+			</isNotEmpty>
+			<isNotEmpty property="END_YEAR">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_MONTH">
+			AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+			</isNotEmpty>
+			<isNotEmpty property="END_MONTH">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_DAY">
+			AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+			</isNotEmpty>
+			<isNotEmpty property="END_DAY">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_QUARTER">
+			AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+			</isNotEmpty>
+			<isNotEmpty property="END_QUARTER">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+			</isNotEmpty>
+		      
+		    ) a
+		  GROUP BY $WEIDU$,buy_company, a.pid, a.buy_company_id 
+		  order by $WEIDU$ 
+		  ) b
+		WHERE a.id = b.buy_company_id(+)
+		AND a.pid  = #PID# 
+	</statement>
+	
+	<statement id="parentCompanyGroupByWeiDuDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                 AS cnt,
+		    SUM(DECODE(a.STATUS, 2, 1, 0)) AS success_cnt,
+		    (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT  - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+		    
+		    SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT
+		  <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		  ,substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		  </isEqual>
+		  
+		  <isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		  ,$WEIDU$ as WEIDU
+		  </isNotEqual>
+		  
+		  FROM
+		    (
+		    
+		    $base_sql$
+		    
+		    AND t4.pid                                = #PID#
+		    
+		    <isNotEmpty property="START_YEAR">
+			AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+			</isNotEmpty>
+			<isNotEmpty property="END_YEAR">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_MONTH">
+			AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+			</isNotEmpty>
+			<isNotEmpty property="END_MONTH">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_DAY">
+			AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+			</isNotEmpty>
+			<isNotEmpty property="END_DAY">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_QUARTER">
+			AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+			</isNotEmpty>
+			<isNotEmpty property="END_QUARTER">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+			</isNotEmpty>
+		      
+		    ) a
+		  GROUP BY $WEIDU$ 
+		  order by $WEIDU$
+	</statement>
+	
+	<!-- 供应商总公司统计 -->
+	<statement id="supplyCompanyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                 AS cnt,
+		    SUM(DECODE(a.STATUS, 2, 1, 0)) AS success_cnt,
+		    (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT  - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+		    
+		    SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT
+	    ,a.sale_company as company,
+	    a.sale_company_id as company_id
+	    
+	    <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		,substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		</isEqual>
+		  
+		<isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		,$WEIDU$ as WEIDU
+		</isNotEqual>
+		  
+	  FROM
+	    (
+
+		$base_sql$
+	    
+	    <isNotEmpty property="CITY_ID">
+		AND t11.city_id = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SITE_USER_ID">
+		AND t10.user_id = #SITE_USER_ID#
+		</isNotEmpty>
+			  
+	    <isNotEmpty property="PID">
+	    AND t4.pid                                = #PID#
+	    </isNotEmpty>
+	    
+	    <isNotEmpty property="START_YEAR">
+		AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+		</isNotEmpty>
+		<isNotEmpty property="END_YEAR">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="START_MONTH">
+		AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+		</isNotEmpty>
+		<isNotEmpty property="END_MONTH">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="START_DAY">
+		AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+		</isNotEmpty>
+		<isNotEmpty property="END_DAY">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="START_QUARTER">
+		AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+		</isNotEmpty>
+		<isNotEmpty property="END_QUARTER">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+		</isNotEmpty>
+	    
+	    ) a
+	  GROUP BY sale_company, a.sale_company_id, $WEIDU$
+	  order by $WEIDU$
+	</statement>
+	
+	<statement id="supplyCompanyGroupByWeiDuDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                 AS cnt,
+	    SUM(DECODE(a.STATUS, 2, 1, 0)) AS success_cnt,
+	    (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+	    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+	    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+	    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT  - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+	    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+	    
+	    SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+	    SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT
+	    
+	    <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		,substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		</isEqual>
+		  
+		<isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		,$WEIDU$ as WEIDU
+		</isNotEqual>
+		  
+	  FROM
+	    (
+
+		$base_sql$
+	    
+	    <isNotEmpty property="CITY_ID">
+		AND t11.city_id = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SITE_USER_ID">
+		AND t10.user_id = #SITE_USER_ID#
+		</isNotEmpty>
+			  
+	    AND t4.pid                                = #PID#
+	    
+	    <isNotEmpty property="START_YEAR">
+		AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+		</isNotEmpty>
+		<isNotEmpty property="END_YEAR">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="START_MONTH">
+		AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+		</isNotEmpty>
+		<isNotEmpty property="END_MONTH">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="START_DAY">
+		AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+		</isNotEmpty>
+		<isNotEmpty property="END_DAY">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="START_QUARTER">
+		AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+		</isNotEmpty>
+		<isNotEmpty property="END_QUARTER">
+		<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+		</isNotEmpty>
+	    
+	    ) a
+	  GROUP BY $WEIDU$
+	  order by $WEIDU$
+	</statement>
+	
+						
+	<!-- 站长的旅行社或供应商总公司统计 -->
+	<statement id="siteCompanyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT 
+			a.company, 
+			a.id company_id,
+			NVL(b.cnt,0) as cnt,
+			NVL(b.success_cnt,0) as success_cnt,
+			NVL(b.OTHER_CNT,0) as OTHER_CNT,
+			NVL(b.SALE_AMOUNT,0) as SALE_AMOUNT,
+			NVL(b.INTER_AMOUNT,0) as INTER_AMOUNT,
+			NVL(b.TRUE_BUY_AMOUNT,0) as TRUE_BUY_AMOUNT,
+			NVL(b.TRUE_SALE_AMOUNT,0) as TRUE_SALE_AMOUNT,
+			NVL(b.REFUND_AMOUNT,0) as REFUND_AMOUNT,
+			NVL(b.WEIDU, '无') WEIDU
+		FROM
+		  (SELECT a.id,
+		    a.company,
+		    DECODE(a.pid, '-1', a.id, a.pid) AS pid,
+		    a.city_id,
+		    a.type
+		  FROM sd_user_company a
+		  ) a,
+		  (SELECT COUNT(1)                 AS cnt,
+		    SUM(DECODE(a.STATUS, 2, 1, 0)) AS success_cnt,
+		    (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT  - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+		    
+		    SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT
+		    
+		    <isEqual compareValue="1" property="TYPE">
+			,a.sale_company_id
+			</isEqual>
+		    <isEqual compareValue="2" property="TYPE">
+			,a.pid
+			</isEqual>
+		    
+		    
+		    <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		    ,substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		    </isEqual>
+		  
+		    <isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		    ,$WEIDU$ as WEIDU
+		    </isNotEqual>
+		  FROM
+		    (
+		    
+		    $base_sql$
+		    
+			AND t11.city_id = #CITY_ID#
+			AND t10.user_id = #SITE_USER_ID#
+		  
+		    <isNotEmpty property="START_YEAR">
+			AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+			</isNotEmpty>
+			<isNotEmpty property="END_YEAR">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_MONTH">
+			AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+			</isNotEmpty>
+			<isNotEmpty property="END_MONTH">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_DAY">
+			AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+			</isNotEmpty>
+			<isNotEmpty property="END_DAY">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_QUARTER">
+			AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+			</isNotEmpty>
+			<isNotEmpty property="END_QUARTER">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+			</isNotEmpty>
+		      
+		    ) a
+		    
+		  GROUP BY  $WEIDU$ 
+		  
+		  <isEqual compareValue="1" property="TYPE">
+		  ,a.sale_company_id
+		  </isEqual>
+		  <isEqual compareValue="2" property="TYPE">
+		  ,a.pid
+		  </isEqual>
+		 
+		  order by $WEIDU$
+		  ) b
+		WHERE a.city_id = #CITY_ID#
+		<isEqual compareValue="1" property="TYPE">
+		and a.id = b.sale_company_id(+)
+		</isEqual>
+		<isEqual compareValue="2" property="TYPE">
+		and a.id = b.pid(+)
+		</isEqual>
+		<isNotEmpty property="TYPE">
+		and a.TYPE = #TYPE#
+		</isNotEmpty>
+		
+	</statement>
+	
+	<!-- 站长的旅行社或供应商总公司统计,柱状图或不需要按照公司分组 -->
+	<statement id="siteCompanyGroupByWeiDuDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(1)                 AS cnt,
+		    SUM(DECODE(a.STATUS, 2, 1, 0)) AS success_cnt,
+		    (COUNT(1) - SUM(DECODE(a.STATUS, 2, 1, 0))) as OTHER_CNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT, 0)) SALE_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT, 0)) INTER_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.SALE_AMOUNT  - a.INTER_AMOUNT + a.REFUND_AMOUNT, 0)) TRUE_BUY_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT, 0)) TRUE_SALE_AMOUNT,
+		    
+		    SUM(DECODE(a.STATUS, 2, a.REFUND_AMOUNT, 0)) REFUND_AMOUNT,
+		    SUM(DECODE(a.STATUS, 2, a.MARKETING_AMOUNT, 0)) MARKETING_AMOUNT
+		    
+		    <isEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		    ,substr($WEIDU$, 0,4) || '年'|| decode(substr($WEIDU$, 5), 1, '第一季度', 2, '第二季度', 3, '第三季度', '第四季度') as WEIDU
+		    </isEqual>
+		  
+		    <isNotEqual property="WEIDU" compareValue="CREATE_QUARTER">
+		    ,$WEIDU$ as WEIDU
+		    </isNotEqual>
+		  FROM
+		    (
+		    
+		    $base_sql$
+		    
+			AND t11.city_id = #CITY_ID#
+			AND t10.user_id = #SITE_USER_ID#
+		  
+		    <isNotEmpty property="START_YEAR">
+			AND TO_CHAR(a.create_time, 'yyyy')       >= #START_YEAR#
+			</isNotEmpty>
+			<isNotEmpty property="END_YEAR">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')       <= #END_YEAR# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_MONTH">
+			AND TO_CHAR(a.create_time, 'yyyy-mm')    >= #START_MONTH#
+			</isNotEmpty>
+			<isNotEmpty property="END_MONTH">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm')    <= #END_MONTH# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_DAY">
+			AND TO_CHAR(a.create_time, 'yyyy-mm-dd')  >= #START_DAY#
+			</isNotEmpty>
+			<isNotEmpty property="END_DAY">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy-mm-dd') <= #END_DAY# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="START_QUARTER">
+			AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q') >= #START_QUARTER#
+			</isNotEmpty>
+			<isNotEmpty property="END_QUARTER">
+			<![CDATA[ AND TO_CHAR(a.create_time, 'yyyy')||TO_CHAR(a.create_time, 'Q')          <= #END_QUARTER# ]]>
+			</isNotEmpty>
+		      
+		    ) a
+		WHERE 1 = 1 
+		GROUP BY  $WEIDU$
+		order by $WEIDU$
+	</statement>
+	
+	<!-- 订单列表(今日,累计,周边,国内,出境,今日/明日出团) -->
+	<statement id="listOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+		SELECT a.*,
+			decode(decode(a.PRODUCE_TYPE, 1, 1, 2), 1, (a.START_DATE || ' ' || a.PRODUCE_NAME || '*' || a.PRODUCE_ID), (a.START_DATE|| ' ' ||a.PRODUCE_NAME || ' ' || a.PLAN_NAME || '*' || a.PRODUCE_ID)) as GROUP_SHOW,
+			t.SHOW_GROUP
+			FROM
+			  (
+			  
+			  $base_sql$
+			  
+			  <isNotEmpty property="START_CREATE_TIME">
+			  	<![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #START_CREATE_TIME# ]]>
+			  </isNotEmpty>
+			  <isNotEmpty property="END_CREATE_TIME">
+			  	<![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #END_CREATE_TIME# ]]>
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CT_START_TIME">
+			  	<![CDATA[ and a.start_date >= #CT_START_TIME# ]]>
+			  </isNotEmpty>
+			  <isNotEmpty property="CT_END_TIME">
+			  	<![CDATA[ and a.start_date <= #CT_END_TIME# ]]>
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="HAVE_REFUND">
+			  and t1.T_REFUND_AMOUNT != 0
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CREATE_USER_ID">
+			  AND a.create_user_id                    = #CREATE_USER_ID#
+			  </isNotEmpty> 
+			  <isNotEmpty property="CREATE_DEPART_ID">
+			  AND t5.depart_id                        = #CREATE_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_DEPART_IDS">
+			  and (
+			  <iterate property="CREATE_DEPART_IDS" conjunction=" or " open=" "  close="  ">
+					t5.depart_id = #CREATE_DEPART_IDS[]#
+		      </iterate>
+		      <isNotEmpty property="buyUserId">
+				or a.CREATE_USER_ID = #buyUserId#
+			  </isNotEmpty>
+			  )
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_COMPANY_ID"> 
+			  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+			  </isNotEmpty> 
+			  
+			  <isNotEmpty property="PID"> 
+			  AND t4.pid = #PID#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CITY_ID">
+			  AND t11.city_id = #CITY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SITE_USER_ID">
+			  AND t10.user_id = #SITE_USER_ID#
+			  </isNotEmpty>
+			  
+			  
+			  <isNotEmpty property="SUPPLY_USER_ID">
+			  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+			  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_IDS"> 
+			  <iterate property="SUPPLY_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+					t8.depart_id = #SUPPLY_DEPART_IDS[]#
+				  </iterate>
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+			  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+			  </isNotEmpty>
+		  	  
+		  	  <isNotEmpty property="START_DATE">
+			  and a.start_date = #START_DATE#
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_TIME">
+			  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') = #CREATE_TIME#
+			  </isNotEmpty>
+			  <isNotEmpty property="ROUTE_TYPE">
+			  and t3.type = #ROUTE_TYPE# 
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="ROUTE_TYPES">
+			  and a.PRODUCE_TYPE in ($ROUTE_TYPES$) 
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="LATEST_START_DATE">
+			  and a.start_date >= #LATEST_START_DATE#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="STATUS">
+			  and a.status = #STATUS# 
+			  </isNotEmpty>
+			  ORDER BY a.CREATE_TIME DESC
+			  <isNotEmpty property="ORDER_START_DATE">
+			  ,a.START_DATE
+			  </isNotEmpty>
+			  ) a,
+			  (SELECT DISTINCT t1.NO,
+			        t1.NO
+			        || ' '
+			        || t4.COMPANY
+			        || ' '
+			        || t3.TEXT
+			        || ' '
+			        || t2.USER_NAME AS SHOW_GROUP
+			      FROM SD_ORDER_ACCOUNT t,
+			        SD_ORDER_ACCOUNT_DETAIL t1,
+			        SD_USER t2,
+			        SD_USER_DEPART t3,
+			        SD_USER_COMPANY t4
+			      WHERE t.ID             = t1.ACCOUNT_ID
+			      AND t1.ACCOUNT_USER_ID = t2.ID
+			      AND t2.DEPART_ID       = t3.ID(+)
+			      AND t2.COMPANY_ID      = t4.ID) t
+			  where a.ACCOUNT_DETAIL_NO = t.NO(+)
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<!-- 订单列表(今日,累计,周边,国内,出境,今日/明日出团) -->
+	<statement id="countOrderDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		
+		SELECT count(1) as cnt
+			FROM
+			  (
+			  
+			  $base_sql$
+			  
+			  <isNotEmpty property="CREATE_USER_ID">
+			  AND a.create_user_id                    = #CREATE_USER_ID#
+			  </isNotEmpty> 
+			  <isNotEmpty property="CREATE_DEPART_ID">
+			  AND t5.depart_id                        = #CREATE_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_COMPANY_ID"> 
+			  AND a.create_company_id                 = #CREATE_COMPANY_ID#
+			  </isNotEmpty> 
+			  
+			  <isNotEmpty property="PID"> 
+			  AND t4.pid = #PID#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CITY_ID">
+			  AND t11.city_id = #CITY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SITE_USER_ID">
+			  AND t10.user_id = #SITE_USER_ID#
+			  </isNotEmpty>
+			  
+			  
+			  <isNotEmpty property="SUPPLY_USER_ID">
+			  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+			  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+			  AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+			  </isNotEmpty>
+		  	  
+		  	  <isNotEmpty property="START_DATE">
+			  and a.start_date = #START_DATE#
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_TIME">
+			  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') = #CREATE_TIME#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="ROUTE_TYPE">
+			  and t3.type = #ROUTE_TYPE# 
+			  </isNotEmpty>
+			  ) a
+  
+	</statement>
+	
+	<statement id="listOrderGroupByCompanyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		select a.* from (select a.*, rownum as myrownum from (
+		SELECT a.* FROM (
+			SELECT  COUNT(1)                 as CNT,
+			    SUM(DECODE(a.STATUS, 2, 1, 0)) as SUCCESS_CNT,
+			    SUM(DECODE(a.STATUS, 4, 1, 0)) as REFUND_CNT,
+			    (SUM(DECODE(a.STATUS, 6, 1, 0)) + SUM(DECODE(a.STATUS, 7, 1, 0))) as CANCEL_CNT,
+			    SUM(a.INTER_AMOUNT - a.REFUND_AMOUNT) as TRUE_SALE_AMOUNT,
+			    SUM(a.INTER_AMOUNT) as INTER_AMOUNT,
+			    SUM(a.SALE_AMOUNT) as SALE_AMOUNT,
+			    <isEqual property="groupType" compareValue="buy">
+			    a.BUY_COMPANY
+			    </isEqual>
+			    <isEqual property="groupType" compareValue="sale">
+			    a.SALE_COMPANY
+			    </isEqual>
+			FROM
+			  (
+			  
+			  $base_sql$
+			  
+			  <isNotEmpty property="PRODUCE_TYPES"> 
+			  	AND a.PRODUCE_TYPE in ($PRODUCE_TYPES$)
+			  </isNotEmpty>
+			  <isNotEmpty property="STATUSES"> 
+			  	AND a.STATUS                 in ($STATUSES$)
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CITY_ID">
+			  AND t11.city_id = #CITY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SITE_USER_ID">
+			  AND t10.user_id = #SITE_USER_ID#
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+			  	AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_USER_ID">
+			  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+			  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+			  </isNotEmpty>
+		  	  
+			  <isNotEmpty property="START_CREATE_TIME">
+			  	<![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #START_CREATE_TIME# ]]>
+			  </isNotEmpty>
+			  <isNotEmpty property="END_CREATE_TIME">
+			  	<![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #END_CREATE_TIME# ]]>
+			  </isNotEmpty>
+			  ) a
+			  GROUP BY
+		      <isEqual property="groupType" compareValue="buy">
+		      a.BUY_COMPANY
+		      </isEqual>
+		      <isEqual property="groupType" compareValue="sale">
+		      a.SALE_COMPANY
+		      </isEqual>
+		  ) a
+		  ORDER BY a.CNT DESC
+		  )a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="listOrderGroupByProduceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.* FROM (
+			SELECT  
+				a.PRODUCE_NAME,
+				a.IS_PUB,
+				count(1) as CNT,
+				sum(a.man_count + a.child_count) as PERSON_COUNT,
+				SUM(a.INTER_AMOUNT - a.REFUND_AMOUNT - a.MARKETING_AMOUNT) as TRUE_SALE_AMOUNT,
+				COUNT(DISTINCT a.buy_company_id)  AS buy_company_cnt
+			FROM
+			  (
+			  
+			  $base_sql$
+			  
+			  <isNotEmpty property="PRODUCE_TYPES"> 
+			  	AND a.PRODUCE_TYPE in ($PRODUCE_TYPES$)
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="STATUSES"> 
+			  	AND a.STATUS in($STATUSES$)
+			  </isNotEmpty>
+		  	  
+			  <isNotEmpty property="START_CREATE_TIME">
+			  	<![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #START_CREATE_TIME# ]]>
+			  </isNotEmpty>
+			  <isNotEmpty property="END_CREATE_TIME">
+			  	<![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #END_CREATE_TIME# ]]>
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+			  	AND a.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_USER_ID">
+			  AND t3.CREATE_USER_ID                    = #SUPPLY_USER_ID#
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_IDS">
+				  <iterate property="SUPPLY_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+					t8.depart_id = #SUPPLY_DEPART_IDS[]#
+				  </iterate>
+			  </isNotEmpty>
+			  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+			  AND t8.depart_id                        = #SUPPLY_DEPART_ID#
+			  </isNotEmpty>
+			  
+			  ) a
+			  GROUP BY a.PRODUCE_NAME, a.IS_PUB
+		  ) a
+		  WHERE 1 = 1
+		  <isNotEmpty property="TRUE_SALE_AMOUNT"> 
+		  and a.TRUE_SALE_AMOUNT > 0
+		  </isNotEmpty>
+		  ORDER BY a.CNT DESC
+	</statement>
+	
+	<statement id="listRouteGroupByEndCityDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	select t.city_name, sum(t.person_count) as person_count from (
+		select (t1.man_count+t1.child_count) as person_count, t.city_name, 
+		(t1.INTER_AMOUNT - nvl(t2.REFUND_AMOUNT,0) - nvl(t3.MARKETING_AMOUNT, 0)) AS TRUE_SALE_AMOUNT
+		from 
+			(select order_id,
+			     substr(t.ca,
+			            instr(t.ca, ',', 1, c.lv) + 1,
+			            instr(t.ca, ',', 1, c.lv + 1) -
+			            (instr(t.ca, ',', 1, c.lv) + 1)) AS city_name
+			from (select id as order_id,
+			             ',' || c || ',' AS ca,
+			             c,
+			             LENGTH(C),
+			             length(c || ','),
+			             REPLACE(c, ','),
+			             length(REPLACE(c, ',')),
+			             nvl(length(REPLACE(c, ',')), 0), 
+			             length(c || ',') - nvl(length(REPLACE(c, ',')), 0) AS cnt
+			        FROM (select id,end_city as c from sd_order_base where end_city is not null and is_del = 0) a) t,
+			        <![CDATA[ (select LEVEL lv from dual CONNECT BY LEVEL <= 100) c where c.lv <= t.cnt) t, ]]>
+		  sd_order_base t1,
+		  (SELECT SUM(a.AMOUNT) AS REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) t2,
+		    (SELECT sum(a.AMOUNT) AS MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    GROUP BY a.order_id
+		    ) t3,
+		    SD_USER t4
+		  where t.order_id = t1.id
+		  and t.order_id = t2.order_id(+)
+		  and t.order_id = t3.order_id(+)
+		  and t1.PRODUCE_USER_ID = t4.ID
+		  and t1.is_del = 0
+		  <isNotEmpty property="PRODUCE_TYPES"> 
+		  	AND t1.PRODUCE_TYPE in ($PRODUCE_TYPES$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="STATUSES"> 
+		  	AND t1.STATUS in($STATUSES$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="START_CREATE_TIME">
+		  	<![CDATA[ and to_char(t1.CREATE_TIME, 'yyyy-mm-dd') >= #START_CREATE_TIME# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="END_CREATE_TIME">
+		  	<![CDATA[ and to_char(t1.CREATE_TIME, 'yyyy-mm-dd') <= #END_CREATE_TIME# ]]>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SUPPLY_COMPANY_ID"> 
+		  	AND t1.COMPANY_ID                 = #SUPPLY_COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_USER_ID">
+		  AND t1.PRODUCE_USER_ID                    = #SUPPLY_USER_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="SUPPLY_DEPART_ID"> 
+		  AND t4.depart_id                        = #SUPPLY_DEPART_ID#
+		  </isNotEmpty>
+	  ) t 
+	  WHERE 1 = 1 
+	  <isNotEmpty property="TRUE_SALE_AMOUNT"> 
+	  and t.TRUE_SALE_AMOUNT > 0
+	  </isNotEmpty>
+	  group by t.CITY_NAME
+	</statement>
+</sqlMap> 

@@ -1,0 +1,106 @@
+
+body{
+	font: 12px/1 Tahoma, Helvetica, Arial, "Microsoft Yahei", sans-serif;
+}
+.container{
+	width: 1000px;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/*  头部 */
+.headerSpace{
+	padding: 5px 0;
+	height: 85px;
+}
+.headerWrap{
+	width: 1000px;
+	position: relative;
+}
+.contact{
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.contact span{
+	color: #999;
+	letter-spacing: 2px;
+	display: block;
+	margin-bottom: 5px;
+}
+.contact span.num{
+	font-size: 24px;
+}
+.contact span.time{
+	font-size: 13px;
+}
+
+.bs-list h1{
+	font-size: 24px;
+	padding-top: 0;
+}
+.bs-list h3{
+	font-size: 20px;
+	line-height: 28px;
+	margin: 0;
+}
+.bs-list h4{
+	font-size: 18px;
+	line-height: 24px;
+	color: #333;
+}
+.bs-list b{
+	font-size: 16px;
+	display: block;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-top: 10px;
+	border-top: 1px solid #eee;
+}
+.bs-list span{
+	font-size: 14px;
+	color: #333;
+	margin-bottom: 10px;
+	display: block;
+}
+.bs-list span.wrd{
+	font-weight: bold;
+	margin: 10px 0;
+}
+.bs-list p{
+	font-size: 14px;
+	color: #ee0000;
+	line-height: 24px;
+	margin-bottom: 0;
+}
+.bs-list p.normal{
+	color: #666;
+	font-size: 16px;
+}
+.bs-list img{
+	max-width: 100%;
+}
+/* 左侧列表菜单 */
+.treenav{
+	padding-left: 0;
+}
+.bs-docs-sidebar .nav>li>a{
+	line-height: 24px;
+}
+.bs-docs-sidebar .nav .nav>li>a{
+	padding-left: 40px;
+}
+.bs-docs-sidebar .nav .nav>li>a:hover{
+	padding-left: 40px;
+}
+.bs-docs-sidebar .nav .nav>.active>a, .bs-docs-sidebar .nav .nav>.active:hover>a, .bs-docs-sidebar .nav .nav>.active:focus>a{
+	padding-left: 40px;
+}
+.bs-docs-sidebar .nav>.active>a, .bs-docs-sidebar .nav>.active:hover>a, .bs-docs-sidebar .nav>.active:focus>a{
+	color: #f60;
+	border-left: 0;
+}
+.bs-docs-sidebar .nav>li>a:hover, .bs-docs-sidebar .nav>li>a:focus{
+	color: #f60;
+	border-left: 0;
+}

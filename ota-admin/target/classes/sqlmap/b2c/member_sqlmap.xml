@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="member">
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select t.* from (select t.*, rownum as myrownum from (
+			SELECT t.ID,
+			  t.USER_NAME,
+			  t.CHINA_NAME,
+			  t.FACE,
+			  t.SEX,
+			  t.BIRTHDAY,
+			  t.MOBILE,
+			  to_char(t.REG_TIME, 'yyyy-mm-dd HH24:mi:ss') as REG_TIME,
+			  t.IS_USE,
+			  t.QQ,
+			  t.COMPANY_ID,
+			  t1.cnt
+			FROM SD_WEB_USER t,
+			  (SELECT COUNT(1) AS cnt,
+			    t.wap_user_id
+			  FROM sd_order_base t
+			  WHERE 1 = 1
+			  and t.is_del= 0
+			  GROUP BY t.wap_user_id
+			  ) t1
+			WHERE 1  = 1
+			AND t.id = t1.wap_user_id
+		)t)t where 1=1 <![CDATA[  and t.myrownum >= #start# and t.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+			FROM SD_WEB_USER t,
+			  (SELECT COUNT(1) AS cnt,
+			    t.wap_user_id
+			  FROM sd_order_base t
+			  WHERE 1 = 1
+			  and t.is_del= 0
+			  GROUP BY t.wap_user_id
+			  ) t1
+			WHERE 1  = 1
+			AND t.id = t1.wap_user_id
+	</statement>
+</sqlMap>

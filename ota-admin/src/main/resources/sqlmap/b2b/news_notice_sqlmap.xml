@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="newsNotice">
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID, 
+				a.TITLE, 
+				a.SITE_ID, 
+				a.TYPE, 
+				a.CREATE_USER, 
+				TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME, 
+				a.UPDATE_USER, 
+				TO_CHAR(a.UPDATE_TIME, 'yyyy-mm-dd HH24:mi:ss') UPDATE_TIME, 
+				a.IS_DEL, 
+				a.IS_TOP,
+				a.CITY_ID,
+				a.CITY_NAME,
+				(SELECT e.text FROM sd_city e WHERE e.id = d.pid)|| '/' || a.city_name AS SUB_AREA
+			FROM SD_NEWS_NOTICE a,
+			sd_city d
+			WHERE 1      = 1
+			AND a.IS_DEL = 0
+			AND d.id      = a.city_id
+			<isNotEmpty property="QUERY">
+				AND a.TITLE LIKE '%$QUERY$%'
+			</isNotEmpty>
+			<isNotEmpty property="SITE_ID">
+				AND a.SITE_ID = #SITE_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				AND a.CITY_ID = #CITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_IDS">
+				AND a.CITY_ID in ($CITY_IDS$)
+			</isNotEmpty>
+			<isNotEmpty property="TYPE">
+				AND a.TYPE = #TYPE#
+			</isNotEmpty>
+			ORDER BY a.IS_TOP DESC, a.CREATE_TIME DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(a.ID) as s 
+			FROM SD_NEWS_NOTICE a,
+			sd_city d
+			WHERE 1      = 1
+			AND a.IS_DEL = 0
+			AND d.id      = a.city_id
+		<isNotEmpty property="QUERY">
+			AND a.TITLE LIKE '%$QUERY$%'
+		</isNotEmpty>
+		<isNotEmpty property="SITE_ID">
+			AND a.SITE_ID = #SITE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			AND a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_IDS">
+			AND a.CITY_ID in ($CITY_IDS$)
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			AND a.TYPE = #TYPE#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveDao" parameterClass="java.util.Map" >
+		INSERT
+		INTO SD_NEWS_NOTICE
+		  (
+		    ID,
+		    TITLE,
+		    CONTENT,
+		    SITE_ID,
+		    TYPE,
+		    CREATE_USER,
+		    CREATE_TIME,
+		    UPDATE_USER,
+		    UPDATE_TIME,
+		    IS_DEL,
+		    IS_TOP,
+		    CITY_ID,
+		    CITY_NAME
+		  )
+		  VALUES
+		  (
+		    #ID#,
+		    #TITLE#,
+		    #CONTENT#,
+		    #SITE_ID#,
+		    #TYPE#,
+		    #CREATE_USER#,
+		    sysdate,
+		    #UPDATE_USER#,
+		    sysdate,
+		    0,
+		    0,
+		    #CITY_ID#,
+		    #CITY_NAME#
+		  )
+	</insert>
+	
+	<update id="editDao" parameterClass="java.util.Map" >
+		UPDATE SD_NEWS_NOTICE SET UPDATE_USER = #UPDATE_USER#, UPDATE_TIME = sysdate
+		<isNotEmpty property="TITLE">
+			,TITLE = #TITLE#
+		</isNotEmpty>
+		<isNotEmpty property="CONTENT">
+			,CONTENT = #CONTENT#
+		</isNotEmpty>
+		<isNotEmpty property="SITE_ID">
+			,SITE_ID = #SITE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			,TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="IS_DEL">
+			,IS_DEL = #IS_DEL#
+		</isNotEmpty>
+		<isNotEmpty property="IS_TOP">
+			,IS_TOP = #IS_TOP#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			,CITY_ID = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_NAME">
+			,CITY_NAME = #CITY_NAME#
+		</isNotEmpty>
+		WHERE ID = #ID#
+	</update>
+	
+	<resultMap class="cn.sd.entity.b2b.NewsNoticeEntity" id="newsNoticeEntity">
+		<result property="ID" column="ID" />
+		<result property="TITLE" column="TITLE" />
+		<result property="CONTENT" column="CONTENT" />
+		<result property="SITE_ID" column="SITE_ID" />
+		<result property="TYPE" column="TYPE" />
+		<result property="CREATE_USER" column="CREATE_USER" />
+		<result property="CREATE_TIME" column="CREATE_TIME" />
+		<result property="UPDATE_USER" column="UPDATE_USER" />
+		<result property="IS_DEL" column="IS_DEL" />
+		<result property="IS_TOP" column="IS_TOP" />
+	</resultMap>
+	
+	<statement id="detailDao" parameterClass="java.util.Map" resultMap="newsNoticeEntity">
+		SELECT a.ID, 
+			a.TITLE, 
+			a.CONTENT,
+			a.SITE_ID, 
+			a.TYPE, 
+			a.CREATE_USER, 
+			TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME, 
+			a.UPDATE_USER, 
+			TO_CHAR(a.UPDATE_TIME, 'yyyy-mm-dd HH24:mi:ss') UPDATE_TIME, 
+			a.IS_DEL, 
+			a.IS_TOP
+		FROM SD_NEWS_NOTICE a
+		WHERE 1      = 1 and a.ID = #ID#
+	</statement>
+	
+</sqlMap>

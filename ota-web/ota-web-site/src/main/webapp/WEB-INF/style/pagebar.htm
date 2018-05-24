@@ -1,0 +1,33 @@
+<!--<div style="padding:15px 0;">
+	<span style="font-weight:normal;color:#888888;">[第<em style="font-style:normal; font-weight:bold; color:#444444;"><%=当前页码%></em>页, 共<%=总页数%>页<%=记录总数%>条记录]</span>
+	<a<%=第一页URL%> style=" padding:3px 2px; background:#F0F4F5;border:1px solid #DDDDDD;color:#1F3A87;padding:3px 6px;">首页</a>
+	<a<%=上一页URL%> style=" padding:3px 2px; background:#F0F4F5;border:1px solid #DDDDDD;color:#1F3A87;padding:3px 6px;">上页</a>
+				
+	<%=索引%>
+				
+	<a<%=下一页URL%> style=" padding:3px 2px; background:#F0F4F5;border:1px solid #DDDDDD;color:#1F3A87;padding:3px 6px;">下页</a>
+	<a<%=最后一页URL%> style=" padding:3px 2px; background:#F0F4F5;border:1px solid #DDDDDD;color:#1F3A87;padding:3px 6px;">末页</a>
+
+</div>-->
+<!--Config
+locaPageStart=<B>
+locaPageEnd=</B>
+hrefStart= href="
+hrefEnd="
+Config-->
+<!-- <div class="pagination" style="text-align:right;">
+	<div class="page-bottom">
+		<a<%=上一页URL%> class="page-start">上一页</a>
+		<a<%=下一页URL%> class="page-next">下一页</a>		
+			共<%=总页数%>页
+		    <!--跳转到
+			<input type="text" value="<%=当前页码%>" onkeydown="if(event.keyCode==13){event.keyCode=0;submit();}" size="3" id="pageJumpto" name="jumpto">页<button onclick="javascript:submit();">确定</button>
+	</div>
+</div>-->
+
+<nav>
+  <ul class="pager">
+    <li><a <%=上一页URL%> class="page-start" target="_self">上一页</a></li>
+    <li><a <%=下一页URL%> class="page-next" target="_self">下一页</a></li>
+  </ul>
+</nav>

@@ -1,0 +1,233 @@
+body{
+	background: #f5f5f5;
+}
+.mhead{
+	background: #fff;
+	height: 65px;
+	overflow: hidden;
+}
+.head-mtitle{
+	height: 65px;
+	margin: 0 10px;
+	float: left;
+}
+.head-mtitle h3{
+	width: 100%;
+	font-size: 12px;
+	color: #999;
+	overflow: hidden;
+}
+.head-mtitle h3.head-mname{
+	margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+    min-width: 235px;
+    overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.head-mtitle .head-mphone, .head-mtitle .head-mqq{
+	width: 50%;
+	float: left;
+}
+.head-sch{
+	height: 34px;
+}
+.head-city{
+	min-width: 100%;
+	padding: 2px;
+	margin: -1px;
+	border-radius: 0;
+}
+.head-city li{
+	float: left;
+	width: 100px;
+	border: 1px dotted #ddd;
+	margin: 2px;
+}
+.head-city li a{
+	text-align: center;
+}
+.head-city li a:focus{
+	background: #59a8ff;
+	color: #fff;
+}
+.mmenu{
+	background: #fff;
+	overflow: hidden;
+	padding: 2px;
+	margin: 5px 0;
+}
+.mmenu img{
+	display: block;
+    max-width: 100%;
+    height: 20px;
+}
+.mmenu ul li{
+	padding: 2px;
+}
+.mmenu ul li a{
+	font-size: 14px;
+	color: #fff;
+	text-align: left;
+	border-radius: 5px;
+	display: block;
+	padding: 15px 10px;
+}
+.mmenu ul li a:hover{
+	text-decoration: none;
+}
+.mmenu ul li a.m-gn{
+	background: #59a8ff;
+}
+.mmenu ul li a.m-cj{
+	background: #cb74f0;
+}
+.mmenu ul li a.m-zb{
+	background: #ff8b8f;
+}
+.mmenu ul li a.m-zyx{
+	background: #74bb0e;
+}
+.mmenu ul li a.m-hddj{
+	background: #21d0c2;
+}
+.mmenu ul li a.m-bjyl{
+	background: #ffc515;
+}
+.mmenu ul li a.m-jd{
+	background: #fb6330;
+}
+.mmenu ul li a.m-trv{
+	background: #0090ff;
+}
+.mmenu ul li a.m-std{
+	background: #ff407a;
+}
+.mmenu ul li span{
+	display: inline-block;
+	vertical-align: middle;
+}
+.mtour{
+	background: #fff;
+}
+.mtour .mtab{
+	width: 100%;
+	background: #fff;
+    overflow: hidden;
+    border-bottom: 0;
+    z-index: 1001;
+}
+.mtour .mtab li{
+	width: 25%;
+}
+.mtour .mtab li span{
+	display: block;
+	color: #fff;
+	font-size: 16px;
+	text-align: center;
+	border: 0;
+	border-radius: 0;
+	margin-right: 0;
+	padding: 11px 10px;
+	height: 42px;
+	background: #59a8ff;
+}
+.mtour .mtab li a{
+	color: #333;
+	font-size: 16px;
+	text-align: center;
+	border: 0;
+	border-radius: 0;
+	margin-right: 0;
+	padding: 8px 10px;
+}
+.mtour .mtab li a, .mtour .mtab li a:focus, .mtour .mtab li a:hover{
+	border: 0;
+}
+.mtour .mtab li.active a{
+	color: #59a8ff;
+	border-bottom: 4px solid #59a8ff;
+}
+.mtour .mtab ul.sectab{
+	width: 100%;
+	background: #f5f5f5;
+    overflow: hidden;
+    border-bottom: 0;
+    z-index: 1000;
+    margin-bottom: -1px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.mtour .mtab ul.sectab li{
+	width: 25%;
+	border: 1px solid #e0e0e0;
+	border-top: 0;
+	border-right: 0;
+}
+.mtour .mtab ul.sectab li.border{
+	border-left: none;
+}
+.mtour .mtab ul.sectab li a{
+	color: #666;
+	font-size: 12px;
+	text-align: center;
+	border: 0;
+	border-radius: 0;
+	margin-right: 0;
+	padding: 5px;
+	margin: 8px;
+}
+.mtour .mtab ul.sectab li.active a{
+	background: #59a8ff;
+	border-radius: 20px;
+	color: #fff;
+}
+.mtour .mtab ul.sectab li a:focus, .mtour .mtab ul.sectab li a:hover{
+	border: 0;
+}
+.mtour .mtour-con{
+	width: 100%;
+	background: #f5f5f5;
+	overflow: hidden;
+}
+.mtour .mtour-con ul.mtour-list{
+	width: 100%;
+	overflow: hidden;
+}
+.mtour .mtour-con ul.mtour-list li{
+	background: #fff;
+}
+.mtour .mtour-con ul.mtour-list .mtour-box{
+	margin-bottom: 10px;
+}
+.mtour .mtour-con ul.mtour-list .mtour-img{
+	height: 175px;
+	position: relative;
+	overflow: hidden;
+}
+.mtour .mtour-con ul.mtour-list .mtour-img img{
+	max-width: 100%;
+}
+.mtour .mtour-con ul.mtour-list .mtour-protit{
+	font-size: 14px;
+	line-height: 18px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.mtour .mtour-con ul.mtour-list .mtour-info{
+	padding: 5px 0;
+	line-height: 18px;
+}
+.mtour .mtour-con ul.mtour-list .mtour-info .mtour-price{
+	font-family: 'Microsoft YaHei';
+    color: #ff5741;
+    float: right;
+}
+.mtour .mtour-con ul.mtour-list .mtour-info .mtour-price em{
+	font-size: 16px;
+}
+.mtour .mtour-con ul.mtour-list .mtour-info .mtour-order{
+	font-size: 12px;
+    color: #999;
+}

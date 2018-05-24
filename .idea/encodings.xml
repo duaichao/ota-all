@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-admin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-config" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-web/ota-web-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-web/ota-web-shop" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ota-web/ota-web-site" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

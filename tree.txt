@@ -1,0 +1,1327 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] ota-all
+[INFO] ota-common
+[INFO] ota-config
+[INFO] ota-admin
+[INFO] ota-web-service
+[INFO] ota-web-shop
+[INFO] ota-web-site
+[INFO] ota-web
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-all 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-all ---
+[INFO] com.xsx.ota:ota-all:pom:1.0-SNAPSHOT
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-common 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-common ---
+[INFO] com.xsx.ota:ota-common:jar:1.0-SNAPSHOT
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-config 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-config ---
+[INFO] com.xsx.ota:ota-config:war:1.0-SNAPSHOT
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-admin 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-admin ---
+[INFO] com.xsx.ota:ota-admin:war:1.0-SNAPSHOT
+[INFO] +- com.xsx.ota:ota-config:war:1.0-SNAPSHOT:compile
+[INFO] +- com.xsx.ota:ota-common:jar:1.0-SNAPSHOT:compile
+[INFO] |  +- (javax.servlet:jstl:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile - omitted for duplicate)
+[INFO] |  +- (commons-lang:commons-lang:jar:2.5:compile - omitted for duplicate)
+[INFO] |  +- (commons-io:commons-io:jar:2.6:compile - omitted for duplicate)
+[INFO] |  +- (commons-httpclient:commons-httpclient:jar:3.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-codec:commons-codec:jar:1.11:compile - omitted for duplicate)
+[INFO] |  +- (commons-digester:commons-digester:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (commons-fileupload:commons-fileupload:jar:1.3.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-scratchpad:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:ooxml-schemas:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sf.json-lib:json-lib:jar:jdk15:2.4:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:fastjson:jar:1.2.47:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (org.htmlparser:htmlparser:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile - omitted for duplicate)
+[INFO] |  +- (org.jdom:jdom:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (javax.mail:mail:jar:1.4.7:compile - omitted for duplicate)
+[INFO] |  +- (com.github.stuxuhai:jpinyin:jar:1.1.8:compile - omitted for duplicate)
+[INFO] |  +- (com.github.penggle:kaptcha:jar:2.3.2:compile - omitted for duplicate)
+[INFO] |  +- (org.bouncycastle:bcprov-jdk15:jar:1.46:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-orm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-ibatis:jar:2.0.8:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:druid:jar:1.1.9:compile - omitted for duplicate)
+[INFO] |  +- (com.oracle:ojdbc6:jar:11.2.0.3:compile - omitted for duplicate)
+[INFO] |  +- (org.slf4j:slf4j-api:jar:1.7.25:compile - omitted for duplicate)
+[INFO] |  +- (log4j:log4j:jar:1.2.17:runtime - omitted for duplicate)
+[INFO] |  \- (org.quartz-scheduler:quartz:jar:2.3.0:compile - omitted for duplicate)
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-web-service 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-web-service ---
+[INFO] com.xsx.ota:ota-web-service:jar:1.0-SNAPSHOT
+[INFO] +- com.xsx.ota:ota-common:jar:1.0-SNAPSHOT:compile
+[INFO] |  +- (javax.servlet:jstl:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile - omitted for duplicate)
+[INFO] |  +- (commons-lang:commons-lang:jar:2.5:compile - omitted for duplicate)
+[INFO] |  +- (commons-io:commons-io:jar:2.6:compile - omitted for duplicate)
+[INFO] |  +- (commons-httpclient:commons-httpclient:jar:3.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-codec:commons-codec:jar:1.11:compile - omitted for duplicate)
+[INFO] |  +- (commons-digester:commons-digester:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (commons-fileupload:commons-fileupload:jar:1.3.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-scratchpad:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:ooxml-schemas:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sf.json-lib:json-lib:jar:jdk15:2.4:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:fastjson:jar:1.2.47:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (org.htmlparser:htmlparser:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile - omitted for duplicate)
+[INFO] |  +- (org.jdom:jdom:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (javax.mail:mail:jar:1.4.7:compile - omitted for duplicate)
+[INFO] |  +- (com.github.stuxuhai:jpinyin:jar:1.1.8:compile - omitted for duplicate)
+[INFO] |  +- (com.github.penggle:kaptcha:jar:2.3.2:compile - omitted for duplicate)
+[INFO] |  +- (org.bouncycastle:bcprov-jdk15:jar:1.46:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-orm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-ibatis:jar:2.0.8:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:druid:jar:1.1.9:compile - omitted for duplicate)
+[INFO] |  +- (com.oracle:ojdbc6:jar:11.2.0.3:compile - omitted for duplicate)
+[INFO] |  +- (org.slf4j:slf4j-api:jar:1.7.25:compile - omitted for duplicate)
+[INFO] |  +- (log4j:log4j:jar:1.2.17:runtime - omitted for duplicate)
+[INFO] |  \- (org.quartz-scheduler:quartz:jar:2.3.0:compile - omitted for duplicate)
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  +- (commons-pool:commons-pool:jar:1.2:compile - omitted for conflict with 1.3)
+[INFO] |  |  +- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  |  \- (xerces:xercesImpl:jar:2.0.2:compile - omitted for conflict with 2.5.0)
+[INFO] |  +- commons-pool:commons-pool:jar:1.3:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.5.0:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-web-shop 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-web-shop ---
+[INFO] com.xsx.ota:ota-web-shop:war:1.0-SNAPSHOT
+[INFO] +- com.xsx.ota:ota-web-service:jar:1.0-SNAPSHOT:compile
+[INFO] |  +- com.xsx.ota:ota-common:jar:1.0-SNAPSHOT:compile
+[INFO] |  |  +- (javax.servlet:jstl:jar:1.2:compile - omitted for duplicate)
+[INFO] |  |  +- (com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-lang:commons-lang:jar:2.5:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-io:commons-io:jar:2.6:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-httpclient:commons-httpclient:jar:3.1:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-codec:commons-codec:jar:1.11:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-digester:commons-digester:jar:2.1:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+[INFO] |  |  +- (commons-fileupload:commons-fileupload:jar:1.3.1:compile - omitted for duplicate)
+[INFO] |  |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  |  +- (org.apache.poi:poi-ooxml:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  |  +- (org.apache.poi:poi-scratchpad:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  |  +- (org.apache.poi:ooxml-schemas:jar:1.1:compile - omitted for duplicate)
+[INFO] |  |  +- (net.sf.json-lib:json-lib:jar:jdk15:2.4:compile - omitted for duplicate)
+[INFO] |  |  +- (com.alibaba:fastjson:jar:1.2.47:compile - omitted for duplicate)
+[INFO] |  |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  |  +- (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  |  +- (com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  |  +- (com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  |  +- (org.htmlparser:htmlparser:jar:2.1:compile - omitted for duplicate)
+[INFO] |  |  +- (net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile - omitted for duplicate)
+[INFO] |  |  +- (org.jdom:jdom:jar:1.1:compile - omitted for duplicate)
+[INFO] |  |  +- (javax.mail:mail:jar:1.4.7:compile - omitted for duplicate)
+[INFO] |  |  +- (com.github.stuxuhai:jpinyin:jar:1.1.8:compile - omitted for duplicate)
+[INFO] |  |  +- (com.github.penggle:kaptcha:jar:2.3.2:compile - omitted for duplicate)
+[INFO] |  |  +- (org.bouncycastle:bcprov-jdk15:jar:1.46:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-orm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-ibatis:jar:2.0.8:compile - omitted for duplicate)
+[INFO] |  |  +- (org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile - omitted for duplicate)
+[INFO] |  |  +- (com.alibaba:druid:jar:1.1.9:compile - omitted for duplicate)
+[INFO] |  |  +- (com.oracle:ojdbc6:jar:11.2.0.3:compile - omitted for duplicate)
+[INFO] |  |  +- (org.slf4j:slf4j-api:jar:1.7.25:compile - omitted for duplicate)
+[INFO] |  |  +- (log4j:log4j:jar:1.2.17:runtime - omitted for duplicate)
+[INFO] |  |  \- (org.quartz-scheduler:quartz:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (javax.servlet:jstl:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile - omitted for duplicate)
+[INFO] |  +- (commons-lang:commons-lang:jar:2.5:compile - omitted for duplicate)
+[INFO] |  +- (commons-io:commons-io:jar:2.6:compile - omitted for duplicate)
+[INFO] |  +- (commons-httpclient:commons-httpclient:jar:3.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-codec:commons-codec:jar:1.11:compile - omitted for duplicate)
+[INFO] |  +- (commons-digester:commons-digester:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (commons-fileupload:commons-fileupload:jar:1.3.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-scratchpad:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:ooxml-schemas:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sf.json-lib:json-lib:jar:jdk15:2.4:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:fastjson:jar:1.2.47:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (org.htmlparser:htmlparser:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile - omitted for duplicate)
+[INFO] |  +- (org.jdom:jdom:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (javax.mail:mail:jar:1.4.7:compile - omitted for duplicate)
+[INFO] |  +- (com.github.stuxuhai:jpinyin:jar:1.1.8:compile - omitted for duplicate)
+[INFO] |  +- (com.github.penggle:kaptcha:jar:2.3.2:compile - omitted for duplicate)
+[INFO] |  +- (org.bouncycastle:bcprov-jdk15:jar:1.46:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-orm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-ibatis:jar:2.0.8:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:druid:jar:1.1.9:compile - omitted for duplicate)
+[INFO] |  +- (com.oracle:ojdbc6:jar:11.2.0.3:compile - omitted for duplicate)
+[INFO] |  +- (org.slf4j:slf4j-api:jar:1.7.25:compile - omitted for duplicate)
+[INFO] |  +- (log4j:log4j:jar:1.2.17:runtime - omitted for duplicate)
+[INFO] |  \- (org.quartz-scheduler:quartz:jar:2.3.0:compile - omitted for duplicate)
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  +- (commons-pool:commons-pool:jar:1.2:compile - omitted for conflict with 1.3)
+[INFO] |  |  +- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  |  \- (xerces:xercesImpl:jar:2.0.2:compile - omitted for conflict with 2.5.0)
+[INFO] |  +- commons-pool:commons-pool:jar:1.3:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.5.0:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-web-site 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-web-site ---
+[INFO] com.xsx.ota:ota-web-site:war:1.0-SNAPSHOT
+[INFO] +- com.xsx.ota:ota-config:war:1.0-SNAPSHOT:compile
+[INFO] +- com.xsx.ota:ota-common:jar:1.0-SNAPSHOT:compile
+[INFO] |  +- (javax.servlet:jstl:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile - omitted for duplicate)
+[INFO] |  +- (commons-lang:commons-lang:jar:2.5:compile - omitted for duplicate)
+[INFO] |  +- (commons-io:commons-io:jar:2.6:compile - omitted for duplicate)
+[INFO] |  +- (commons-httpclient:commons-httpclient:jar:3.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-codec:commons-codec:jar:1.11:compile - omitted for duplicate)
+[INFO] |  +- (commons-digester:commons-digester:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (commons-fileupload:commons-fileupload:jar:1.3.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-scratchpad:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:ooxml-schemas:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sf.json-lib:json-lib:jar:jdk15:2.4:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:fastjson:jar:1.2.47:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (org.htmlparser:htmlparser:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile - omitted for duplicate)
+[INFO] |  +- (org.jdom:jdom:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (javax.mail:mail:jar:1.4.7:compile - omitted for duplicate)
+[INFO] |  +- (com.github.stuxuhai:jpinyin:jar:1.1.8:compile - omitted for duplicate)
+[INFO] |  +- (com.github.penggle:kaptcha:jar:2.3.2:compile - omitted for duplicate)
+[INFO] |  +- (org.bouncycastle:bcprov-jdk15:jar:1.46:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-orm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-ibatis:jar:2.0.8:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:druid:jar:1.1.9:compile - omitted for duplicate)
+[INFO] |  +- (com.oracle:ojdbc6:jar:11.2.0.3:compile - omitted for duplicate)
+[INFO] |  +- (org.slf4j:slf4j-api:jar:1.7.25:compile - omitted for duplicate)
+[INFO] |  +- (log4j:log4j:jar:1.2.17:runtime - omitted for duplicate)
+[INFO] |  \- (org.quartz-scheduler:quartz:jar:2.3.0:compile - omitted for duplicate)
+[INFO] +- com.xsx.ota:ota-web-service:jar:1.0-SNAPSHOT:compile
+[INFO] |  +- (com.xsx.ota:ota-common:jar:1.0-SNAPSHOT:compile - omitted for duplicate)
+[INFO] |  +- (javax.servlet:jstl:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile - omitted for duplicate)
+[INFO] |  +- (commons-lang:commons-lang:jar:2.5:compile - omitted for duplicate)
+[INFO] |  +- (commons-io:commons-io:jar:2.6:compile - omitted for duplicate)
+[INFO] |  +- (commons-httpclient:commons-httpclient:jar:3.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-codec:commons-codec:jar:1.11:compile - omitted for duplicate)
+[INFO] |  +- (commons-digester:commons-digester:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+[INFO] |  +- (commons-fileupload:commons-fileupload:jar:1.3.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-scratchpad:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:ooxml-schemas:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sf.json-lib:json-lib:jar:jdk15:2.4:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:fastjson:jar:1.2.47:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (org.htmlparser:htmlparser:jar:2.1:compile - omitted for duplicate)
+[INFO] |  +- (net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile - omitted for duplicate)
+[INFO] |  +- (org.jdom:jdom:jar:1.1:compile - omitted for duplicate)
+[INFO] |  +- (javax.mail:mail:jar:1.4.7:compile - omitted for duplicate)
+[INFO] |  +- (com.github.stuxuhai:jpinyin:jar:1.1.8:compile - omitted for duplicate)
+[INFO] |  +- (com.github.penggle:kaptcha:jar:2.3.2:compile - omitted for duplicate)
+[INFO] |  +- (org.bouncycastle:bcprov-jdk15:jar:1.46:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-orm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-ibatis:jar:2.0.8:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile - omitted for duplicate)
+[INFO] |  +- (com.alibaba:druid:jar:1.1.9:compile - omitted for duplicate)
+[INFO] |  +- (com.oracle:ojdbc6:jar:11.2.0.3:compile - omitted for duplicate)
+[INFO] |  +- (org.slf4j:slf4j-api:jar:1.7.25:compile - omitted for duplicate)
+[INFO] |  +- (log4j:log4j:jar:1.2.17:runtime - omitted for duplicate)
+[INFO] |  \- (org.quartz-scheduler:quartz:jar:2.3.0:compile - omitted for duplicate)
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  +- (commons-pool:commons-pool:jar:1.2:compile - omitted for conflict with 1.3)
+[INFO] |  |  +- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  |  \- (xerces:xercesImpl:jar:2.0.2:compile - omitted for conflict with 2.5.0)
+[INFO] |  +- commons-pool:commons-pool:jar:1.3:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.5.0:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ota-web 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ ota-web ---
+[INFO] com.xsx.ota:ota-web:pom:1.0-SNAPSHOT
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] |  \- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- javax.servlet:jstl:jar:1.2:compile
+[INFO] +- com.octo.captcha:jcaptcha-all:jar:1.0-RC6:compile
+[INFO] |  +- quartz:quartz:jar:1.5.1:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.0.b2:compile
+[INFO] |  +- hsqldb:hsqldb:jar:1.8.0.7:compile
+[INFO] |  +- net.sf.ehcache:ehcache:jar:1.2.4:compile
+[INFO] |  +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.2.1:compile
+[INFO] +- commons-lang:commons-lang:jar:2.5:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:compile
+[INFO] +- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  +- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  +- (org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile - omitted for duplicate)
+[INFO] |  \- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     \- (xml-apis:xml-apis:jar:1.0.b2:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] +- org.apache.poi:poi-scratchpad:jar:3.10.1:compile
+[INFO] |  \- (org.apache.poi:poi:jar:3.10.1:compile - omitted for duplicate)
+[INFO] +- org.apache.poi:ooxml-schemas:jar:1.1:compile
+[INFO] |  \- org.apache.xmlbeans:xmlbeans:jar:2.3.0:compile
+[INFO] |     \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.json-lib:json-lib:jar:jdk15:2.4:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  \- net.sf.ezmorph:ezmorph:jar:1.0.6:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.47:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile
+[INFO] +- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.3.3:compile
+[INFO] |  +- (com.fasterxml.jackson.core:jackson-core:jar:2.3.3:compile - omitted for duplicate)
+[INFO] |  \- (com.fasterxml.jackson.core:jackson-databind:jar:2.3.3:compile - omitted for duplicate)
+[INFO] +- org.htmlparser:htmlparser:jar:2.1:compile
+[INFO] |  \- org.htmlparser:htmllexer:jar:2.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.12:compile
+[INFO] +- org.jdom:jdom:jar:1.1:compile
+[INFO] +- javax.mail:mail:jar:1.4.7:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- com.github.stuxuhai:jpinyin:jar:1.1.8:compile
+[INFO] +- com.github.penggle:kaptcha:jar:2.3.2:compile
+[INFO] |  +- javax.servlet:javax.servlet-api:jar:3.1.0:compile
+[INFO] |  \- com.jhlabs:filters:jar:2.0.235-1:compile
+[INFO] +- org.bouncycastle:bcprov-jdk15:jar:1.46:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.1.RELEASE:compile
+[INFO] +- org.springframework:spring-beans:jar:4.1.1.RELEASE:compile
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-aop:jar:4.1.1.RELEASE:compile
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-web:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-aop:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.1.RELEASE:compile
+[INFO] |     \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-context-support:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-test:jar:4.1.1.RELEASE:test
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:test - omitted for duplicate)
+[INFO] +- org.springframework:spring-webmvc:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-expression:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-tx:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-orm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-jdbc:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-tx:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-oxm:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-beans:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-websocket:jar:4.1.1.RELEASE:compile
+[INFO] |  +- (org.springframework:spring-context:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  +- (org.springframework:spring-core:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] |  \- (org.springframework:spring-web:jar:4.1.1.RELEASE:compile - omitted for duplicate)
+[INFO] +- org.springframework:spring-ibatis:jar:2.0.8:compile
+[INFO] +- org.apache.ibatis:ibatis-sqlmap:jar:2.3.4.726:compile
+[INFO] +- com.alibaba:druid:jar:1.1.9:compile
+[INFO] +- com.oracle:ojdbc6:jar:11.2.0.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] +- log4j:log4j:jar:1.2.17:runtime
+[INFO] \- org.quartz-scheduler:quartz:jar:2.3.0:compile
+[INFO]    +- com.mchange:mchange-commons-java:jar:0.2.11:compile
+[INFO]    \- com.zaxxer:HikariCP-java6:jar:2.3.13:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] ota-all ............................................ SUCCESS [  1.508 s]
+[INFO] ota-common ......................................... SUCCESS [  0.100 s]
+[INFO] ota-config ......................................... SUCCESS [  0.071 s]
+[INFO] ota-admin .......................................... SUCCESS [  0.113 s]
+[INFO] ota-web-service .................................... SUCCESS [  0.140 s]
+[INFO] ota-web-shop ....................................... SUCCESS [  0.129 s]
+[INFO] ota-web-site ....................................... SUCCESS [  0.108 s]
+[INFO] ota-web ............................................ SUCCESS [  0.057 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.548 s
+[INFO] Finished at: 2018-05-23T11:17:55+08:00
+[INFO] Final Memory: 21M/343M
+[INFO] ------------------------------------------------------------------------

@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="user">
+
+ 	<resultMap id="companyDetail" class="cn.sd.entity.produce.CompanyDetail">
+	   	<result column="ID" property="ID" jdbcType="VARCHAR" />
+	   	<result column="USER_ID" property="USER_ID" jdbcType="VARCHAR" />
+	   	<result column="USER_NAME" property="USER_NAME" jdbcType="VARCHAR" />
+	   	<result column="TYPE" property="TYPE" jdbcType="VARCHAR" />
+	   	<result column="PID" property="PID" jdbcType="VARCHAR" />
+	   	<result column="COMPANY" property="COMPANY" jdbcType="VARCHAR" />
+	   	<result column="CITY_ID" property="CITY_ID" jdbcType="VARCHAR" />
+	   	<result column="LOGO" property="LOGO" jdbcType="VARCHAR" />
+	   	
+	   	<result column="ICON" property="ICON" jdbcType="VARCHAR" />
+	   	<result column="CODE" property="CODE" jdbcType="VARCHAR" />
+	   	<result column="PARTNER" property="PARTNER" jdbcType="VARCHAR" />
+	   	<result column="KEY" property="KEY" jdbcType="VARCHAR" />
+	   	<result column="SELLER_EMAIL" property="SELLER_EMAIL" jdbcType="VARCHAR" />
+	   	<result column="ABOUT" property="ABOUT" jdbcType="VARCHAR" />
+	   	<result column="IS_ALONE" property="IS_ALONE" jdbcType="VARCHAR" />
+	   	<result column="TITLE" property="TITLE" jdbcType="VARCHAR" />
+	   	<result column="DOMAIN" property="DOMAIN" jdbcType="VARCHAR" />
+	   	<result column="RECORD_NO" property="RECORD_NO" jdbcType="VARCHAR" />
+	   	<result property="QQ1" column="QQ1" />
+		<result property="QQ2" column="QQ2" />
+		<result property="PHONE1" column="PHONE1" />
+		<result property="PHONE2" column="PHONE2" />
+		<result property="WX_IMG" column="WX_IMG" />
+		<result property="ACCOUNT_WAY" column="ACCOUNT_WAY" />
+		<result property="START_CITY_NAME" column="START_CITY_NAME" />
+		<result property="MANAGER" column="MANAGER" />
+		<result property="WAP_ID" column="WAP_ID" />
+		<result property="ENTITY_ID" column="ENTITY_ID" />
+		<result property="ENTITY_NAME" column="ENTITY_NAME" />
+		<result property="SETTING_TYPE" column="SETTING_TYPE" />
+		<result property="ACCOUNT_USER_ID" column="ACCOUNT_USER_ID" />
+		<result property="ACCOUNT_USER_NAME" column="ACCOUNT_USER_NAME" />
+		<result property="DEPART_ID" column="DEPART_ID" />
+	</resultMap>
+	
+	<statement id="searchWebCategoryByCompanyId" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, a.COMPANY_ID, a.CATEGORY, a.ORDER_BY, a.ITEM_ID FROM SD_WEB_CATEGORY a WHERE a.COMPANY_ID = #COMPANY_ID# ORDER BY a.ORDER_BY
+	</statement>
+	
+	<statement id="searchCompanyBuyDomain" parameterClass="java.util.Map" resultMap="companyDetail">
+		SELECT t.ID, 
+			t.USER_ID,
+			t.USER_NAME,
+			t.TYPE,
+			t.PID, 
+			t.COMPANY, 
+			t.CITY_ID, 
+			t1.LOGO, 
+			t1.ICON, 
+			decode(t1.TYPE, 1, t1.CODE, t3.CODE) as code,
+			t1.PARTNER, 
+			t1.KEY, 
+			t1.SELLER_EMAIL, 
+			t1.ABOUT,
+			t.IS_ALONE,
+			t1.TITLE, 
+			t1.DOMAIN, 
+			t1.RECORD_NO,
+			t1.QQ1,
+			t1.QQ2,
+			t1.PHONE1,
+			t1.PHONE2,
+			t1.WX_IMG,
+			t.ACCOUNT_WAY,
+			t2.START_CITY_NAME,
+			t1.MANAGER,
+			t1.ID as WAP_ID,
+			t1.ENTITY_ID,
+			t1.ENTITY_NAME,
+			t1.TYPE as SETTING_TYPE,
+			t1.ACCOUNT_USER_ID,
+			t1.ACCOUNT_USER_NAME,
+			t1.DEPART_ID
+		FROM SD_USER_COMPANY t,
+		  (select t.*, t1.user_name as entity_name, t1.DEPART_ID from SD_WAP_SETTING t, sd_user t1 where 1 = 1 and t.entity_id = t1.id(+))t1,
+		  (SELECT 
+		  	  a.id as COMPANY_ID,
+			 
+			  DECODE(t.start_city_name, null, t1.start_city_name, t.start_city_name) as start_city_name
+
+			  
+			FROM sd_user_company a,
+			  sd_user_company b,
+			  
+			  (SELECT company_id,
+			  ltrim(MAX(SYS_CONNECT_BY_PATH(city_name, ',')), ',') start_city_name
+			FROM
+			  (SELECT city_name,
+			    company_id,
+			    ROW_NUMBER() OVER(PARTITION BY company_id ORDER BY city_name DESC) RN
+			  FROM SD_COMPANY_START_CITY
+			  )
+			  START WITH RN     = 1
+			  CONNECT BY RN - 1 = PRIOR RN
+			  AND company_id        = PRIOR company_id
+			GROUP BY company_id) t,
+			
+			(SELECT company_id,
+			  ltrim(MAX(SYS_CONNECT_BY_PATH(city_name, ',')), ',') start_city_name
+			FROM
+			  (SELECT city_name,
+			    company_id,
+			    ROW_NUMBER() OVER(PARTITION BY company_id ORDER BY city_name DESC) RN
+			  FROM SD_COMPANY_START_CITY
+			  )
+			  START WITH RN     = 1
+			  CONNECT BY RN - 1 = PRIOR RN
+			  AND company_id        = PRIOR company_id
+			GROUP BY company_id) t1
+			
+			WHERE a.pid = b.id(+)
+			and a.id = t.COMPANY_ID(+)
+			and a.pid = t1.COMPANY_ID(+)) t2,
+			(select t.user_id, t1.code from sd_user_company t, sd_wap_setting t1 where t.user_id = t1.entity_id and t1.type = 1) t3
+		WHERE t.id    = t1.company_id
+		AND t.id    = t2.company_id(+)
+		and t.user_id = t3.user_id(+)
+		and t1.IS_USE = 0
+		AND t1.domain like '%$DOMAIN$%'
+		<isNotEmpty property="TYPE">
+			and t1.type = #TYPE#
+		</isNotEmpty>  
+	</statement>
+	
+	<statement id="searchCompanyBuyID" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID, t.COMPANY, t.CITY_ID, t.TRAFFIC_EXPENSE, t.ROUTE_EXPENSE
+		FROM SD_USER_COMPANY t
+		WHERE t.id = #ID#  
+	</statement>
+	
+	<statement id="searchCompanyCounselor" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.CHINA_NAME,
+		  t.USER_NAME,
+		  t.MOBILE,
+		  t.SEX,
+		  t.QQ1,
+		  t.QQ2,
+		  t.PHONE,
+		  t.FACE,
+		  t.SIGNATURE,
+		  t2.ADDRESS,
+		  t2.COMPANY,
+		  t2.LOGO_URL,
+		  t2.ID as COMPANY_ID,
+		  t2.BUSINESS,
+		  t2.PHONE,
+		  t2.LONGITUDE, 
+		  t2.LATITUDE,
+		  t3.ORDER_CNT,
+		  t4.ID as DEPART_ID
+		FROM SD_USER t,
+		  SD_USER_PLUS t1,
+		  (SELECT t.ID, t.ADDRESS, t.COMPANY, t.LOGO_URL, t.BUSINESS, t.PHONE, t.LONGITUDE, t.LATITUDE, t.ORDER_BY, t.IS_SHOW
+		  FROM SD_USER_COMPANY t, sd_user t1
+		  WHERE (t.ID = #COMPANY_ID# OR t.PID   = #COMPANY_ID#)
+		  and t.user_id = t1.id
+      	  and t1.is_use = 0
+		  ) t2,
+		  (select count(t.id) as order_cnt, t.create_company_id from sd_order_base t group by t.create_company_id) t3,
+		  sd_user_depart t4
+		WHERE t.ID          = t1.USER_ID
+		AND t.COMPANY_ID    = t2.ID
+		and t.COMPANY_ID = t3.CREATE_COMPANY_ID
+		and t.depart_id = t4.id(+)
+		AND t1.IS_COUNSELOR = 1
+		AND t.IS_DEL        = 0
+		AND t.IS_USE 		= 0
+		AND t2.IS_SHOW		= 1
+		<isNotEmpty property="STORE_ID">
+		AND t.COMPANY_ID = #STORE_ID#
+		</isNotEmpty>
+		order by t3.ORDER_CNT DESC, t2.ID
+	</statement>
+	
+	<statement id="searchUser" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.CHINA_NAME,
+		  t.USER_NAME,
+		  t.MOBILE,
+		  t.SEX,
+		  t.QQ1,
+		  t.QQ2,
+		  t.FACE,
+		  t.SIGNATURE,
+		  t.COMPANY_ID,
+		  t.DEPART_ID,
+		  t.CITY_ID,
+		  t1.TYPE as COMPANY_TYPE,
+		  t1.IS_ALONE
+		FROM SD_USER t,
+		SD_USER_COMPANY t1
+		WHERE t.COMPANY_ID = t1.ID
+		<isNotEmpty property="ID">
+			and t.ID = #ID#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="searchWebUser" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.USER_NAME,
+		  t.PASSWORD,
+		  t.CHINA_NAME,
+		  t.FACE,
+		  t.SEX,
+		  to_char(t.BIRTHDAY, 'yyyy-mm-dd') as BIRTHDAY,
+		  t.MOBILE,
+		  t.REG_TIME,
+		  t.IS_USE,
+		  t.QQ
+		FROM SD_WEB_USER t
+		WHERE 1 = 1
+		<isNotEmpty property="USER_NAME_AND_MOBILE">
+			AND (t.USER_NAME = #T_USER_NAME# or t.MOBILE = #T_MOBILE#)
+		</isNotEmpty>
+		<isNotEmpty property="USER_NAME">
+			AND t.USER_NAME = #USER_NAME#
+		</isNotEmpty>
+		<isNotEmpty property="PASSWORD">
+			AND t.PASSWORD    = #PASSWORD#
+		</isNotEmpty>
+		<isNotEmpty property="MOBILE">
+			AND t.MOBILE    = #MOBILE#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			AND t.ID    = #ID#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="searchWapSetting" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+			t.ABOUT,
+			t.CODE,
+			t.COMPANY_ID,
+			t.DOMAIN,
+			t.ICON,
+			t.KEY,
+			t.LOGO,
+			t.PARTNER,
+			t.SELLER_EMAIL,
+			t.TITLE,
+			t.RECORD_NO,
+			t.QQ1,
+			t.QQ2,
+			t.PHONE1,
+			t.PHONE2,
+			t.PLATFORM_ACCOUNT,
+			t.WX_IMG,
+			t.TYPE,
+			t.ENTITY_ID,
+			t.MANAGER,
+			t.IS_USE
+		FROM sd_wap_setting t
+		WHERE 1 = 1
+		<isNotEmpty property="COMPANY_ID">
+			and t.COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_ID">
+			and t.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and t.TYPE = #TYPE#
+		</isNotEmpty>
+	</statement>
+	
+	
+	<insert id="saveWebUser" parameterClass="java.util.Map">
+		INSERT INTO SD_WEB_USER(
+			ID,
+			USER_NAME,
+			PASSWORD,
+			MOBILE,
+			REG_TIME)
+		VALUES(
+			#ID#,
+			#USER_NAME#,
+			#PASSWORD#,
+			#MOBILE#,
+			sysdate)
+	</insert>
+	
+	<update id="updateWebUserPwd" parameterClass="java.util.Map">
+		UPDATE SD_WEB_USER SET PASSWORD = #PASSWORD# where ID = #ID#
+	</update>
+	
+	<update id="updateUserPwdByMobile" parameterClass="java.util.Map">
+		UPDATE SD_WEB_USER SET PASSWORD = #PASSWORD# where MOBILE = #MOBILE#
+	</update>
+	
+	<update id="updateUserPwdByID" parameterClass="java.util.Map">
+		UPDATE SD_WEB_USER SET PASSWORD = #PASSWORD# where ID = #ID#
+	</update>
+	
+	<update id="updateWebUserInfo" parameterClass="java.util.Map">
+		UPDATE SD_WEB_USER SET CHINA_NAME = #CHINA_NAME#, SEX = #SEX#
+		<isNotEmpty property="BIRTHDAY">
+		, BIRTHDAY = to_date(#BIRTHDAY#, 'yyyy-mm-dd')
+		</isNotEmpty> 
+		where ID = #ID#
+	</update>
+	
+	<update id="updateWebUserMobile" parameterClass="java.util.Map">
+		UPDATE SD_WEB_USER SET MOBILE = #MOBILE# where ID = #ID#
+	</update>
+	
+	<update id="updateWebUserFace" parameterClass="java.util.Map">
+		UPDATE SD_WEB_USER SET FACE = #FACE# where ID = #ID#
+	</update>
+	
+</sqlMap>

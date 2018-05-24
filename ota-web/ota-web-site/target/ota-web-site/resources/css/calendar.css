@@ -1,0 +1,123 @@
+@charset "utf-8";
+/* CSS Document */
+/*线路详情页行程日历*/
+
+.calendar {
+	margin: 0;
+	overflow: hidden;
+	width: 100%;
+}
+.calendar .outer {
+	width: 100%;
+	overflow: hidden;
+}
+.calendar table {
+	background: #FFF;
+	border-collapse: separate;
+	border-spacing: 3px;
+	float: left;
+}
+.calendar .week th {
+	background: #ccc;
+	color: #FFF;
+	height: 26px;
+	line-height: 26px;
+	overflow: hidden;
+	width: 66px;
+	text-align: center;
+}
+.calendar .week th.weekEnd {
+	background: #4d9df7;
+}
+.calendar .month th div {
+	background: #4d9df7;
+	color: #fff;
+	overflow: hidden;
+	position: relative;
+}
+.calendar .month th .prevMonth,
+.calendar .month th .nextMonth {
+	float: left;
+	width: 66px;
+	position: absolute;
+	z-index: 9;
+}
+.calendar .month th .prevMonth{
+	left: 0;
+}
+.calendar .month th .nextMonth{
+	right: 0;
+}
+.calendar .month th .dates {
+	float: left;
+	width: 100%;
+	text-align: center;
+}
+.calendar .month th .dates em {
+	font-size: 16px;
+}
+.calendar .month th a {
+	background: url(../images/calendarbg.gif) no-repeat 0 0;
+	display: inline-block;
+	height: 22px;
+	width: 66px;
+}
+.calendar .month th a:hover{
+	text-decoration: none;
+}
+.calendar .month th a.prev {
+	background-position: 0 0;
+}
+.calendar .month th a.prev:hover {
+	background-position: 0 -22px;
+}
+.calendar .month th a.prev0 {
+	background-position: 0 -44px;
+	cursor: not-allowed;
+}
+.calendar .month th a.next {
+	background-position: 0 -66px;
+}
+.calendar .month th a.next:hover {
+	background-position: 0 -88px;
+}
+.calendar .month th a.next0 {
+	background-position: 0 -110px;
+	cursor: not-allowed;
+}
+.calendar td {
+	background-color: #f8f8f8;
+	max-width: 100%;
+	width: 79px;
+	height: 66px;
+	line-height: 14px;
+	text-align: center;
+	vertical-align: middle;
+	overflow: hidden;
+	position: relative;
+}
+.calendar td.cur {
+	background-color: #fffceb;
+}
+.calendar td.hover {
+	background-color: #e7e7e7;
+	cursor: pointer;
+}
+.calendar td em {
+	font-family: Arial;
+	font-size: 0.6em;
+	color: #888;
+}
+.calendar td em.money {
+	color: #F60;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+.calendar p{
+	text-align: left;
+}
+.calendar .nl {
+	font-size: 0.6em;
+	font-weight: bold;
+	color: #ff5741;
+}

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>站长管理使用说明</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/docs.min.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/help.css" />
+		<script type="text/javascript" src="js/jquery.min.js" ></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="js/docs.min.js" ></script>
+	</head>
+	<body>
+	<!-- 头部 -->
+	<header class="navbar navbar-static-top bs-docs-nav headerSpace" id="top" role="banner">
+		<div class="container">
+		    <div class="navbar-header headerWrap">
+		      	<a href="javascript:;" target="_self">
+					<img src="img/logo.png" height="75" alt="136旅游" title="136旅游">
+				</a>
+				<div class="contact">
+					<span class="num"><i class="icon-phone-sign"></i> 029-88898185</span>
+					<span class="time">周一至周日 <i class="icon-time"></i>8:00-18:00</span>
+					<a target="“blank”" class="qq" href="http://wpa.qq.com/msgrd?V=3&amp;uin=3187200277&amp;Site=QQ客服&amp;Menu=yes">
+						<img border="0" src="http://wpa.qq.com/pa?p=1:3187200277:3" alt="点击这里给我发消息">
+					</a>
+				</a>
+			</div>
+		    </div>
+		</div>
+	</header>
+    
+	<div class="container bs-docs-container">
+      	<div class="row">
+	      	<!-- 快捷菜单 -->
+	        <div class="col-md-2">
+	          	<div class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix-top treenav" role="complementary">
+		            <ul class="nav bs-docs-sidenav">
+		            	<li class="active">
+						  	<a href="#zzgl-group">一、站群管理</a>
+						  	<ul class="nav">
+						  		<li>
+							    	<a href="#zzgl-group-station">1.1 站长管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-group-station-s1">1.1.1 站个性化</a></li>
+							    		<li><a href="#zzgl-group-station-s2">1.1.2 设置银行卡号</a></li>
+							    		<li><a href="#zzgl-group-station-s3">1.1.3 设为客服</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							    	<a href="#zzgl-group-travel">1.2 旅行社管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-group-travel-t1">1.2.1 添加旅行社</a></li>
+							    		<li><a href="#zzgl-group-travel-t2">1.2.2 修改旅行社</a></li>
+							    		<li><a href="#zzgl-group-travel-t3">1.2.3 审核旅行社</a></li>
+							    		<li><a href="#zzgl-group-travel-t4">1.2.4 启用/禁用旅行社</a></li>
+							    		<li><a href="#zzgl-group-travel-t5">1.2.5 推荐旅行社</a></li>
+							    		<li><a href="#zzgl-group-travel-t6">1.2.6 独立运营旅行社</a></li>
+							    		<li><a href="#zzgl-group-travel-t7">1.2.7 设置银行卡号</a></li>
+							    		<li><a href="#zzgl-group-travel-t8">1.2.8 合作商户</a></li>
+							    		<li><a href="#zzgl-group-travel-t9">1.2.9 合同</a></li>
+							    		<li><a href="#zzgl-group-travel-t10">1.2.10 出发城市</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							    	<a href="#zzgl-group-supply">1.3 供应商管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-group-supply-s1">1.3.1 添加供应商</a></li>
+							    		<li><a href="#zzgl-group-supply-s2">1.3.2 修改供应商</a></li>
+							    		<li><a href="#zzgl-group-supply-s3">1.3.3 审核供应商</a></li>
+							    		<li><a href="#zzgl-group-supply-s4">1.3.4 启用/禁用供应商</a></li>
+							    		<li><a href="#zzgl-group-supply-s5">1.3.5 推荐供应商</a></li>
+							    		<li>
+							    			<a href="#zzgl-group-supply-s6">1.3.6 授权</a>
+							    			<ul class="nav">
+							    				<li><a href="#zzgl-group-supply-s6-one">1.3.6.1 授权单卖交通</a></li>
+							    				<li><a href="#zzgl-group-supply-s6-two">1.3.6.2 授权单卖地接</a></li>
+							    				<li><a href="#zzgl-group-supply-s6-three">1.3.6.3 授权线路共享</a></li>
+							    			</ul>
+							    		</li>
+							    		<li><a href="#zzgl-group-supply-s7">1.3.7 设置银行卡号</a></li>
+							    		<li><a href="#zzgl-group-supply-s8">1.3.8 出发城市</a></li>
+							    		<li><a href="#zzgl-group-supply-s9">1.3.9 设置专线类型</a></li>
+						    		</ul>
+							    </li>	
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="#zzgl-promotion">二、优惠活动</a>
+						  	<ul class="nav">
+						  		<li>
+							    	<a href="#zzgl-promotion-act">2.1 设置优惠活动</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-promotion-act-a1">2.1.1 添加优惠活动</a></li>
+							    		<li><a href="#zzgl-promotion-act-a2">2.1.2 修改优惠活动</a></li>
+							    		<li><a href="#zzgl-promotion-act-a3">2.1.3 启用/禁用优惠活动</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							    	<a href="#zzgl-promotion-package">2.2 设置优惠套餐</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-promotion-package-p1">2.2.1 添加优惠套餐</a></li>
+							    		<li><a href="#zzgl-promotion-package-p2">2.2.2 修改优惠套餐</a></li>
+							    		<li><a href="#zzgl-promotion-package-p3">2.2.3 启用/禁用优惠套餐</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#zzgl-promotion-collocation">2.3 产品搭配优惠</a></li>
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="#zzgl-company">三、公司管理</a>
+						  	<ul class="nav">
+						  		<li>
+							    	<a href="#zzgl-company-department">3.1 部门管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-company-department-d1">3.1.1 添加部门</a></li>
+							    		<li><a href="#zzgl-company-department-d2">3.1.2 修改部门</a></li>
+							    		<li><a href="#zzgl-company-department-d3">3.1.3 删除部门</a></li>
+							    		<li><a href="#zzgl-company-department-d4">3.1.4 启用/禁用部门</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							    	<a href="#zzgl-company-staff">3.2 员工管理</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-company-staff-s1">3.2.1 添加员工</a></li>
+							    		<li><a href="#zzgl-company-staff-s2">3.2.2 修改员工</a></li>
+							    		<li><a href="#zzgl-company-staff-s3">3.2.3 删除员工</a></li>
+							    		<li><a href="#zzgl-company-staff-s4">3.2.4 启用/禁用员工</a></li>
+							    		<li><a href="#zzgl-company-staff-s5">3.2.5 设置员工权限</a></li>
+							    		<li><a href="#zzgl-company-staff-s6">3.2.6 员工设为经理</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#zzgl-company-mod">3.3 修改密码</a></li>
+							    <li><a href="#zzgl-company-web">3.4 网站设置</a></li>
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="#zzgl-order">四、退单和掉单</a>
+						  	<ul class="nav">
+							    <li><a href="#zzgl-order-review">4.1 审核退单</a></li>
+							    <li><a href="#zzgl-order-solve">4.2 处理掉单</a></li>
+						  	</ul>
+						</li>
+						<li>
+						  	<a href="#zzgl-other">五、其他</a>
+						  	<ul class="nav">
+						  		<li>
+							    	<a href="#zzgl-other-notice">5.1 公告</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-other-notice-n1">5.1.1 添加公告</a></li>
+							    		<li><a href="#zzgl-other-notice-n2">5.1.2 修改公告</a></li>
+							    		<li><a href="#zzgl-other-notice-n3">5.1.3 删除公告</a></li>
+							    		<li><a href="#zzgl-other-notice-n4">5.1.4 置顶公告</a></li>
+						    		</ul>
+							    </li>
+							    <li>
+							    	<a href="#zzgl-other-ad">5.2 广告图</a>
+							    	<ul class="nav">
+							    		<li><a href="#zzgl-other-ad-a1">5.2.1 上传广告图</a></li>
+							    		<li><a href="#zzgl-other-ad-a2">5.2.2 删除广告图</a></li>
+						    		</ul>
+							    </li>
+							    <li><a href="#zzgl-other-message">5.3 短信</a></li>
+						  	</ul>
+						</li>
+		            </ul>
+		            <a class="back-to-top" href="#top"><i class="icon-circle-arrow-up"></i> 返回顶部</a>       
+	          	</div>
+	        </div>
+	        
+	        <!-- 右侧内容 -->
+	        <div class="col-md-10" role="main">
+		        <div class="bs-docs-section">
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h1>站长管理使用说明</h1>
+				  		<h4>站长管理使用说明主要介绍站长维护其下属的不同地区供应商和旅行社信息、审核退款和处理纠纷、对其定期回访并收集意见等。</h4>
+  						<h4><b>站长管理主要有四大工作模块：</b>站群管理、优惠活动、公司管理、审核退单和处理掉单。</h4>
+					   	<h4><b>站群管理：</b>站群管理是指站长维护旅行社和供应商信息，定期对其进行回访并收集意见等。站长可以设置站个性化，给下属的不同地区网站首页配置客服、绑定银行卡方便对账管理、管理在线旅行社和供应商。</h4>
+					   	<h4><b>优惠活动：</b>优惠活动包括设置优惠和套餐，以及产品搭配优惠活动.站长可以根据实际情况设置系统优惠活动，吸引买家在线支付。</h4>
+					   	<h4><b>公司管理：</b>公司管理下设部门管理和员工管理,层级管理有助于细化员工权限,方便站长监督和管理。</h4>
+					   	<h4><b>审核退单和处理掉单：</b>旅行社申请退款和因系统原因造成的掉单，站长都应及时处理。</h4>
+				 	</div>
+				 	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h1 id="zzgl-group">一、站群管理</h1>
+				  		<p class="normal">站群管理主要包括站长管理、旅行社管理和供应商管理。</p>
+				  		<p class="normal">登陆站长账户，点击<code>我的136</code> - <code>站群管理</code> - <code>站配置</code>，如下图所示：</p>
+				  		<p class="normal"><img src="img/img02.jpg"></p><br />
+				  		<p class="normal">选中站长账户，点击图标<code>i</code>，即可查看站长账户的详细信息。如下图所示：</p>
+				  		<p class="normal"><img src="img/img03.jpg"></p><br />
+				  	</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-group-station">1.1 站长管理</h3>
+						<p class="normal">站长管理包括设置站个性化、设置银行卡号和设置客服三大方面</p>
+						<b id="zzgl-group-station-s1">1.1.1 站个性化</b>
+						<p class="normal">站个性化，是指站长给下属的不同地区网站首页配置客服电话和QQ。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，点击<code>站个性化</code>，选择地区，填写客服电话和QQ，核对无误，点击确定，如下图所示：</p>
+						<p class="normal"><img src="img/img04.jpg"></p><br />
+						<p class="normal">配置成功后，客服电话和QQ会显示在网站登录页面，如下图所示：</p>
+						<p class="normal"><img src="img/img05.jpg"></p><br />
+						<b id="zzgl-group-station-s2">1.1.2 设置银行卡号</b>
+						<p class="normal">站长设置银行卡号，主要是为了方便站长和旅行社之间的财务对账和打款。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，点击<code>银行卡号</code>，填写银行卡基本信息，核对无误，点击确定，如下图所示：</p>
+						<p class="normal"><img src="img/img06.jpg"></p><br />
+						<b id="zzgl-group-station-s3">1.1.3 设为客服</b>
+						<p class="normal">账户设为客服后，旅行社入驻网站时，系统会给客服的手机发送提示审核短信。</p>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户和部门，选中需要设为客服的账户，点击<code>设为客服</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img07.jpg"></p><br />
+						<p class="normal">系统发送的提示审核短信内容如下图所示：</p>
+						<p class="normal"><img src="img/img08.jpg"></p><br />
+						<p class="normal">客服收到审核短信后，应及时联系工作人员审核旅行社资料。具体的审核步骤参照1.2.2—1.2.4。</p>
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-group-travel">1.2 旅行社管理</h3>
+						<p class="normal">旅行社管理包括添加、修改、审核、启用/禁用、推荐、独立运营旅行社，设置银行卡号和合作商户。</p>
+						<b id="zzgl-group-travel-t1">1.2.1 添加旅行社</b>
+						<p class="normal">添加旅行社分为两种情况，一种情况是站长添加旅行社，另一种情况是旅行社自己入驻136。</p>
+						<p class="normal">站长添加旅行社：登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，<br />点击<code>添加</code>，填写公司信息和账户信息，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img09.jpg"></p><br />
+						<p>注: 1、组团社导出word版行程页眉会显示公司简称</p>
+    					<p>2、行程word模板格式：集团公司提供logo给网站客服，技术制作统一的logo图标；网站客服将logo 图标设置到新建word文件页眉处：右击页眉图片—设置图片格式—版式—衬于文字下方,设置完成后，如下图</p>
+    					<p class="normal"><img src="img/img10.jpg"></p><br />
+    					<p>2、行程word模板格式：集团公司提供logo给网站客服，技术制作统一的logo图标；网站客服将logo 图标设置到新建word文件页眉处：右击页眉图片—设置图片格式—版式—衬于文字下方,设置完成后，如下图</p>
+    					<p>3、公章图片格式设置步骤：出团确认单word版页面，在“收件单位盖章处”上传公章图片，点击插入——图片（png格式），选择需上传的图片，点击插入即可，调整图片到合适大小后，开始截图，从“收件单位盖章处”开始截图到“发件单位盖章处”冒号的位置，高度为160像素，如下图所示：</p>
+    					<p class="normal"><img src="img/img11.jpg"></p><br />
+    					<p>4、补单的延迟天数设置为负数</p>
+					    <p>5、集团公司的对账方式向领导申请</p>
+					    <p>6、对账方式设置成功后，若后期更改对账方式，可能会导致前期的对账数据丢失</p>
+					    <p>7、若旅行社角色选择“独立旅行社+充值退款”，则此账户有线下充值功能</p>
+					    <p class="normal">站长添加的旅行社，来源显示的是“系统开通”，如下图所示：</p>
+					    <p class="normal"><img src="img/img12.jpg"></p><br />
+					    <p class="normal">旅行社入驻：进入网站首页，点击<code>入驻136</code>填写公司基本信息，勾选同意《136旅游用户服务协议》，核对无误，点击注册.如下图所示：</p>
+						<p class="normal"><img src="img/img13.jpg"></p><br />
+						<p class="normal">旅行社入驻，来源显示的是<code>前台注册</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img14.jpg"></p><br />
+						<b id="zzgl-group-travel-t2">1.2.2 修改旅行社</b>
+						<p class="normal">修改旅行社分为两种情况,一种是修改集团公司总部账户信息,一种是修改集团公司下属的门市/子公司信息。</p>
+						<p class="normal">修改总部信息：登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击<code>修改</code>，修改旅行社的基本信息，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img15.jpg"></p><br />
+						<p class="normal">修改门市/子公司信息：登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击<code>修改</code>，修改旅行社的基本信息，确认无误,点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img16.jpg"></p><br />
+						<b id="zzgl-group-travel-t3">1.2.3 审核旅行社</b>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中需要审核的旅行社账户，点击，查看旅行社资料是否完善，点击<code>审核</code>，数据更新成功后，审核状态由"待审核"变为"通过"，如下图所示：</p>
+						<p class="normal"><img src="img/img17.jpg"></p><br />
+						<b id="zzgl-group-travel-t4">1.2.4 启用/禁用旅行社</b>
+						<p class="normal">当旅行社长时间未使用账户登录，或者旅行社与供应商等发生业务纠纷时，此时需要启用账户禁用功能(禁用后的旅行社账户下属的所有员工子账户都不能登录)</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中需要禁用的旅行社账户，点击<code>启用/禁用</code>，（禁用后，该账户不能登录），数据更新成功后,账户状态由"启用"变为"禁用"，如下图所示：</p>
+						<p class="normal"><img src="img/img18.jpg"></p><br />
+						<p class="normal">已经禁用的账户，设置为启用，具体步骤同上。</p>
+						<b id="zzgl-group-travel-t5">1.2.5 推荐旅行社</b>
+						<p class="normal">设置推荐旅行社成功后，该旅行社的信息会优先显示在首页。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中需要推荐的旅行社账户，点击<code>推荐</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img19.jpg"></p><br />
+						<b id="zzgl-group-travel-t6">1.2.6 独立运营旅行社</b>
+						<p class="normal">设置为独立运营的旅行社，供应商可以指定发布产品给它。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击修改，分配角色选择“独立旅行社/独立旅行社+充值退款”，核对无误，点击保存，点击<code>独立运营</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img20.jpg"></p><br />
+						<b id="zzgl-group-travel-t7">1.2.7 设置银行卡号</b>
+						<p class="normal">普通旅行社设置银行卡号，站长会把实际退款金额转入该银行卡。</p>
+						<p class="normal">独立旅行社设置银行卡号，站长会把该旅行社所有的业务金额转入该账户。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击<code>银行卡号</code>，填写银行卡基本信息，核对无误，点击确定，如下图所示：</p>
+						<p class="normal"><img src="img/img21.jpg"></p><br />
+						<b id="zzgl-group-travel-t8">1.2.8 合作商户</b>
+						<p class="normal">与该旅行社的可预订城市相同的所有供应商，作为合作商户的数据范围;可跨站设置合作商户， 订单属于组团社及其所属站，供应商订单不受站限制。</p>
+						<p class="normal">合作商户设置成功后，供应商可以指定发布产品给该旅行社(如独家指定产品)。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击<code>合作商户</code>，选择合作的供应商，核对无误，点击确定，如下图所示：</p>
+						<p class="normal"><img src="img/img22.jpg"></p><br />
+						<b id="zzgl-group-travel-t9">1.2.9 合同</b>
+						<p class="normal">旅行社设置合同权限后，其总部或者门市/分公司的员工在购买产品时必须选择合同号;合同管理有助于总公司监管门市/分公司的业务情况。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击<code>合同</code>，系统提示“数据更新成功”，如下图所示：</p>
+						<p class="normal"><img src="img/img23.jpg"></p><br />
+						<b id="zzgl-group-travel-t10">1.2.10 出发城市</b>
+						<p class="normal">站长控制旅行社可预定出发城市的范围，旅行社可预定多个城市的产品；旅行社可预定城市与合作供应商产品的出发地匹配的指定产品，以及可预定城市与产品的出发地匹配的共享产品。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“旅行社”，选中所需的旅行社账户，点击<code>出发城市</code>，输入并选择出发城市（可设置多个出发城市），点击确定，系统提示“保存出发城市成功”，如下图所示：</p>
+						<p class="normal"><img src="img/img24.jpg"></p><br />
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-group-supply">1.3 供应商管理</h3>
+						<p class="normal">供应商管理包括添加、修改、审核、启用/禁用、推荐、授权旅行社以及设置银行卡号。</p>
+						<b id="zzgl-group-supply-s1">1.3.1 添加供应商</b>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，点击<code>添加</code>，填写公司信息和账户信息，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img25.jpg"></p><br />
+						<p>注：上传公章格式设置：出团确认单word版页面，在“发件单位盖章处”上传公章图片，点击插入——图片（png格式），选择需上传的图片，点击插入即可，调整图片到合适大小后，开始截图，大小为130*130像素</p>
+						<b id="zzgl-group-supply-s2">1.3.2 修改供应商</b>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，点击<code>修改</code>，修改供应商基本信息，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img26.jpg"></p><br />
+						<b id="zzgl-group-supply-s3">1.3.3 审核供应商</b>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中需要审核的供应商账户，点击<code>i</code>，查看供应商资料是否完善，资料确认无误，点击<code>审核</code>，数据更新成功后，审核状态由"待审核"变为"通过"，如下图所示：</p>
+						<p class="normal"><img src="img/img27.jpg"></p><br />
+						<b id="zzgl-group-supply-s4">1.3.4 启用/禁用供应商</b>
+						<p class="normal">当供应商长时间未使用账户登录，或者旅行社与供应商等发生业务纠纷时，此时需要启用账户禁用功能(禁用后的供应商账户下属的所有员工子账户都不能登录)。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中需要禁用的供应商账户，点击<code>启用/禁用</code>，（禁用后，该账户不能登录），数据更新成功后，账户状态由"启用"变为"禁用"，如下图所示：</p>
+						<p class="normal"><img src="img/img28.jpg"></p><br />
+						<p class="normal">已经禁用的账户，设置为启用，具体步骤同上。</p>
+						<b id="zzgl-group-supply-s5">1.3.5 推荐供应商</b>
+						<p class="normal">推荐供应商成功后，该供应商的信息会优先显示在首页。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中需要推荐的供应商账户，点击<code>推荐</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img29.jpg"></p><br />
+						<b id="zzgl-group-supply-s6">1.3.6 授权</b>
+						<p class="normal">站长可以根据供应商的主营业务，分配供应商账户的不同使用权限，使供应商更加多样化，满足不同客户的需求。</p>
+						<span class="wrd" id="zzgl-group-supply-s6-one">1.3.6.1 授权单卖交通</span>
+						<p class="normal">根据供应商的主营业务，站长可授权供应商账户单独售卖交通产品。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中需要授权的供应商账户，点击<code>授权</code> - <code>单卖交通</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img30.jpg"></p><br />
+						<span class="wrd" id="zzgl-group-supply-s6-two">1.3.6.2 授权单卖地接</span>
+						<p class="normal">根据供应商的主营业务，站长可授权供应商单卖地接，即不搭配往返大交通的地接产品。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中需要授权的供应商账户，点击<code>授权</code> - <code>单卖地接</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img31.jpg"></p><br />
+						<span class="wrd" id="zzgl-group-supply-s6-three">1.3.6.3 授权线路共享</span>
+						<p class="normal">授权线路共享后，供应商可以将产品共享到平台上，供非协议组团社购买，扩大产品的销售渠道。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中需要授权的供应商账户，点击<code>授权</code> - <code>线路共享</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img32.jpg"></p><br />
+						<b id="zzgl-group-supply-s7">1.3.7 设置银行卡号</b>
+						<p class="normal">供应商设置银行卡号，旅行社购买产品的金额和退款金额会转入该账户。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中所需的供应商账户，点击<code>银行卡号</code>，填写银行卡基本信息，核对无误，点击确定，如下图所示：</p>
+						<p class="normal"><img src="img/img33.jpg"></p><br />
+						<b id="zzgl-group-supply-s8">1.3.8 出发城市</b>
+						<p class="normal">站长控制供应商发布出发城市的范围，供应商可发布多个城市出发的线路。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中所需的供应商账户，点击<code>出发城市</code>，输入并选择出发城市（可设置多个出发城市），点击确定，系统提示“保存出发城市成功”，如下图所示：</p>
+						<p class="normal"><img src="img/img34.jpg"></p><br />
+						<b id="zzgl-group-supply-s9">1.3.9 设置专线类型</b>
+						<p class="normal">供应商设置国内/出境类型，方便组团社按供应商类型筛选产品。</p>
+						<p class="normal">登录站长账户，进入站配置页面，选中站长账户，选中所需地区，选中“供应商”，选中所需的供应商账户，点击<code>设置专线类型</code>，选择专线类型，核对无误，点击确定，如下图所示：</p>
+						<p class="normal"><img src="img/img35.jpg"></p><br />
+					</div>
+					
+					<div class="bs-callout bs-callout-danger bs-list">
+				  		<h1 id="zzgl-promotion">二、优惠活动</h1>
+				  		<p class="normal">优惠活动包括设置优惠和套餐，以及产品搭配优惠活动，站长可以根据实际情况设置系统优惠活动，吸引买家在线支付。</p>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>优惠活动</code>，进入优惠活动页面，如下图所示：</p>
+				  		<p class="normal"><img src="img/img36.jpg"></p><br />
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-promotion-act">1.1 设置优惠活动</h3>
+						<b id="zzgl-promotion-act-a1">2.1.1 添加优惠活动</b>
+						<p class="normal">登录站长账户，进入优惠页面，点击<code>添加</code>，选择所需地区，填写优惠详情，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img37.jpg"></p><br />
+						<b id="zzgl-promotion-act-a2">2.1.2 修改优惠活动</b>
+						<p class="normal">登录站长账户，进入优惠页面，选中所需优惠活动，点击<code>修改</code>，修改优惠信息详情，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img38.jpg"></p><br />
+						<b id="zzgl-promotion-act-a3">2.1.3 启用/禁用优惠活动</b>
+						<p class="normal">登录站长账户，进入优惠页面，选中所需优惠活动，点击<code>启用/禁用</code>，禁用成功后，优惠状态由"已启用"变为"已禁用"禁用后的优惠活动将不能再使用)，如下图所示：</p>
+						<p class="normal"><img src="img/img39.jpg"></p><br />
+						<p class="normal">已禁用的优惠活动设置为启用，具体步骤同上。</p>
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-promotion-package">2.2 设置优惠套餐</h3>
+						<b id="zzgl-promotion-package-p1">2.2.1 添加优惠套餐</b>
+						<p class="normal">登录站长账户，进入优惠页面，选中所需的优惠活动，点击<code>添加</code>，设置优惠套餐，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img40.jpg"></p><br />
+						<b id="zzgl-promotion-package-p2">2.2.2 修改优惠套餐</b>
+						<p class="normal">登录站长账户，进入优惠页面，选中所需优惠活动和优惠套餐，点击<code>修改</code>，修改优惠套餐详情，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img41.jpg"></p><br />
+						<b id="zzgl-promotion-package-p3">2.2.3 启用/禁用优惠套餐</b>
+						<p class="normal">登录站长账户，进入优惠页面，选中所需优惠活动和优惠套餐，点击<code>启用/禁用</code>，禁用成功后，套餐状态由"已启用"变为"已禁用"(禁用后的优惠套餐将不能再使用)，如下图所示：</p>
+						<p class="normal"><img src="img/img42.jpg"></p><br />
+						<p class="normal">已禁用的优惠套餐设置为启用，具体步骤同上。</p>
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-promotion-collocation">2.3 产品搭配优惠</h3>
+						<p class="normal">登录站长账户，点击<code>我的136</code> - <code>发布产品</code> - <code>线路</code>，进入线路页面，选中所需产品，点击<code>优惠活动</code>，选择优惠活动和套餐(根据在线支付和余额支付选择所需套餐），核对无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img43.jpg"></p><br />
+					</div>
+					
+					<div class="bs-callout bs-callout-danger bs-list">
+				  		<h1 id="zzgl-company">三、公司管理</h1>
+				  		<p class="normal">公司管理下设部门管理和员工管理，层级管理有助于细化员工权限，方便站长监督和管理。</p>
+				  		<p class="normal">登陆站长账户，点击<code>我的136</code> - <code>公司管理</code>，进入公司管理页面，如下图所示：</p>
+				  		<p class="normal"><img src="img/img44.jpg"></p><br />
+				  		<p class="normal">选中站长账户，点击<code>i</code>，即可查看供应商的详细信息，如下图所示：</p>
+				  		<p class="normal"><img src="img/img45.jpg"></p><br />
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-company-department">3.1 部门管理</h3>
+						<p class="normal">公司管理下设部门管理，层级管理有助于细化员工权限，方便公司管理。</p>
+						<b id="zzgl-company-department-d1">3.1.1 添加部门</b>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户，点击<code>添加</code>，填写部门名称，选择部门状态， 确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img46.jpg"></p><br />
+						<b id="zzgl-company-department-d2">3.1.2 修改部门</b>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户，点击<code>修改</code>，修改部门名称和状态， 确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img47.jpg"></p><br />
+						<b id="zzgl-company-department-d3">3.1.3 删除部门</b>
+						<p class="normal">删除部门，首先要确定部门下属的员工子项目都已删除完成，删除员工的具体操作方法同3.2.3所示;其次，选中需要删除的部门名称，点击<code>删除</code>，核对无误，点击"确定"，如下图所示：</p>
+						<p class="normal"><img src="img/img48.jpg"></p><br />
+						<b id="zzgl-company-department-d4">3.1.4 启用/禁用部门</b>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户和部门，若部门处于"启用"状态，可以设置为禁用，点击<code>启用/禁用</code>，即可(部门禁用后，其下属的所有员工账户都不能登录)，如下图所示：</p>
+						<p class="normal"><img src="img/img49.jpg"></p><br />
+						<p class="normal">已禁用的部门设置为启用，具体操作步骤同上。</p>
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-company-staff">3.2 员工管理</h3>
+						<p class="normal">公司管理下设部门管理，层级管理有助于细化员工权限，方便公司管理。</p>
+						<b id="zzgl-company-staff-s1">3.2.1 添加员工</b>
+						<p class="normal">登录站长账户，进入公司管理页面， 选中站长账户和部门，点击<code>添加员工</code>，填写员工信息 (登录名设置好后，便不能修改)，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img50.jpg"></p><br />
+						<b id="zzgl-company-staff-s2">3.2.2 修改员工</b>
+						<p class="normal">登录站长账户，进入公司管理页面， 选中站长账户和部门，选中需要修改的员工信息，点击<code>修改员工</code>，即可修改员工信息详情，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img51.jpg"></p><br />
+						<b id="zzgl-company-staff-s3">3.2.3 删除员工</b>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户和部门，选中需要删除的员工信息，点击<code>删除员工</code>，核对无误，点击"确定"，如下图所示：</p>
+						<p class="normal"><img src="img/img52.jpg"></p><br />
+						<b id="zzgl-company-staff-s4">3.2.4 启用/禁用员工</b>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户和部门，将处于启用状态的员工账户设置为禁用，步骤如下:选中需要禁用的员工信息，点击<code>启/禁员工</code>，即可(禁用后的员工账户，不能再登录)，如下图所示：</p>
+						<p class="normal"><img src="img/img53.jpg"></p><br />
+						<p class="normal">已经禁用的员工设置为启用，具体操作步骤同上.（禁用同一部门下的所有员工账户，禁用该部门即可，具体操作步骤如3.1.4所示）。</p>
+						<b id="zzgl-company-staff-s5">3.2.5 设置员工权限</b>
+						<p class="normal">根据不同员工的工作性质设置不同的员工操作权限。</p>
+						<p class="normal">登录站长账户，进入公司管理页面，选中站长账户和部门，选中需要设置权限的员工账户，点击<code>员工权限</code>，勾选需要配置的模块和按钮名称，确认无误，点击<code>配置按钮</code>和<code>配置模块</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img54.jpg"></p><br />
+						<b id="zzgl-company-staff-s6">3.2.6 设置员工权限</b>
+						<p class="normal">设为经理的账户，比同一部门下其他员工账户的数据权限更大，它可以查看和操作部门下所有的订单数据、销售报表等。</p>
+						<p class="normal">登录站长账户， 进入公司管理页面， 选中站长账户和部门，选中需要设为经理的员工账户，点击<code>设为经理</code>，如下图所示：</p>
+						<p class="normal"><img src="img/img55.jpg"></p><br />
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-company-mod">3.3 修改密码</h3>
+						<p class="normal">修改站长账户密码，分为两种情况:一是登录账户后，直接修改密码;二是忘记登录密码， 此种情况有两种修改密码的方式，一种情况是已绑定手机号码的站长账户，可以通过绑定的手机号码重置密码，另一种情况未绑定手机号码的站长账户，可以联系公司技术人员修改密码。</p>
+						<p class="normal">登录账户后，直接修改密码: 登录站长账户，点击右上角账户名称，点击<code>改密码</code>，输入新密码，确认无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img56.jpg"></p><br />
+						<p class="normal">通过绑定的手机号码重置密码 : 在登录页面点击"找回密码"，输入手机号码和新密码，点击<code>免费获取验证码</code>，系统会给已绑定手机号码发送验证码，输入验证码，确认无误，点击提交，如下图所示：</p>
+						<p class="normal"><img src="img/img57.jpg"></p><br />
+						<p class="normal">公司管理员账户忘记密码且没有绑定手机，可以联系所在地区站长修改密码。</p>
+						<p class="normal">登录站长账户， 进入公司管理页面， 选中需要修改密码的公司账户，点击<code>重置公司密码</code>，重置密码成功后，密码恢复为系统初始密码：111111，如下图所示：</p>
+						<p class="normal"><img src="img/img58.jpg"></p><br />
+						<p class="normal">站长账户下属的员工账户忘记登陆密码且没有绑定手机，可以联系所在地区站长修改密码。</p>
+						<p class="normal">登陆站长账户，进入公司管理页面，选中站长账户，选中所需部门和需要重置密码的员工账户，点击<code>重置密码</code>，重置密码成功后，密码恢复为系统初始密码：111111，如下图所示：</p>
+						<p class="normal"><img src="img/img59.jpg"></p><br />
+					</div>
+					<div class="bs-callout bs-callout-danger bs-list">
+						<h3 id="zzgl-company-web">3.4 网站设置</h3>
+						<p class="normal">站长设置官网的域名、备案号和支付宝账号信息，有利于站长控制集团公司开通二级域名官网的个数。</p>
+						<p class="normal">登陆站长账户，进入公司管理页面，选中站长账户，选中所需账户，点击<code>网站设置</code>，填写域名、备案号和支付宝信息，核对无误，点击保存，如下图所示：</p>
+						<p class="normal"><img src="img/img60.jpg"></p><br />
+					</div>
+					
+					<div class="bs-callout bs-callout-danger bs-list">
+				  		<h1 id="zzgl-order">四、退单和掉单</h1>
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h3 id="zzgl-order-review">4.1 审核退单</h3>
+				  		<p class="normal">组团社申请退款和供应商审核退款完成后，站长确认退款订单:登陆站长账户，点击<code>我的订单</code> - <code>线路订单</code>，筛选出组团社申请退款的订单，查看组团社申请退款详情和供应商建议退款金额及备注，选中退款订单，确认无误，点击退款完成，如下图所示：</p>
+				  		<p class="normal"><img src="img/img61.jpg"></p><br />
+				  		<p class="normal">点击退款完成后，进入退款完成对话框，填写实际退款金额及备注，如下图所示：</p>
+				  		<p class="normal"><img src="img/img62.jpg"></p><br />
+				  		<p class="normal">站长确认完成退款后，订单状态会从<code>退款中</code>变为<code>已退款</code></p>
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h3 id="zzgl-order-solve">4.2 处理掉单</h3>
+				  		<p class="normal">组团社购买产品付款成功后，支付宝确认已收到付款，但此时系统出现故障，订单状态仍显示"付款中"，订单编号下显示"掉单"(即组团社已付款成功，但是系统上并未下单成功)，如下图所示：</p>
+				  		<p class="normal"><img src="img/img63.jpg"></p><br />
+				  		<p class="normal">出现掉单情况，组团社应及时联系网站客服处理掉单。</p>
+				  	</div>
+				  	
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h1 id="zzgl-other">五、其他</h1>
+				  		<p class="normal">站长可通过设置公告来告知关于入驻商户切身利益的相关事宜、设置广告图和短信的方式达到网站推广和宣传的效果。</p>
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h3 id="zzgl-other-notice">5.1 公告</h3>
+				  		<p class="normal">公告主要是用来告知关于入驻商户切身利益的相关事宜。</p>
+				  		<b id="zzgl-other-notice-n1">5.1.1 添加公告</b>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>公告</code>，进入公告页面，点击<code>添加</code>，选择所需地区，选择公告类型，添加标题和正文（正文可添加图片、表格等），核对无误，点击保存，如下图所示：</p>
+				  		<p class="normal"><img src="img/img64.jpg"></p><br />
+				  		<p class="normal">点击<code>i</code>，可查看公告详细内容，如下图所示：</p>
+				  		<p class="normal"><img src="img/img65.jpg"></p><br />
+				  		<p class="normal">设置成功后，公告标题会显示在页面的右上角，点击可查看详情，如下图所示：</p>
+				  		<p class="normal"><img src="img/img66.jpg"></p><br />
+				  		<p class="normal">如果平台设置有多条公告，公告标题将会按照置顶优先、发布时间倒序滚动显示。</p>
+				  		<b id="zzgl-other-notice-n2">5.1.2 修改公告</b>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>公告</code>，进入公告页面，点击<code>修改</code>，修改公告完成后，核对无误，点击保存，如下图所示：</p>
+				  		<p class="normal"><img src="img/img67.jpg"></p><br />
+				  		<b id="zzgl-other-notice-n3">5.1.3 删除公告</b>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>公告</code>，进入公告页面，点击<code>删除</code>，核对无误，点击确定，如下图所示：</p>
+				  		<p class="normal"><img src="img/img68.jpg"></p><br />
+				  		<b id="zzgl-other-notice-n4">5.1.4 置顶公告</b>
+				  		<p class="normal">公告需要优先显示时，可以设置置顶。</p>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>公告</code>，进入公告页面，点击<code>置顶</code>，数据更新成功后，该条公告会优先显示在页面，如下图所示：</p>
+				  		<p class="normal"><img src="img/img69.jpg"></p><br />
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h3 id="zzgl-other-ad">5.2 广告图</h3>
+				  		<p class="normal">站长可以通过设置广告图达到推广和宣传的效果。</p>
+				  		<b id="zzgl-other-ad-a1">5.2.1 上传广告图</b>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>广告图</code>，进入广告图页面，点击<code>上传广告图</code>，选择所需地区，点击添加附件，选择需要添加的文件(图片最佳分辨率为1920*450)，核对无误，点击打开，编辑广告链接(注:若此时不想用该广告图，可以点击移除全部)，点击开始上传，上传成功后，状态会显示为上传成功，如下图所示：</p>
+				  		<p class="normal"><img src="img/img70.jpg"></p><br />
+				  		<p class="normal">广告图链接为必填项，若没有广告图外链，可以暂时填写平台内部链接（www.136ly.com)，平台后期会提供内部产品详情外链供用户使用。</p>
+				  		<p class="normal">设置成功后，广告图会显示在网站首页，如下图所示：</p>
+				  		<p class="normal"><img src="img/img71.jpg"></p><br />
+				  		<b id="zzgl-other-ad-a2">5.2.2 删除广告图</b>
+				  		<p class="normal">登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>广告图</code>，进入广告图页面，选中需要删除的广告图，点击<code>删除广告图</code>，核对无误，点击确定，如下图所示：</p>
+				  		<p class="normal"><img src="img/img72.jpg"></p><br />
+				  	</div>
+				  	<div class="bs-callout bs-callout-danger bs-list">
+				  		<h3 id="zzgl-other-message">5.3 短信</h3>
+				  		<p class="normal">站长可以通过设置群发广告达到推广和宣传的效果。</p>
+				  		<p class="normal"> 群发短信：登录站长账户，点击<code>我的136</code> - <code>B2B系统</code> - <code>短信</code>，进入短信页面，点击<code>群发短信</code>，输入手机号码，多个手机号码用英文（，）隔开，编辑短信内容.核对无误，点击发送，如下图所示：</p>
+				  		<p class="normal"><img src="img/img73.jpg"></p><br />
+				  	</div>
+				</div>
+			</div>
+        </div>
+    </div>
+    
+    <!-- 尾部 -->
+	<footer class="bs-docs-footer" role="contentinfo">
+	  	<div class="container">
+	    	<p>Copyright © 2012-2017 All Rights Reserved 陕ICP备14012052号 版权所有</p>
+	  	</div>
+	</footer>
+	</body>
+</html>

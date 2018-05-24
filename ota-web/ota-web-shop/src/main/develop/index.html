@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html manifest="">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">
+    <meta http-equiv="pragma" content="no-cache"> 
+	<meta http-equiv="Cache-Control" content="no-cache, must-revalidate"> 
+	<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="微店">
+    <meta name="applicable-device" content="mobile">
+    <meta name="full-screen" content="yes" />
+  	<meta name="x5-fullscreen" content="true" />
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <meta name="description" content="首页">
+    <title>Weidian</title>
+    <script type="text/javascript" src="jweixin.js"></script>
+    <script type="text/javascript">
+        var Ext = Ext || {};
+        Ext.shopInfo = '{"ABOUT":"帮助传统旅游企业由实体经营模式向线上线下o2o模式转变。系统主要实现3个功能：1）为产品、资源企业，供应商拓宽销售渠道，减少中间环节，更好的把产品、资源销售给分销商及终端消费者。2）满足企业共享及个性化需求，让网络技术与旅游无限融合，为旅行社分销商建设官方网站。游客通过网站可以明确各种产品的具体内容，并实现会员注册和在线预订等相关功能。3）更准确、高效为供应商和旅行社提供公司内部管理、财务管理功能，极大提高工作效率。因此系统框架设计主要由B2B分销系统、B2C产品在线交易，展示系统、公司内部管理和财务管理系统构成","ACCOUNT_WAY":"3","CITY_ID":"0C9DA31F90BAB047E050007F0100C19F","CODE":"wap/2017/3/13/64a7e4ea5ed944f89a34c759b145b47e.xsx518.com.png","COMPANY":"陕西新视线国际旅行社有限公司  ","DOMAIN":"m.xsx518.com","ENTITY_ID":"4c20e0c23e1c4d2eba6b949e9dbe524b","ENTITY_NAME":"xsxmh","ICON":"","ID":"6b470711b9094ec68f6f4e4986ecce19","IS_ALONE":"0","KEY":"","LOGO":"wap/2017/3/14/9ab141aa8a5440a9965fc61a0485b441.png","MANAGER":"莫小二","PARTNER":"","PDOMAIN":"xsx518.com","PHONE1":"029-88321171","PHONE2":"","PID":"-1","QQ1":"3187200277","QQ2":"","RECORD_NO":"琼ICP备16003588号","SELLER_EMAIL":"","SETTING_TYPE":"1","START_CITY_NAME":"西安,海口,三亚","TITLE":"陕西新视线国际旅行社有限公司","TYPE":"2","USER_ID":"4c20e0c23e1c4d2eba6b949e9dbe524b","USER_NAME":"xsxmh","WAP_ID":"6a494f326aa14dbfba284182a8286e94","WX_IMG":"wap/2017/3/13/6e0483f406e9432db77090a2023105f4.png","categorys":[{"ICON":null,"CATEGORY":"主题推荐","PID":"36666E8E0C9DEF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBD20C224E050007F01005CB9","COLOR":null,"ITEM_ID":"zhuti","ORDER_BY":-1},{"ICON":"fm-guonei","CATEGORY":"国内游","PID":"36666E8E0C9EEF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBD44C224E050007F01005CB9","COLOR":"#2eadf5","ITEM_ID":"guonei","ORDER_BY":0},{"ICON":"fm-zhoubian","CATEGORY":"周边游","PID":"36666E8E0CA1EF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBDB0C224E050007F01005CB9","COLOR":"#2ecc71","ITEM_ID":"zby","ORDER_BY":1},{"ICON":"fm-earth","CATEGORY":"出境游","PID":"36666E8E0C9FEF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBD68C224E050007F01005CB9","COLOR":"#925e8b","ITEM_ID":"chujing","ORDER_BY":2},{"ICON":"fm-ziyouxing","CATEGORY":"自由行","PID":"36666E8E0CA2EF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBDD4C224E050007F01005CB9","COLOR":"#009688","ITEM_ID":"ziyouxing","ORDER_BY":3},{"ICON":"fm-haidao","CATEGORY":"海岛度假","PID":"36666E8E0CA0EF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBD8CC224E050007F01005CB9","COLOR":"#fa8500","ITEM_ID":"haidaodujia","ORDER_BY":4},{"ICON":"fm-youlun","CATEGORY":"包机邮轮","PID":"36666E8E0CA3EF38E050007F0100469B","COMPANY_ID":"6b470711b9094ec68f6f4e4986ecce19","ID":"366A696EBDF8C224E050007F01005CB9","COLOR":"#90A4AE","ITEM_ID":"baojiyoulun","ORDER_BY":6}]}'; 
+    	Ext.imgDomain = 'http://img.1.xsx518.com/attachment/';
+    	Ext.domain = 'http://m.xsx518.com';
+        Ext.beforeLoad = function (tags) {
+            var s = location.search, 
+                profile;
+            if (s.match(/\bclassic\b/)) {
+                profile = 'classic';
+            }
+            else if (s.match(/\bmodern\b/)) {
+                profile = 'modern';
+            }
+            else {
+                profile = tags.desktop ? 'classic' : 'modern';
+            }
+            Ext.manifest = profile;
+        };
+    </script>
+    
+    
+    <!-- The line below must be kept intact for Sencha Cmd to build your application -->
+    <script id="microloader" data-app="4a40032f-5422-4d1e-ad0e-b46d60511962" type="text/javascript" src="bootstrap.js"></script>
+
+</head>
+<body></body>
+</html>

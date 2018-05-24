@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config library="system">
+    <PublicConfig>
+        <!-- 本地 -->
+        <detail name="domain">http://localhost</detail>
+    </PublicConfig>
+</config>

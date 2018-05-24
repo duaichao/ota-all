@@ -1,0 +1,22 @@
+.auth-login{
+	.x-tabbar{
+		padding:0;
+		& > .x-inner {
+		     padding: 0;
+		}
+	}
+	.fm-plus{
+		right:8px;
+	}
+}
+
+@include button-ui(
+    $ui: 'get-code',
+    $color: #9a9a9a,
+    $icon-color: #9a9a9a,
+    $background-color: #f1f1f1,
+    $border-width: 0
+);
+.x-button-get-code{
+	.x-button-label{font-size:14px!important;}
+}

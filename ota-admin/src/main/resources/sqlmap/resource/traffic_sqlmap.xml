@@ -1,0 +1,1053 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="traffic">
+
+	<parameterMap class="java.util.Map" id="params">
+		<parameter property="traffic_rule_id" jdbcType="VARCHAR" mode="IN"/>
+	</parameterMap> 
+	
+	<procedure id="callProcedureRuleCompile" parameterMap="params"> 
+		{call SD_PROCEDURE_RULE_COMPILE(?)}  
+	</procedure>
+	
+	<parameterMap class="java.util.Map" id="trafficParams">
+		<parameter property="traffic_id" jdbcType="VARCHAR" mode="IN"/>
+	</parameterMap>
+	
+	<procedure id="callProcedureTrfficMinprice" parameterMap="trafficParams"> 
+		{call SD_PROCEDURE_TRFFIC_MINPRICE(?)}
+	</procedure>
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID, 
+				a.TITLE, 
+				a.END_DATE, 
+				a.END_TIME, 
+				a.IS_SALE, 
+				a.SALE_STATUS, 
+				a.MIN_BUY, 
+				a.TYPE, 
+				a.IS_SINGLE, 
+				a.ROTE, 
+				a.CREATE_USER, 
+				to_char(a.CREATE_TIME, 'YYYY-MM-DD HH24:mi:ss') CREATE_TIME, 
+				a.CREATE_USER_ID, 
+				a.UPDATE_USER, 
+				to_char(a.UPDATE_TIME, 'YYYY-MM-DD HH24:mi:ss') UPDATE_TIME, 
+				a.CITY_ID, 
+				a.CITY_NAME, 
+				a.IS_DEL, 
+				a.IS_PUB, 
+				a.MIN_DATE, 
+				a.MIN_PRICE, 
+				a.MIN_RULE_ID,
+				TO_CHAR(a.PUB_TIME, 'yyyy-mm-dd hh24:mi:ss') PUB_TIME,
+				a.PUB_USER,
+				a.COMPANY_ID,
+				a.START_CITY,
+				a.END_CITY,
+				a.SALE_AGIO,
+				a.BEGIN_STATION,
+				a.END_STATION,
+				c.company,
+				b.user_name,
+				b.china_name,
+				b.MOBILE,
+				(a.START_CITY || DECODE(a.BEGIN_STATION, null, '', '', '', '('||a.BEGIN_STATION||')') || '-' || a.END_CITY || DECODE(a.END_STATION, null, '', '', '', '('||a.END_STATION||')')) as STATION,
+				NVL(d.CNT, 0) as ROUTE_TRAFFIC_CNT
+			FROM SD_PRO_TRAFFIC a, sd_user b, sd_user_company c,
+			(SELECT COUNT(1) AS CNT,
+			  a.traffic_id
+			FROM SD_PRO_ROUTE_TRAFFIC_DETAIL a,
+			  SD_PRO_ROUTE_TRAFFIC b,
+			  SD_PRO_ROUTE c
+			WHERE a.PLAN_ID = b.ID
+			AND b.ROUTE_ID  = c.ID
+			AND a.IS_DEL    = 0
+			AND b.IS_DEL    = 0
+			AND c.IS_DEL    = 0
+			GROUP BY a.traffic_id) d
+			WHERE a.CREATE_USER_ID = b.id
+			and b.company_id = c.id
+			and a.id = d.traffic_id(+)
+			and a.is_del = 0 
+			<isNotEmpty property="SALE_DEPART_ID">
+				AND b.DEPART_ID            = #SALE_DEPART_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_IDS">
+		       	and b.CITY_ID in ($CITY_IDS$)  
+		    </isNotEmpty>
+		    
+			<isNotEmpty property="COMPANY_ID">
+		       	and b.COMPANY_ID = #COMPANY_ID#  
+		    </isNotEmpty>
+		    
+			<isNotEmpty property="query">
+		    	and (a.TITLE like '%$query$%'  or a.START_CITY like '%$query$%' or a.END_CITY like '%$query$%')
+		    </isNotEmpty>
+		    <isNotEmpty property="TITLE">
+		    	and a.TITLE = #TITLE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_NAME">
+		       	and a.CITY_NAME = #CITY_NAME#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_ID">
+		       	and a.CITY_ID = #CITY_ID#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_USER">
+		       	and a.CREATE_USER = #CREATE_USER#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_USER_ID">
+		       	and a.CREATE_USER_ID = #CREATE_USER_ID#  
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_PUB">
+		       	and a.IS_PUB = #IS_PUB#  
+		    </isNotEmpty>
+		    <isNotEmpty property="UPDATE_USER">
+				and a.UPDATE_USER = #UPDATE_USER#  
+		    </isNotEmpty>
+		    <isNotEmpty property="NOTEQUALSID">
+		    	and a.ID != #NOTEQUALSID# 
+		    </isNotEmpty>
+		    <isNotEmpty property="SALE_STATUS">
+		    	and a.SALE_STATUS = #SALE_STATUS# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_SALE">
+		    	and a.IS_SALE = #IS_SALE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="ID">
+		    	and a.ID = #ID# 
+		    </isNotEmpty>
+		    <isNotEmpty property="START_CITY">
+		    	and a.START_CITY = #START_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="END_CITY">
+		    	and a.END_CITY = #END_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_SINGLE">
+		    	and a.IS_SINGLE = #IS_SINGLE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_FULL_PRICE">
+		    	and a.IS_FULL_PRICE = #IS_FULL_PRICE# 
+		    </isNotEmpty>
+			ORDER BY a.UPDATE_TIME DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt 
+		FROM SD_PRO_TRAFFIC a, sd_user b, sd_user_company c,
+		(SELECT COUNT(1) AS CNT,
+		  a.traffic_id
+		FROM SD_PRO_ROUTE_TRAFFIC_DETAIL a,
+		  SD_PRO_ROUTE_TRAFFIC b,
+		  SD_PRO_ROUTE c
+		WHERE a.PLAN_ID = b.ID
+		AND b.ROUTE_ID  = c.ID
+		AND a.IS_DEL    = 0
+		AND b.IS_DEL    = 0
+		AND c.IS_DEL    = 0
+		GROUP BY a.traffic_id) d
+		WHERE a.CREATE_USER_ID = b.id
+		and b.company_id = c.id
+		and a.id = d.traffic_id(+)
+		and a.is_del = 0 
+		<isNotEmpty property="SALE_DEPART_ID">
+			AND b.DEPART_ID            = #SALE_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_IDS">
+	       	and b.CITY_ID in ($CITY_IDS$)  
+	    </isNotEmpty>
+	    
+		<isNotEmpty property="COMPANY_ID">
+	       	and b.COMPANY_ID = #COMPANY_ID#  
+	    </isNotEmpty>
+	    
+		<isNotEmpty property="query">
+	    	and (a.TITLE like '%$query$%'  or a.START_CITY like '%$query$%' or a.END_CITY like '%$query$%')
+	    </isNotEmpty>
+	    <isNotEmpty property="TITLE">
+	    	and a.TITLE = #TITLE# 
+	    </isNotEmpty>
+	    <isNotEmpty property="CITY_NAME">
+	       	and a.CITY_NAME = #CITY_NAME#  
+	    </isNotEmpty>
+	    <isNotEmpty property="CITY_ID">
+	       	and a.CITY_ID = #CITY_ID#  
+	    </isNotEmpty>
+	    <isNotEmpty property="CREATE_USER">
+	       	and a.CREATE_USER = #CREATE_USER#  
+	    </isNotEmpty>
+	    <isNotEmpty property="CREATE_USER_ID">
+	       	and a.CREATE_USER_ID = #CREATE_USER_ID#  
+	    </isNotEmpty>
+	    <isNotEmpty property="IS_PUB">
+	       	and a.IS_PUB = #IS_PUB#  
+	    </isNotEmpty>
+	    <isNotEmpty property="UPDATE_USER">
+			and a.UPDATE_USER = #UPDATE_USER#  
+	    </isNotEmpty>
+	    <isNotEmpty property="NOTEQUALSID">
+	    	and a.ID != #NOTEQUALSID# 
+	    </isNotEmpty>
+	    <isNotEmpty property="SALE_STATUS">
+	    	and a.SALE_STATUS = #SALE_STATUS# 
+	    </isNotEmpty>
+	    <isNotEmpty property="IS_SALE">
+	    	and a.IS_SALE = #IS_SALE# 
+	    </isNotEmpty>
+	    <isNotEmpty property="ID">
+	    	and a.ID = #ID# 
+	    </isNotEmpty>
+	    <isNotEmpty property="START_CITY">
+	    	and a.START_CITY = #START_CITY# 
+	    </isNotEmpty>
+	    <isNotEmpty property="END_CITY">
+	    	and a.END_CITY = #END_CITY# 
+	    </isNotEmpty>
+	    <isNotEmpty property="IS_SINGLE">
+	    	and a.IS_SINGLE = #IS_SINGLE# 
+	    </isNotEmpty>
+	    <isNotEmpty property="IS_FULL_PRICE">
+	    	and a.IS_FULL_PRICE = #IS_FULL_PRICE# 
+	    </isNotEmpty>
+	</statement>
+	
+	<insert id="saveDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_TRAFFIC
+		  (
+		    ID, 
+			TITLE, 
+			END_DATE, 
+			END_TIME, 
+			TYPE, 
+			IS_SINGLE, 
+			ROTE, 
+			CREATE_USER, 
+			CREATE_TIME, 
+			CREATE_USER_ID, 
+			UPDATE_USER, 
+			UPDATE_TIME, 
+			CITY_ID, 
+			CITY_NAME, 
+			IS_DEL, 
+			IS_PUB, 
+			MIN_DATE, 
+			MIN_PRICE, 
+			MIN_RULE_ID,
+			PUB_TIME,
+			PUB_USER,
+			COMPANY_ID,
+			START_CITY,
+			END_CITY,
+			BEGIN_STATION,
+			END_STATION
+			<isNotEmpty property="IS_FULL_PRICE">
+			,IS_FULL_PRICE
+			</isNotEmpty>
+		  )
+		  VALUES
+		  (
+		    #ID#, 
+			#TITLE#, 
+			#END_DATE#, 
+			#END_TIME#, 
+			#TYPE#, 
+			#IS_SINGLE#, 
+			#ROTE#, 
+			#CREATE_USER#, 
+			sysdate, 
+			#CREATE_USER_ID#, 
+			#UPDATE_USER#, 
+			sysdate, 
+			#CITY_ID#, 
+			#CITY_NAME#, 
+			0,
+			<isNotEmpty property="IS_PUB">
+				#IS_PUB#,
+			</isNotEmpty> 
+			<isEmpty property="IS_PUB">
+			0, 
+			</isEmpty>
+			#MIN_DATE#, 
+			#MIN_PRICE#, 
+			#MIN_RULE_ID#,
+			sysdate,
+			#PUB_USER#,
+			#COMPANY_ID#,
+			#START_CITY#,
+			#END_CITY#,
+			#BEGIN_STATION#,
+			#END_STATION#
+			<isNotEmpty property="IS_FULL_PRICE">
+			,1
+			</isNotEmpty>
+		  )
+	</insert>
+  	
+  	<update id="editDao"  parameterClass="java.util.Map">
+  		UPDATE SD_PRO_TRAFFIC a SET 
+  			UPDATE_USER = #UPDATE_USER#, 
+			UPDATE_TIME = sysdate 
+			<isNotEmpty prepend=" , " property="TITLE">
+		   		TITLE = #TITLE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="END_DATE">
+		   		END_DATE = #END_DATE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="END_TIME">
+		   		END_TIME = #END_TIME#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="IS_SALE">
+		   		IS_SALE = #IS_SALE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="SALE_STATUS">
+		   		SALE_STATUS = #SALE_STATUS#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="MIN_BUY">
+		   		MIN_BUY = #MIN_BUY#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="TYPE">
+		   		TYPE = #TYPE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="IS_SINGLE">
+		   		IS_SINGLE = #IS_SINGLE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="ROTE">
+		   		ROTE = #ROTE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="CITY_ID">
+		   		CITY_ID = #CITY_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="CITY_NAME">
+		   		CITY_NAME = #CITY_NAME#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="IS_DEL">
+		   		IS_DEL = #IS_DEL#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="IS_PUB">
+		   		IS_PUB = #IS_PUB#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="MIN_DATE">
+		   		MIN_DATE = #MIN_DATE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="MIN_PRICE">
+		   		MIN_PRICE = #MIN_PRICE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="MIN_RULE_ID">
+		   		MIN_RULE_ID = #MIN_RULE_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="PUB_TIME">
+		   		PUB_TIME = to_date(#PUB_TIME#, 'yyyy-mm-dd hh24:mi:ss')
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="PUB_USER">
+		   		PUB_USER = #PUB_USER#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="COMPANY_ID">
+		   		COMPANY_ID = #COMPANY_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="START_CITY">
+		   		START_CITY = #START_CITY#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="END_CITY">
+		   		END_CITY = #END_CITY#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="SALE_AGIO">
+		   		SALE_AGIO = #SALE_AGIO#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="BEGIN_STATION">
+		   		BEGIN_STATION = #BEGIN_STATION#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="END_STATION">
+		   		END_STATION = #END_STATION#
+		    </isNotEmpty>
+		    where a.ID = #ID#
+  	</update>
+	
+	<statement id="listMusterDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+			SELECT a.ID, 
+				a.TRAFFIC_ID, 
+				a.MUSTER_TIME, 
+				a.MUSTER_PLACE, 
+				a.CREATE_USER, 
+				to_char(a.CREATE_TIME, 'YYYY-MM-DD HH24:mi:ss') CREATE_TIME, 
+				a.CREATE_USER_ID, 
+				a.UPDATE_USER, 
+				to_char(a.UPDATE_TIME, 'YYYY-MM-DD HH24:mi:ss') UPDATE_TIME, 
+				a.IS_DEL
+			FROM SD_PRO_TRAFFIC_MUSTER a, SD_USER b
+			WHERE 1       = 1
+			and a.is_del = 0 
+			and a.CREATE_USER_ID = b.id
+			<isNotEmpty property="COMPANY_ID">
+				and b.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend=" and " property="MUSTER_PLACE">
+		   		a.MUSTER_PLACE = #MUSTER_PLACE#
+		    </isNotEmpty>
+		    <isNotEmpty property="NOTEQUALSID">
+		    	and a.ID != #NOTEQUALSID# 
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" and " property="TRAFFIC_ID">
+		   		a.TRAFFIC_ID = #TRAFFIC_ID#
+		    </isNotEmpty>
+			ORDER BY a.UPDATE_TIME DESC
+	</statement>
+	
+	<statement id="listMusterPlaceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+			SELECT distinct a.MUSTER_PLACE
+			FROM SD_PRO_TRAFFIC_MUSTER a, SD_USER b
+			WHERE 1       = 1
+			and a.is_del = 0 
+			and a.CREATE_USER_ID = b.id
+			<isNotEmpty property="COMPANY_ID">
+				and b.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend=" and " property="MUSTER_PLACE">
+		   		a.MUSTER_PLACE = #MUSTER_PLACE#
+		    </isNotEmpty>
+		    <isNotEmpty property="NOTEQUALSID">
+		    	and a.ID != #NOTEQUALSID# 
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" and " property="TRAFFIC_ID">
+		   		a.TRAFFIC_ID = #TRAFFIC_ID#
+		    </isNotEmpty>
+	</statement>
+	
+	<insert id="saveMusterDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_TRAFFIC_MUSTER
+		  (
+		    ID, 
+			TRAFFIC_ID, 
+			MUSTER_TIME, 
+			MUSTER_PLACE, 
+			CREATE_USER, 
+			CREATE_TIME, 
+			CREATE_USER_ID, 
+			UPDATE_USER, 
+			UPDATE_TIME, 
+			IS_DEL
+		  )
+		  VALUES
+		  (
+		    #ID#, 
+			#TRAFFIC_ID#, 
+			#MUSTER_TIME#, 
+			#MUSTER_PLACE#, 
+			#CREATE_USER#, 
+			sysdate, 
+			#CREATE_USER_ID#, 
+			#UPDATE_USER#, 
+			sysdate, 
+			0
+		  )
+	</insert>
+  	
+  	<update id="editMusterDao"  parameterClass="java.util.Map">
+  		UPDATE SD_PRO_TRAFFIC_MUSTER a SET 
+  			UPDATE_USER = #UPDATE_USER#, 
+			UPDATE_TIME = sysdate 
+			<isNotEmpty prepend=" , " property="TRAFFIC_ID">
+		   		TRAFFIC_ID = #TRAFFIC_ID#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="MUSTER_TIME">
+		   		MUSTER_TIME = #MUSTER_TIME#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="MUSTER_PLACE">
+		   		MUSTER_PLACE = #MUSTER_PLACE#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="IS_DEL">
+		   		IS_DEL = #IS_DEL#
+		    </isNotEmpty> 
+		    where a.ID = #ID#
+  	</update>
+  	 
+  	<statement id="listTrafficRuleDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+			SELECT a.ID,
+			  a.BEGIN_DATE,
+			  a.END_DATE,
+			  a.SEAT_COUNT,
+			  a.TYPE,
+			  a.IS_PUB,
+			  a.TRAFFIC_ID,
+			  a.BASE_PRICE,
+			  a.BASE_INTER_PRICE,
+			  b.text,
+			  c.IS_PUB as TRAFFIC_PUB,
+			  c.IS_SALE
+			FROM SD_PRO_TRAFFIC_RULE a,
+			  (SELECT REPLACE(wmsys.wm_concat(b.text), ',', '-') text,
+			    b.rule_id
+			  FROM SD_PRO_TRAFFIC_RULE a,
+			    SD_PRO_TRAFFIC_RULE_EXPAND b
+			  WHERE a.id = b.rule_id
+			  GROUP BY b.rule_id
+			  ) b, SD_PRO_TRAFFIC c
+			WHERE 1  = 1
+			and a.TRAFFIC_ID = c.ID
+			AND a.ID = b.RULE_ID(+)
+			<isNotEmpty property="IS_PUB">
+				and a.IS_PUB = #IS_PUB#
+			</isNotEmpty>
+			<isNotEmpty property="TRAFFIC_ID">
+				and a.TRAFFIC_ID = #TRAFFIC_ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE">
+				and a.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="NOTEQUALSID">
+				and a.ID != #NOTEQUALSID#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="RULEIDS">
+				and a.ID in (#RULEIDS#)
+			</isNotEmpty>
+			order by a.BEGIN_DATE
+	</statement>
+	
+  	<insert id="saveTrafficRuleDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_TRAFFIC_RULE
+		  (
+		    ID, 
+			BEGIN_DATE, 
+			END_DATE, 
+			SEAT_COUNT, 
+			TYPE, 
+			IS_PUB, 
+			TRAFFIC_ID, 
+			BASE_PRICE,
+			BASE_INTER_PRICE
+		  )
+		  VALUES
+		  (
+		    #ID#, 
+			#BEGIN_DATE#, 
+			#END_DATE#, 
+			#SEAT_COUNT#, 
+			#TYPE#, 
+			#IS_PUB#, 
+			#TRAFFIC_ID#, 
+			#BASE_PRICE#,
+			#BASE_INTER_PRICE#
+		  )
+	</insert>
+	
+	<delete id="delRuleDao" parameterClass="java.util.Map">
+		delete from SD_PRO_TRAFFIC_RULE where id = #ID#
+	</delete>
+	
+	<insert id="saveTrafficRuleExpandDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_TRAFFIC_RULE_EXPAND
+		  (
+		    ID, 
+			RULE_ID, 
+			TEXT
+		  )
+		  VALUES
+		  (
+		    #ID#, 
+			#RULE_ID#, 
+			#TEXT#
+		  )
+	</insert>
+
+	<delete id="delTrafficRuleExpandDao" parameterClass="java.util.Map">
+		delete from SD_PRO_TRAFFIC_RULE_EXPAND where RULE_ID = #RULE_ID# and (select is_pub from sd_pro_traffic_rule where id = #RULE_ID#) = 0
+	</delete>
+	
+	<delete id="delRuleExpandDao" parameterClass="java.util.Map">
+		delete from SD_PRO_TRAFFIC_RULE_EXPAND where RULE_ID = #RULE_ID#
+	</delete>
+	
+	<insert id="saveBasePriceDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_BASE_PRICE
+		  (
+		    ID, 
+			ENTITY_ID, 
+			TYPE_ID,
+			TYPE_NAME,
+			ATTR_ID,
+			ATTR_NAME,
+			PRICE,
+			UPDATE_USER_ID,
+			UPDATE_USER,
+			UPDATE_TIME
+		  )
+		  VALUES
+		  (
+		    #ID#, 
+			#ENTITY_ID#, 
+			#TYPE_ID#,
+			#TYPE_NAME#,
+			#ATTR_ID#,
+			#ATTR_NAME#,
+			#PRICE#,
+			#UPDATE_USER_ID#,
+			#UPDATE_USER_ID#,
+			sysdate
+		  )
+	</insert>
+	
+	<delete id="delBasePriceDao" parameterClass="java.util.Map">
+		delete from SD_PRO_BASE_PRICE where ENTITY_ID = #ENTITY_ID#
+	</delete>
+	
+  	<update id="editTrafficRuleDao"  parameterClass="java.util.Map">
+  		UPDATE SD_PRO_TRAFFIC_RULE a SET 
+  			ID = ID 
+			<isNotEmpty prepend=" , " property="BEGIN_DATE">
+		   		BEGIN_DATE = #BEGIN_DATE#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="END_DATE">
+		   		END_DATE = #END_DATE#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="SEAT_COUNT">
+		   		SEAT_COUNT = #SEAT_COUNT#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="TYPE">
+		   		TYPE = #TYPE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="TRAFFIC_ID">
+		   		TRAFFIC_ID = #TRAFFIC_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="BASE_PRICE">
+		   		BASE_PRICE = #BASE_PRICE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="BASE_INTER_PRICE">
+		   		BASE_INTER_PRICE = #BASE_INTER_PRICE#
+		    </isNotEmpty>
+		    where a.ID = #ID#
+  	</update>
+  	
+  	<delete id="delTrafficRuleDao"  parameterClass="java.util.Map">
+  		delete from sd_pro_traffic_rule where is_pub = 0 and id = #ID# 
+  	</delete>
+  	
+  	<update id="pubTrafficRuleDao"  parameterClass="java.util.Map">
+  		UPDATE SD_PRO_TRAFFIC_RULE a SET is_pub = 1 where id = #ID# and is_pub = 0 
+  	</update>
+
+  	<statement id="listPriceTypeDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+			select a.b_order_by,a.type_id as id,a.type_name as title
+			$sql$
+			from (
+			select a.*,b.order_by as b_order_by,c.order_by as c_order_by from sd_pro_base_price a,SD_PRO_PRICE_TYPE b,SD_PRO_PRICE_ATTR c
+			where a.TYPE_ID = b.id and a.ATTR_ID=c.id 
+			<isNotEmpty property="ENTITY_ID">
+				and a.entity_id = #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="RULEIDS">
+				and a.entity_id in ($RULEIDS$)
+			</isNotEmpty>	 
+			) a group by a.b_order_by,a.type_id,a.type_name
+	</statement>
+	
+	<statement id="listRenewPriceTypeDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+			select a.b_order_by,a.type_id as id,a.type_name as title
+			$sql$
+			from (
+			select a.*,b.order_by as b_order_by,c.order_by as c_order_by from sd_order_price a,SD_PRO_PRICE_TYPE b,SD_PRO_PRICE_ATTR c
+			where a.TYPE_ID = b.id and a.ATTR_ID=c.id 
+			<isNotEmpty property="ORDER_ID">
+				and a.ORDER_ID = #ORDER_ID#
+			</isNotEmpty>
+			) a group by a.b_order_by,a.type_id,a.type_name
+	</statement>
+	
+	<statement id="listBasePriceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+			select a.ID, a.ENTITY_ID, a.TYPE_ID, a.TYPE_NAME, a.ATTR_ID, a.ATTR_NAME, a.PRICE, a.UPDATE_USER_ID, a.UPDATE_USER, 
+			to_char(a.UPDATE_TIME, 'YYYY-MM-DD HH24:mi:ss') UPDATE_TIME, a.ATTR_TYPE from sd_pro_base_price a
+			where 1 = 1
+			<isNotEmpty property="ENTITY_ID">
+				and a.entity_id= #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="ENTITY_IDS">
+				and a.entity_id in ($ENTITY_IDS$)
+			</isNotEmpty>
+	</statement>
+	
+	<statement id="listPriceAttrDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, 
+			a.TITLE, 
+			a.ORDER_BY, 
+			a.IS_USE,
+			a.CON_NAME
+		FROM SD_PRO_PRICE_ATTR a
+		WHERE 1       = 1
+		and a.IS_USE = 0 
+		<isNotEmpty property="PID">
+			and a.pid = #PID#
+		</isNotEmpty>
+		<isEmpty property="PID">
+			and a.pid = '-1'
+		</isEmpty>
+		order by a.ORDER_BY 
+	</statement>
+	
+	<statement id="listAllPriceAttrDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, 
+			a.TITLE, 
+			a.ORDER_BY, 
+			a.IS_USE,
+			a.CON_NAME
+		FROM SD_PRO_PRICE_ATTR a
+		WHERE 1       = 1
+		and a.IS_USE = 0 
+		<isNotEmpty property="PID">
+			and a.pid = #PID#
+		</isNotEmpty>
+		order by a.ORDER_BY 
+	</statement>
+	
+	<statement id="listTrafficSeatDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.SALE_DATE,
+			a.SALE_SEAT,
+			a.ENTITY_ID,
+			a.TYPE,
+			a.RULE_ID,
+			a.TRAFFIC_ID,
+			a.CREATE_TIME 
+		FROM SD_PRO_TRAFFIC_SEAT a
+		WHERE 1       = 1
+		<isNotEmpty property="TRAFFIC_ID">
+			and a.TRAFFIC_ID = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_ID">
+			and a.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="RULE_ID">
+			and a.RULE_ID = #RULE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_DATE">
+			and a.SALE_DATE = #SALE_DATE#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="saleSeatNumDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT nvl(sum(a.SALE_SEAT), 0) sale_seat, SALE_DATE
+		FROM SD_PRO_TRAFFIC_SEAT a
+		WHERE 1       = 1
+		<isNotEmpty property="TRAFFIC_ID">
+			and a.TRAFFIC_ID = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_ID">
+			and a.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="RULE_ID">
+			and a.RULE_ID = #RULE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_DATE">
+			and a.SALE_DATE = #SALE_DATE#
+		</isNotEmpty>
+		<isNotEmpty property="EDITDATES">
+			and a.SALE_DATE in ($EDITDATES$)
+		</isNotEmpty>
+		group by a.SALE_DATE
+	</statement>
+	
+  	<insert id="saveTrafficSeatDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_TRAFFIC_SEAT
+		  (
+		    ID,
+			SALE_DATE,
+			SALE_SEAT,
+			ENTITY_ID,
+			TYPE,
+			RULE_ID,
+			TRAFFIC_ID,
+			CREATE_TIME
+		  )
+		  VALUES
+		  (
+		    #ID#,
+			#SALE_DATE#,
+			#SALE_SEAT#,
+			#ENTITY_ID#,
+			#TYPE#,
+			#RULE_ID#,
+			#TRAFFIC_ID#,
+			sysdate
+		  )
+	</insert>
+  	
+  	<update id="editTrafficSeatDao"  parameterClass="java.util.Map">
+  		UPDATE SD_PRO_TRAFFIC_SEAT a SET 
+  			ID = ID 
+			<isNotEmpty prepend=" , " property="SALE_DATE">
+		   		SALE_DATE = #SALE_DATE#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="SALE_SEAT">
+		   		SALE_SEAT = #SALE_SEAT#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="ENTITY_ID">
+		   		ENTITY_ID = #ENTITY_ID#
+		    </isNotEmpty>
+			<isNotEmpty prepend=" , " property="TYPE">
+		   		TYPE = #TYPE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="RULE_ID">
+		   		RULE_ID = #RULE_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="TRAFFIC_ID">
+		   		TRAFFIC_ID = #TRAFFIC_ID#
+		    </isNotEmpty>
+		    where a.ID = #ID#
+  	</update>
+	
+	<statement id="listTrafficRuleCompileDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, 
+			a.RULE_SQL, 
+			a.BEGIN_DATE, 
+			a.END_DATE, 
+			a.RULE_ID, 
+			a.TRAFFIC_ID,
+			c.SALE_AGIO
+		FROM SD_PRO_TRAFFIC_RULE_COMPILE a, SD_PRO_TRAFFIC_RULE b, SD_PRO_TRAFFIC c, sd_user_company d
+		WHERE 1       = 1
+		and a.RULE_ID = b.ID
+		and a.TRAFFIC_ID = c.id
+		and c.IS_DEL = 0
+		<isNotEmpty property="IS_SALE">
+			and c.IS_SALE = 1
+		</isNotEmpty>
+		and c.IS_PUB = 1
+		and c.company_id = d.id
+		<isNotEmpty property="SALE_TRAFFIC">
+			and d.SALE_TRAFFIC = 1
+		</isNotEmpty>
+		<isNotEmpty property="SALE_STATUS">
+			and c.SALE_STATUS = 0
+		</isNotEmpty>
+		<isNotEmpty property="RULE_ID">
+			and a.RULE_ID = #RULE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TRAFFIC_ID">
+			and b.TRAFFIC_ID = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="FIRST_DATE">
+			<![CDATA[
+				and (b.begin_date between #FIRST_DATE# and #LAST_DATE# or b.end_date between #FIRST_DATE# and #LAST_DATE# or (b.begin_date <= #FIRST_DATE# and #LAST_DATE# <= b.end_date))
+			]]>
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="listTrafficRuleDateDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		select a.rq,
+			a.xq,
+			a.SEAT_COUNT,
+			a.TYPE,
+			a.IS_PUB,
+			a.TRAFFIC_ID,
+			a.BASE_PRICE,
+			a.TITLE,
+			a.DAY_NUM,
+			a.END_TIME,
+			a.IS_SALE,
+			a.SALE_STATUS,
+			a.MIN_BUY,
+			a.TRAFFIC_PUB,
+			a.ID,
+			a.company_id,
+			a.BASE_INTER_PRICE,
+			a.SALE_SEAT,
+			a.actual_price,
+			a.actual_inter_price,
+			a.actual_seat,
+			a.isvalid,
+			a.rote,
+			a.company, a.phone, a.SALE_AGIO, a.user_name, a.china_name, 
+			a.mobile, a.start_city, a.end_city, a.end_date, a.IS_SINGLE,
+			a.CREATE_USER_ID,
+			a.CITY_ID,
+			a.CITY_NAME
+       from (select a.*, rownum as myrownum from (
+			SELECT a.*, c.company, c.phone, b.SALE_AGIO, d.user_name, d.china_name, 
+			d.mobile, b.start_city, b.end_city, b.end_date, b.IS_SINGLE,b.rote, b.CREATE_USER_ID,b.CITY_ID,
+			b.CITY_NAME
+			from (
+				$sql$
+			)a , sd_pro_traffic b, sd_user_company c, sd_user d
+			where 1 = 1
+			and a.traffic_id = b.id
+			and b.company_id = c.id
+			and b.create_user_id = d.id
+			<![CDATA[ and TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + b.END_DATE),'yyyymmdd hh24:mi') <= a.rq
+					    ||' '
+					    || b.END_TIME
+					  ]]>
+			<isNotEmpty property="SALE_TRAFFIC">
+			and c.SALE_TRAFFIC = #SALE_TRAFFIC#
+			</isNotEmpty>
+			<isNotEmpty property="NOT_COMPANY_ID">
+				and c.ID != #NOT_COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				and d.CITY_ID in($CITY_ID$)
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				and (b.TITLE like '%$query$%' or c.company like '%$query$%') 
+			</isNotEmpty>
+			<isNotEmpty property="START_CITY">
+				and b.START_CITY = #START_CITY#
+			</isNotEmpty>
+			<isNotEmpty property="END_CITY">
+				and b.END_CITY = #END_CITY#
+			</isNotEmpty>
+			<isNotEmpty property="IS_SINGLE">
+				and b.IS_SINGLE = #IS_SINGLE#
+			</isNotEmpty>
+			<isNotEmpty property="NOW_DATE">
+				<![CDATA[ and a.rq = #NOW_DATE# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="BEGIN_DATE">
+				and to_date(a.rq, 'yyyy-mm-dd') >= to_date(#BEGIN_DATE#, 'yyyy-mm-dd')
+			</isNotEmpty>
+			<isNotEmpty property="END_DATE">
+				<![CDATA[ and to_date(a.rq, 'yyyy-mm-dd') <= to_date(#END_DATE#, 'yyyy-mm-dd')]]>
+			</isNotEmpty>
+			<isNotEmpty property="ISVALID">
+				and a.ISVALID = #ISVALID#
+			</isNotEmpty>
+			
+			<isNotEmpty property="SALE_STATUS">
+				and b.SALE_STATUS = #SALE_STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="IS_SALE">
+				and b.IS_SALE = #IS_SALE#
+			</isNotEmpty>
+			<isNotEmpty property="IS_PUB">
+				and b.IS_PUB = #IS_PUB#
+			</isNotEmpty>
+			
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countTrafficRuleDateDao" parameterClass="java.util.Map" resultClass="java.lang.Integer" remapResults="true">
+		SELECT count(1) s from (
+			$sql$
+		)a, sd_pro_traffic b, sd_user_company c, sd_user d
+		where 1 = 1
+		and a.traffic_id = b.id
+		and b.company_id = c.id
+		and b.create_user_id = d.id
+		<![CDATA[ and TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + b.END_DATE),'yyyymmdd hh24:mi') <= a.rq
+					    ||' '
+					    || b.END_TIME
+					  ]]>
+		<isNotEmpty property="SALE_TRAFFIC">
+		and c.SALE_TRAFFIC = #SALE_TRAFFIC#
+		</isNotEmpty>
+		<isNotEmpty property="NOT_COMPANY_ID">
+			and c.ID != #NOT_COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			and d.CITY_ID in($CITY_ID$)
+		</isNotEmpty>
+		<isNotEmpty property="query">
+			and (b.TITLE like '%$query$%' or c.company like '%$query$%') 
+		</isNotEmpty>
+		<isNotEmpty property="START_CITY">
+			and b.START_CITY = #START_CITY#
+		</isNotEmpty>
+		<isNotEmpty property="END_CITY">
+			and b.END_CITY = #END_CITY#
+		</isNotEmpty>
+		<isNotEmpty property="IS_SINGLE">
+			and b.IS_SINGLE = #IS_SINGLE#
+		</isNotEmpty>
+		<isNotEmpty property="NOW_DATE">
+			<![CDATA[ and to_date(a.rq, 'yyyy-mm-dd') = to_date(#NOW_DATE#, 'yyyy-mm-dd') ]]>
+		</isNotEmpty>
+		<isNotEmpty property="SALE_STATUS">
+			and b.SALE_STATUS = #SALE_STATUS#
+		</isNotEmpty>
+		<isNotEmpty property="IS_SALE">
+			and b.IS_SALE = #IS_SALE#
+		</isNotEmpty>
+		<isNotEmpty property="IS_PUB">
+			and b.IS_PUB = #IS_PUB#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="listTrafficRuleSeatDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.RULE_ID,
+			a.SEAT,
+			a.EDIT_DATE,
+			a.UPDATE_USER,
+			a.UPDATE_TIME,
+			a.TRAFFIC_ID
+		FROM SD_PRO_TRAFFIC_RULE_SEAT a 
+		WHERE 1       = 1
+		<isNotEmpty property="RULE_ID">
+			and a.RULE_ID = #RULE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="EDIT_DATE">
+			and a.EDIT_DATE = #EDIT_DATE#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveTrafficRuleSeatDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_TRAFFIC_RULE_SEAT
+		  (
+		    ID,
+			RULE_ID,
+			SEAT,
+			EDIT_DATE,
+			UPDATE_USER,
+			UPDATE_TIME,
+			TRAFFIC_ID
+		  )
+		  VALUES
+		  (
+		    #ID#,
+			#RULE_ID#,
+			#SEAT#,
+			#EDIT_DATE#,
+			#UPDATE_USER#,
+			sysdate,
+			#TRAFFIC_ID#
+		  )
+	</insert>
+	
+	<delete id="delTrafficRuleSeatDao" parameterClass="java.util.Map">
+		delete from SD_PRO_TRAFFIC_RULE_SEAT where EDIT_DATE in ($EDITDATES$) and TRAFFIC_ID = #TRAFFIC_ID#
+	</delete>
+	
+	<statement id="listBasePriceByAttrDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.c_order_by,
+		  a.attr_id,
+		  a.attr_name,
+		  SUM(DECODE(b_order_by,1,price,0)) AS waimai,
+		  SUM(DECODE(b_order_by,2,price,0)) AS tonghang
+		FROM
+		  (SELECT a.*,
+		    b.order_by AS b_order_by,
+		    c.order_by AS c_order_by
+		  FROM sd_pro_base_price a,
+		    SD_PRO_PRICE_TYPE b,
+		    SD_PRO_PRICE_ATTR c
+		  WHERE a.TYPE_ID = b.id
+		  AND a.ATTR_ID   =c.id
+		  AND a.entity_id = #ENTITY_ID#
+		  ) a
+		GROUP BY a.c_order_by,
+		  a.attr_id,
+		  a.attr_name
+	</statement>
+	
+	<delete id="delProcedureRuleCompileDao" parameterClass="java.util.Map">
+		delete from SD_PRO_TRAFFIC_RULE_COMPILE where RULE_ID = #ID#
+	</delete>
+</sqlMap>

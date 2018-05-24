@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="sms">
+	
+	<insert id="saveUserSmsLogDao" parameterClass="java.util.Map">
+		INSERT INTO SD_USER_SMS_LOG (
+			ID,
+			COMPANY_ID,
+			COUNT,
+			TYPE,
+			CREATE_TIME,
+			CREATE_USER,
+			AMOUNT,
+			PAY_STATUS,
+			PAY_TYPE,
+			NO
+		) VALUES (
+			#ID#,
+			#COMPANY_ID#,
+			#COUNT#,
+			#TYPE#,
+			sysdate,
+			#CREATE_USER#,
+			#AMOUNT#,
+			#PAY_STATUS#,
+			#PAY_TYPE#,
+			#NO#
+		)
+	</insert>
+	
+	<update id="updateUserSmsLogStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_USER_SMS_LOG SET PAY_STATUS = #PAY_STATUS#, PAY_TIME = SYSDATE WHERE NO = #NO# 
+	</update>
+	
+	<insert id="saveUserSmsDao" parameterClass="java.util.Map">
+		INSERT INTO SD_USER_SMS (
+			ID,
+			COMPANY_ID,
+			SMS_COUNT,
+			USE_COUNT,
+			CREATE_TIME
+		) VALUES (
+			#ID#,
+			#COMPANY_ID#,
+			#SMS_COUNT#,
+			#USE_COUNT#,
+			SYSDATE
+		)
+	</insert>
+	
+	<statement id="listUserSmsDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+			t.COMPANY_ID,
+			t.SMS_COUNT,
+			t.USE_COUNT,
+			(t.sms_count - t.use_count) as enable_count,
+			to_char(t.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') as CREATE_TIME
+		 FROM SD_USER_SMS t
+		 where 1 = 1
+			<isNotEmpty property="COMPANY_ID">
+				AND t.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+	</statement>
+	
+	<update id="updateUserSmsCountDao" parameterClass="java.util.Map">
+		UPDATE SD_USER_SMS SET SMS_COUNT = SMS_COUNT + $SMS_COUNT$ WHERE ID = #ID#
+	</update>
+	
+	<statement id="listUserSmsLogDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT t.ID,
+				t.COMPANY_ID,
+				t.COUNT,
+				t.TYPE,
+				to_char(t.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') as CREATE_TIME,
+				t.CREATE_USER,
+				t.AMOUNT,
+				t.PAY_STATUS,
+				t.PAY_TYPE,
+				to_char(t.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+				t.NO,
+				t1.COMPANY,
+				t2.USER_NAME,
+				t2.CHINA_NAME
+			 FROM SD_USER_SMS_LOG t, SD_USER_COMPANY t1, SD_USER t2
+			 where t.COMPANY_ID = t1.ID
+				AND t.CREATE_USER = t2.ID
+				<isNotEmpty property="NO">
+					AND t.NO = #NO#
+				</isNotEmpty>
+				<isNotEmpty property="COMPANY_ID">
+					AND t.COMPANY_ID = #COMPANY_ID#
+				</isNotEmpty>
+				<isNotEmpty property="CREATE_BEGIN_DATE">
+					<![CDATA[ AND to_char(t.create_time, 'YYYY-MM-dd') >= #CREATE_BEGIN_DATE# ]]>
+				</isNotEmpty>
+				<isNotEmpty property="CREATE_END_DATE">
+					<![CDATA[ AND to_char(t.create_time, 'YYYY-MM-dd') <= #CREATE_END_DATE# ]]>
+				</isNotEmpty>
+				
+				<isNotEmpty property="PAY_BEGIN_DATE">
+					<![CDATA[ AND to_char(t.pay_time, 'YYYY-MM-dd') >= #PAY_BEGIN_DATE# ]]>
+				</isNotEmpty>
+				<isNotEmpty property="PAY_END_DATE">
+					<![CDATA[ AND to_char(t.pay_time, 'YYYY-MM-dd') <= #PAY_END_DATE# ]]>
+				</isNotEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countUserSmsLogDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		 FROM SD_USER_SMS_LOG t, SD_USER_COMPANY t1, SD_USER t2
+		 where t.COMPANY_ID = t1.ID
+			AND t.CREATE_USER = t2.ID
+			<isNotEmpty property="NO">
+				AND t.NO = #NO#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				AND t.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_BEGIN_DATE">
+				<![CDATA[ AND to_char(t.create_time, 'YYYY-MM-dd') >= #CREATE_BEGIN_DATE# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_END_DATE">
+				<![CDATA[ AND to_char(t.create_time, 'YYYY-MM-dd') <= #CREATE_END_DATE# ]]>
+			</isNotEmpty>
+			
+			<isNotEmpty property="PAY_BEGIN_DATE">
+				<![CDATA[ AND to_char(t.pay_time, 'YYYY-MM-dd') >= #PAY_BEGIN_DATE# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="PAY_END_DATE">
+				<![CDATA[ AND to_char(t.pay_time, 'YYYY-MM-dd') <= #PAY_END_DATE# ]]>
+			</isNotEmpty>
+	</statement>
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID ,
+			  a.MOBILE,
+			  a.CONTENT,
+			  TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME,
+			  a.STATUS,
+			  a.CREATE_USER,
+			  a.TYPE,
+			  a.SMS_TYPE,
+			  a.RESOURCES,
+			  a.CNT,
+			  t.COMPANY
+			FROM SD_SMS_LOG a, SD_USER_COMPANY t 
+			WHERE 1      = 1
+			and a.company_id = t.id(+)
+			<isNotEmpty property="SITE_ID">
+				AND a.SITE_ID in ($SITE_ID$)
+			</isNotEmpty>
+			<isNotEmpty property="MOBILE">
+			AND a.MOBILE LIKE '%$MOBILE$%'
+			</isNotEmpty>
+			<isNotEmpty property="QUERY">
+			AND (CONTENT LIKE '%$QUERY$%' or a.MOBILE LIKE '%$QUERY$%')
+			</isNotEmpty>
+			<isNotEmpty property="TYPE">
+				<isEqual property="TYPE" compareValue="4">
+					AND a.TYPE        = #TYPE#	
+				</isEqual>
+				<isNotEqual property="TYPE" compareValue="4">
+					AND a.TYPE        != 4 
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_USER">
+				AND a.CREATE_USER = #CREATE_USER#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS">
+				AND a.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				AND a.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_PID">
+				AND (t.ID = #COMPANY_PID# or t.PID = #COMPANY_PID#)
+			</isNotEmpty>
+			ORDER BY a.CREATE_TIME DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(a.ID) s 
+		FROM SD_SMS_LOG a
+		WHERE 1      = 1
+		<isNotEmpty property="SITE_ID">
+			AND a.SITE_ID in ($SITE_ID$)
+		</isNotEmpty>
+		<isNotEmpty property="MOBILE">
+		AND a.MOBILE LIKE '%$MOBILE$%'
+		</isNotEmpty>
+		<isNotEmpty property="QUERY">
+		AND (CONTENT LIKE '%$QUERY$%' or a.MOBILE LIKE '%$QUERY$%')
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			<isEqual property="TYPE" compareValue="4">
+				AND a.TYPE        = #TYPE#	
+			</isEqual>
+			<isNotEqual property="TYPE" compareValue="4">
+				AND a.TYPE        != 4 
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_USER">
+			AND a.CREATE_USER = #CREATE_USER#
+		</isNotEmpty>
+		<isNotEmpty property="STATUS">
+			AND a.STATUS = #STATUS#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			AND a.COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_PID">
+			AND (t.ID = #COMPANY_PID# or t.PID = #COMPANY_PID#)
+		</isNotEmpty>
+	</statement>
+	
+	<update id="eidtStatusDao" parameterClass="java.util.Map">	
+		<![CDATA[ update SD_SMS_LOG SET STATUS = 6 WHERE STATUS = 7 AND TYPE = 4 AND ROWNUM <= #end# ]]>
+	</update>
+	
+	<insert id="saveDao" parameterClass="java.util.HashMap">
+		insert into sd_sms_log(ID,MOBILE,CONTENT,CREATE_TIME,STATUS,CREATE_USER,TYPE,SITE_ID, SMS_TYPE, ORDER_ID, COMPANY_ID) values (sys_guid(),#MOBILE#,#CONTENT#,sysdate,#STATUS#,#CREATE_USER#, #TYPE#, #SITE_ID#, #SMS_TYPE#, #ORDER_ID#, #COMPANY_ID#)
+	</insert>
+	
+	<statement id="smsSendStatusDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(1) AS CNT FROM SD_USER_SMS a WHERE a.COMPANY_ID = #COMPANY_ID# AND <![CDATA[ a.SMS_COUNT > a.USE_COUNT ]]>
+	</statement>
+	
+	<statement id="smsSendStatusGroupDao" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT COUNT(1) AS CNT FROM SD_USER_SMS A WHERE A.COMPANY_ID = #COMPANY_ID# AND <![CDATA[ (USE_COUNT + $SMS_NUM$) <= SMS_COUNT ]]>
+	</statement>
+	
+	<update id="usersmsGroupDao" parameterClass="java.util.HashMap">
+		update SD_USER_SMS set USE_COUNT = USE_COUNT + $SMS_NUM$ where COMPANY_ID = #COMPANY_ID#		
+	</update>
+	
+	<statement id="searchhalfHourCntDao" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		<![CDATA[ select count(a.id) s from SD_SMS_LOG a where a.create_time >= (sysdate-1/48) and a.create_time <= sysdate and a.mobile = #MOBILE# and a.content = #CONTENT#]]>
+	</statement>
+	
+	<statement id="searchHourCntDao" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		<![CDATA[ select count(a.id) s from SD_SMS_LOG a where a.create_time >= (sysdate-$TIME$) and a.create_time <= sysdate and a.mobile = #MOBILE# ]]>
+	</statement>
+	
+	<statement id="searchhalfDayCntDao" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		<![CDATA[ select count(a.id) s from SD_SMS_LOG a where a.create_time >= (sysdate-1/48) and a.create_time <= sysdate and a.mobile like '%$MOBILE$%' and a.content = #CONTENT#]]>
+	</statement>
+	
+	<statement id="searchDayCntDao" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		<![CDATA[ select count(a.id) s from SD_SMS_LOG a where a.create_time >= (sysdate-$TIME$) and a.create_time <= sysdate and a.mobile like '%$MOBILE$%' ]]>
+	</statement>
+
+
+</sqlMap>

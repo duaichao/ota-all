@@ -1,0 +1,13 @@
+// Icon Sizes
+// -------------------------
+
+/* makes the font 33% larger relative to the icon container */
+.#{$fm-css-prefix}-lg {
+  font-size: (4em / 3);
+  line-height: (3em / 4);
+  vertical-align: -15%;
+}
+.#{$fm-css-prefix}-2x { font-size: 2em; }
+.#{$fm-css-prefix}-3x { font-size: 3em; }
+.#{$fm-css-prefix}-4x { font-size: 4em; }
+.#{$fm-css-prefix}-5x { font-size: 5em; }

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="power">
+	<resultMap id="powerEntityResult" class="cn.sd.entity.b2b.PowerEntity">
+	    	<result column="ID" property="id" jdbcType="VARCHAR" />
+	    	<result column="MODULE_ID" property="moduleId" jdbcType="VARCHAR" />
+	    	<result column="POWER_NAME" property="text" jdbcType="VARCHAR" />
+	    	<result column="IS_USE" property="isUse" jdbcType="VARCHAR" />
+	    	<result column="ICONCLS"  property="iconCls" jdbcType="VARCHAR" />
+	    	<result column="GLYPH"  property="glyph" jdbcType="VARCHAR" />
+	    	<result column="ITEM_ID"  property="itemId" jdbcType="VARCHAR" />
+	    	<result column="XTYPE"  property="xtype" jdbcType="VARCHAR" />
+	</resultMap> 
+	
+	<delete id="clearRolePowerDao" parameterClass="java.util.Map">
+		delete from SD_ROLE_POWER where ROLE_ID= #ROLE_ID#
+	</delete>
+	
+	<insert id="syncRolePowerDao" parameterClass="java.util.Map">
+		INSERT INTO SD_ROLE_POWER
+		  (ID, ROLE_ID, POWER_ID
+		  )
+		SELECT SYS_GUID(),
+		  #ROLE_ID#,
+		  t.POWER_ID
+		FROM SD_ROLE_POWER t
+		WHERE t.ROLE_ID = #SYNC_ROLE_ID#
+	</insert>
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultMap="powerEntityResult">
+		SELECT DISTINCT a.*
+		FROM
+		  (select a.ID		 ,
+		   a.MODULE_ID         ,
+		   a.POWER_NAME        ,
+		   a.IS_USE      ,
+		   a.ICONCLS     ,
+		   a.GLYPH,
+		   a.ITEM_ID,a.XTYPE,a.ORDER_BY		  from SD_POWER a 
+		   <isNotEmpty prepend=" , " property="ROLE_ID">
+		   		SD_ROLE_POWER b
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="USER_ID">
+		   		SD_USER_POWER b
+		    </isNotEmpty>
+		   where a.MODULE_ID=#MODULE_ID# and a.is_use = 0
+		   <isNotEmpty prepend=" and " property="ROLE_ID">
+		   		a.ID(+) = b.POWER_ID and b.ROLE_ID = #ROLE_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" and " property="USER_ID">
+		   		a.ID(+) = b.POWER_ID and b.USER_ID = #USER_ID#
+		    </isNotEmpty>
+		    
+		    <isNotEmpty prepend=" " property="USER_ID">
+		   UNION ALL
+			  SELECT T2.ID,
+			    T2.MODULE_ID,
+			    T2.POWER_NAME,
+			    T2.IS_USE,
+			    T2.ICONCLS,
+			    T2.GLYPH,
+			    T2.ITEM_ID,
+			    T2.XTYPE,
+			    t2.ORDER_BY
+			  FROM SD_COMPANY_USER_ROLE t,
+			    SD_ROLE_POWER t1,
+			    SD_POWER T2
+			  WHERE t.ROLE_ID  = t1.ROLE_ID
+			  AND t1.POWER_ID  = t2.id
+			  AND t2.MODULE_ID = #MODULE_ID#
+			  AND t.USER_ID    = #USER_ID#
+			  AND t2.is_use    = 0
+		   </isNotEmpty>
+		   )a
+		   order　by a.ORDER_BY
+	</statement>
+
+	<select id="rolePowerDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+        select POWER_ID  from SD_ROLE_POWER where ROLE_ID=#VALUE#
+	</select>
+
+	<statement id="listRoleOfPowerDao" parameterClass="java.util.Map" resultMap="powerEntityResult">
+		SELECT a.ID,
+		  a.MODULE_ID,
+		  a.POWER_NAME,
+		  a.IS_USE,
+		  a.ICONCLS,
+		  a.GLYPH,
+		  a.ITEM_ID,
+		  a.XTYPE
+		from sd_power a, sd_role_power b
+		where 1 = 1
+		and a.ID = b.POWER_ID
+		and a.is_use = 0
+		and a.MODULE_ID = #MODULE_ID#
+		and b.ROLE_ID = #ROLE_ID#
+		ORDER BY a.ORDER_BY ASC
+	</statement>
+	
+	
+	<statement id="userOfPowerDao" parameterClass="java.util.Map" resultMap="powerEntityResult">
+		SELECT a.ID,
+		  a.MODULE_ID,
+		  a.POWER_NAME,
+		  a.IS_USE,
+		  a.ICONCLS,
+		  a.GLYPH,
+		  a.ITEM_ID,
+		  a.XTYPE
+		from sd_power a, sd_user_power b
+		where 1 = 1 and a.ID = b.POWER_ID
+		and a.is_use = 0
+		and a.MODULE_ID = #MODULE_ID#
+		and b.USER_ID = #USER_ID#
+		ORDER BY a.ORDER_BY ASC
+	</statement>
+	
+	<statement id="listUserPowerDao" parameterClass="java.util.Map" resultMap="powerEntityResult">
+		SELECT DISTINCT a.*
+		FROM
+		  (SELECT a.ID ,
+		    a.MODULE_ID ,
+		    a.POWER_NAME ,
+		    a.IS_USE ,
+		    a.ICONCLS ,
+		    a.GLYPH,
+		    a.ITEM_ID,
+		    a.XTYPE,
+		    a.ORDER_BY
+		  FROM SD_POWER a ,
+		    SD_ROLE_POWER b
+		  WHERE a.ID(+)  = b.POWER_ID
+		  AND a.IS_USE   = 0
+		  AND a.MODULE_ID= #MODULE_ID#
+		  AND b.ROLE_ID  = #ROLE_ID#
+		  UNION ALL
+		  SELECT a.ID ,
+		    a.MODULE_ID ,
+		    a.POWER_NAME ,
+		    a.IS_USE ,
+		    a.ICONCLS ,
+		    a.GLYPH,
+		    a.ITEM_ID,
+		    a.XTYPE,
+		    a.ORDER_BY
+		  FROM SD_POWER a ,
+		    SD_USER_POWER b
+		  WHERE a.ID(+)  = b.POWER_ID
+		  AND a.IS_USE   = 0
+		  AND a.MODULE_ID= #MODULE_ID#
+		  AND b.USER_ID  = #USER_ID#
+		  UNION ALL
+		  SELECT T2.ID,
+		    T2.MODULE_ID,
+		    T2.POWER_NAME,
+		    T2.IS_USE,
+		    T2.ICONCLS,
+		    T2.GLYPH,
+		    T2.ITEM_ID,
+		    T2.XTYPE,
+		    t2.ORDER_BY
+		  FROM SD_COMPANY_USER_ROLE t,
+		    SD_ROLE_POWER t1,
+		    SD_POWER T2
+		  WHERE t.ROLE_ID  = t1.ROLE_ID
+		  AND t1.POWER_ID  = t2.id
+		  AND t2.IS_USE    = 0
+		  AND t2.MODULE_ID = #MODULE_ID#
+		  AND t.USER_ID    = #USER_ID#
+		  )a order　by a.ORDER_BY
+	</statement>
+	
+	<statement id="listUserOfPowerIDDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select POWER_ID from SD_USER_POWER where USER_ID = #USER_ID#
+	</statement>
+	
+</sqlMap>

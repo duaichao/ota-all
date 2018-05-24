@@ -1,0 +1,1625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="route">
+
+	<resultMap id="routeEntity" class="cn.sd.entity.RouteEntity">
+		<result column="ID" property="ID" />
+		<result column="NO" property="NO" />
+		<result column="FACE" property="FACE" />
+		<result column="TITLE" property="TITLE" />
+		<result column="FEATURE" property="FEATURE" />
+		<result column="NOTICE" property="NOTICE" />
+		<result column="TYPE" property="TYPE" />
+		<result column="COMPANY_ID" property="COMPANY_ID" />
+		<result column="COMPANY_NAME" property="COMPANY_NAME" />
+		<result column="PORDUCE_CONCAT" property="PORDUCE_CONCAT" />
+		<result column="PRODUCE_MOBILE" property="PRODUCE_MOBILE" />
+		<result column="CREATE_USER" property="CREATE_USER" />
+		<result column="CREATE_TIME" property="CREATE_TIME" />
+		<result column="CREATE_USER_ID" property="CREATE_USER_ID" />
+		<result column="UPDATE_USER" property="UPDATE_USER" />
+		<result column="UPDATE_TIME" property="UPDATE_TIME" />
+		<result column="UPDATE_USER_ID" property="UPDATE_USER_ID" />
+		<result column="CITY_ID" property="CITY_ID" />
+		<result column="CITY_NAME" property="CITY_NAME" />
+		<result column="IS_DEL" property="IS_DEL" />
+		<result column="IS_PUB" property="IS_PUB" />
+		<result column="SOURCE_URL" property="SOURCE_URL" />
+		<result column="IS_SINGLE_PUB" property="IS_SINGLE_PUB" />
+		<result column="IS_GRANT" property="IS_GRANT" />
+		<result column="IS_SHARE" property="IS_SHARE" />
+		<result column="DAY_COUNT" property="DAY_COUNT" />
+		<result column="ATTR" property="ATTR" />
+		<result column="RETAIL_SINGLE_ROOM" property="RETAIL_SINGLE_ROOM" />
+		<result column="INTER_SINGLE_ROOM" property="INTER_SINGLE_ROOM" />
+		<result column="FEATURE1" property="FEATURE1" />
+		<result column="IS_FULL_PRICE" property="IS_FULL_PRICE" />
+		<result column="SUM_PRICE" property="SUM_PRICE" />
+		<result column="BEGIN_CITY" property="BEGIN_CITY" />
+		<result column="END_CITY" property="END_CITY" />
+		<result column="COLLECT_ID" property="COLLECT_ID" />
+		
+	</resultMap>
+
+	<statement id="routeDetailEntity" parameterClass="java.util.Map" resultMap="routeEntity">
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		a.PORDUCE_CONCAT,
+		a.PRODUCE_MOBILE,
+		a.CREATE_USER,
+		a.CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		a.UPDATE_TIME,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.UPDATE_USER_ID,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.CITY_NUM,
+		a.SINGLE_REMARK,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM,
+		a.FEATURE1,
+		a.IS_FULL_PRICE,
+		b.SUM_PRICE,
+		h3.BEGIN_CITY,
+		h4.END_CITY,
+		h5.COLLECT_ID
+		FROM SD_PRO_ROUTE a,
+			(SELECT a.ROUTE_ID,
+			a.RQ,
+			a.ACTUAL_PRICE,
+			a.ACTUAL_INTER_PRICE,
+			a.PLANID,
+			a.RN,
+			b.ROUTE_PRICE,
+			b.ROUTE_INTER_PRICE,
+			(a.ACTUAL_PRICE + b.ROUTE_PRICE) SUM_PRICE,
+			(a.ACTUAL_INTER_PRICE + b.ROUTE_INTER_PRICE) SUM_INTER_PRICE
+			FROM
+			(SELECT a.ROUTE_ID,
+			a.RQ,
+			a.ACTUAL_PRICE,
+			a.ACTUAL_INTER_PRICE,
+			a.PLANID,
+			a.RN
+			FROM
+			(SELECT a.ROUTE_ID,
+			a.RQ,
+			a.ACTUAL_PRICE,
+			a.ACTUAL_INTER_PRICE,
+			a.PLANID,
+			ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+			FROM SD_PRO_ROUTE_CALENDAR a
+					      <![CDATA[ WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq
+						    ||' '
+						    || a.END_TIME
+						  ]]>
+	
+			<isNotEmpty property="BEGIN_DATE">
+				and a.RQ >= to_char(to_date(#BEGIN_DATE#, 'yyyy-mm-dd'), 'yyyymmdd')
+			</isNotEmpty>
+			<isNotEmpty property="END_DATE">
+						  	<![CDATA[ and a.RQ <= to_char(to_date(#END_DATE#, 'yyyy-mm-dd'), 'yyyymmdd') ]]>
+			</isNotEmpty>
+	
+			) a
+			WHERE rn = 1
+			) a,
+			(SELECT a.entity_id,
+			SUM(DECODE(a.TYPE_ID, '0FA5123749D28C87E050007F0100BCAD', a.PRICE,0)) AS ROUTE_PRICE,
+			SUM(DECODE(a.TYPE_ID, '0FA5123749D38C87E050007F0100BCAD', a.PRICE,0))
+			AS ROUTE_INTER_PRICE
+			FROM SD_PRO_BASE_PRICE a
+			WHERE a.ATTR_ID = '0FA5123749CF8C87E050007F0100BCAD'
+			GROUP BY a.ENTITY_ID
+			) b,
+			sd_pro_route_city_labels c
+	
+			WHERE a.ROUTE_ID = b.ENTITY_ID
+			and a.route_id = c.route_id(+)
+			<isNotEmpty property="LABEL_IDS">
+				and
+				<iterate property="LABEL_IDS" conjunction="or" open="("
+					close=")">
+					c.label_ids like '%$LABEL_IDS[]$%'
+				</iterate>
+			</isNotEmpty>
+			) b,
+			(SELECT route_id,
+			LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') begin_city
+			FROM
+			(SELECT CITY_NAME,
+			route_id,
+			ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			FROM SD_PRO_ROUTE_CITY
+			WHERE type = 1
+			)
+			START WITH RN = 1
+			CONNECT BY RN - 1 = PRIOR RN
+			AND route_id = PRIOR route_id
+			GROUP BY route_id
+			)h3,
+			(SELECT route_id,
+			LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') end_city
+			FROM
+			(SELECT CITY_NAME,
+			route_id,
+			ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			FROM SD_PRO_ROUTE_CITY
+			WHERE type = 2
+			)
+			START WITH RN = 1
+			CONNECT BY RN - 1 = PRIOR RN
+			AND route_id = PRIOR route_id
+			GROUP BY route_id
+			)h4,
+			(SELECT t.id as COLLECT_ID, t.PRODUCE_ID FROM SD_WEB_COLLECT t where t.USER_ID = #COLLECT_USER_ID#) h5
+		WHERE a.ID = #ID#
+		and a.ID = b.ROUTE_ID(+)
+		and a.ID = h3.ROUTE_ID(+)
+		and a.ID = h4.ROUTE_ID(+)
+		and a.ID = h5.PRODUCE_ID(+)
+		
+	</statement>
+
+	<statement id="searchRoute" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		select a.* from (select a.*, rownum as myrownum from ( select a.* ,b.id as recommend_id, b.type recommend_type, b.order_by, c.COLLECT_ID
+		from (
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		c.china_name as PORDUCE_CONCAT,
+		c.mobile as PRODUCE_MOBILE,
+		c.PHONE,
+		a.CREATE_USER,
+		TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		TO_CHAR(a.UPDATE_TIME, 'yyyy-mm-dd hh24:mm:ss') UPDATE_TIME,
+		a.UPDATE_USER_ID,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM,
+		decode(h6.PRICE, null, b.SUM_PRICE, (b.SUM_INTER_PRICE + h6.price)) as sum_price,
+		to_char(to_date(b.rq, 'YYYY/MM/DD'),'YYYY/MM/DD') rq,
+		c.QQ1,
+		c.QQ2,
+		DECODE(h.ROUTE_TRAFFIC_CNT, null, 0, h.ROUTE_TRAFFIC_CNT) ROUTE_TRAFFIC_CNT,
+		DECODE(h1.BASE_PRICE_CNT, null, 0, h1.BASE_PRICE_CNT) BASE_PRICE_CNT,
+		h2.themes,
+		h3.begin_city,
+		h4.end_city,
+		h5.discount_info,
+		h5.DISCOUNT_ID,
+		h7.SCENIC_NAME
+		<isNotEmpty property="ORDER">
+			,nvl(t6.ORDER_CNT, 0) as ORDER_CNT
+		</isNotEmpty>
+		FROM
+		(
+		<isNotEmpty property="IS_ALONE">
+			SELECT a.ID,
+			a.NO,
+			a.FACE,
+			a.TITLE,
+			a.FEATURE,
+			a.NOTICE,
+			a.TYPE,
+			a.COMPANY_ID,
+			a.COMPANY_NAME,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+			a.CREATE_USER,
+			a.CREATE_TIME,
+			a.CREATE_USER_ID,
+			a.UPDATE_USER,
+			a.UPDATE_TIME,
+			a.CITY_ID,
+			a.CITY_NAME,
+			a.IS_DEL,
+			a.IS_PUB,
+			a.SOURCE_URL,
+			a.IS_SINGLE_PUB,
+			a.IS_GRANT,
+			a.IS_SHARE,
+			a.UPDATE_USER_ID,
+			a.DAY_COUNT,
+			a.ATTR,
+			a.CITY_NUM,
+			a.SINGLE_REMARK,
+			a.RETAIL_SINGLE_ROOM,
+			a.INTER_SINGLE_ROOM
+			FROM sd_pro_route a, sd_user_company b
+			WHERE a.IS_SHARE = 1
+			AND a.IS_DEL =0
+			AND a.IS_PUB =1
+			and a.COMPANY_ID = b.id
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_IDS">
+				and a.CITY_ID in ($CITY_IDS$)
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				and a.CITY_ID = #CITY_ID#
+			</isNotEmpty>
+			UNION
+		</isNotEmpty>
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		a.PORDUCE_CONCAT,
+		a.PRODUCE_MOBILE,
+		a.CREATE_USER,
+		a.CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		a.UPDATE_TIME,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.UPDATE_USER_ID,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.CITY_NUM,
+		a.SINGLE_REMARK,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM
+		FROM SD_PRO_ROUTE a,
+		(select distinct b.route_id from SD_PRO_ROUTE_GRANT b where 1 = 1
+		<isNotEmpty property="COMPANY_ID">
+			and (b.COMPANY_ID = #COMPANY_ID#
+			<isNotEmpty property="COMPANY_PID">
+				or b.COMPANY_ID = #COMPANY_PID#
+			</isNotEmpty>
+			)
+		</isNotEmpty>
+		) b
+		WHERE a.ID = b.ROUTE_ID
+		AND a.IS_DEL =0
+		AND a.IS_PUB =1
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_IDS">
+			and a.CITY_ID in ($CITY_IDS$)
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			and a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+
+		) a,
+		(SELECT a.ROUTE_ID,
+			a.RQ,
+			a.ACTUAL_PRICE,
+			a.ACTUAL_INTER_PRICE,
+			a.PLANID,
+			a.RN,
+			b.ROUTE_PRICE,
+			b.ROUTE_INTER_PRICE,
+			(a.ACTUAL_PRICE + b.ROUTE_PRICE) SUM_PRICE,
+			(a.ACTUAL_INTER_PRICE + b.ROUTE_INTER_PRICE) SUM_INTER_PRICE
+			FROM
+			(SELECT a.ROUTE_ID,
+			a.RQ,
+			a.ACTUAL_PRICE,
+			a.ACTUAL_INTER_PRICE,
+			a.PLANID,
+			a.RN
+			FROM
+			(SELECT a.ROUTE_ID,
+				a.RQ,
+				a.ACTUAL_PRICE,
+				a.ACTUAL_INTER_PRICE,
+				a.PLANID,
+				ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+				FROM SD_PRO_ROUTE_CALENDAR a
+						      <![CDATA[ WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq
+							    ||' '
+							    || a.END_TIME
+							  ]]>
+		
+				<isNotEmpty property="BEGIN_DATE">
+					and a.RQ >= to_char(to_date(#BEGIN_DATE#, 'yyyy-mm-dd'), 'yyyymmdd')
+				</isNotEmpty>
+				<isNotEmpty property="END_DATE">
+							  	<![CDATA[ and a.RQ <= to_char(to_date(#END_DATE#, 'yyyy-mm-dd'), 'yyyymmdd') ]]>
+				</isNotEmpty>
+	
+			) a
+			WHERE rn = 1
+			) a,
+			(SELECT a.entity_id,
+				SUM(DECODE(a.TYPE_ID, '0FA5123749D28C87E050007F0100BCAD', a.PRICE,0)) AS ROUTE_PRICE,
+				SUM(DECODE(a.TYPE_ID, '0FA5123749D38C87E050007F0100BCAD', a.PRICE,0))
+				AS ROUTE_INTER_PRICE
+				FROM SD_PRO_BASE_PRICE a
+				WHERE a.ATTR_ID = '0FA5123749CF8C87E050007F0100BCAD'
+				GROUP BY a.ENTITY_ID
+			) b,
+			sd_pro_route_city_labels c
+	
+			WHERE a.ROUTE_ID = b.ENTITY_ID
+			and a.route_id = c.route_id(+)
+			<isNotEmpty property="LABEL_IDS">
+				and
+				<iterate property="LABEL_IDS" conjunction="or" open="(" close=")">
+					c.label_ids like '%$LABEL_IDS[]$%'
+				</iterate>
+			</isNotEmpty>
+		) b, SD_USER c, SD_USER_COMPANY d,
+		(select count(b.id) as ROUTE_TRAFFIC_CNT , b.route_id from
+		sd_pro_route_traffic b, sd_pro_route_traffic_detail c where b.id =
+		c.plan_id and b.is_del = 0 and c.is_del = 0 group by b.route_id) h,
+
+		(select count(b.id) as BASE_PRICE_CNT,b.entity_id from
+		SD_PRO_BASE_PRICE b group by b.entity_id ) h1,
+
+		(SELECT route_id,
+			LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+			FROM
+			(SELECT tag_name,
+			route_id,
+			ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+			FROM sd_pro_route_tag
+			)
+			START WITH RN = 1
+			CONNECT BY RN - 1 = PRIOR RN
+			AND route_id = PRIOR route_id
+			GROUP BY route_id
+		)h2,
+
+
+		(SELECT route_id,
+			LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') begin_city
+			FROM
+			(SELECT CITY_NAME,
+			route_id,
+			ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			FROM SD_PRO_ROUTE_CITY
+			WHERE type = 1
+			)
+			START WITH RN = 1
+			CONNECT BY RN - 1 = PRIOR RN
+			AND route_id = PRIOR route_id
+			GROUP BY route_id
+		)h3,
+		(SELECT route_id,
+			LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') end_city
+			FROM
+			(SELECT CITY_NAME,
+			route_id,
+			ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			FROM SD_PRO_ROUTE_CITY
+			WHERE type = 2
+			)
+			START WITH RN = 1
+			CONNECT BY RN - 1 = PRIOR RN
+			AND route_id = PRIOR route_id
+			GROUP BY route_id
+		)h4,
+		(SELECT t.PRO_ID,
+		t.DISCOUNT_ID,
+		t.title||'('||MAX(SYS_CONNECT_BY_PATH(t.discount_info, ' 套餐*：'))||')' as discount_info
+		FROM
+		(SELECT t.PRO_ID,
+		t.DISCOUNT_ID,
+		t1.title,
+		DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: '
+		|| t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') as discount_info,
+		ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+		FROM SD_DISCOUNT_PRODUCT t,
+		SD_DISCOUNT t1,
+		sd_discount_rule t2
+		WHERE t.discount_id = t1.id
+		AND t.discount_rule_id = t2.id
+		AND t1.is_use = 0
+		AND t2.is_use = 0
+		) t
+		START WITH t.RN = 1
+		CONNECT BY t.RN - 1 = PRIOR t.RN
+		AND t.PRO_ID = PRIOR t.PRO_ID
+		GROUP BY t.PRO_ID,
+		t.DISCOUNT_ID,
+		t.title) h5,
+		(select * from sd_wap_price where AGENCY_ID = #AGENCY_ID#) h6,
+		(SELECT route_id,
+		LTRIM(MAX(SYS_CONNECT_BY_PATH(SCENIC_NAME, ',')), ',') SCENIC_NAME
+		FROM
+		(SELECT SCENIC_NAME,
+		route_id,
+		ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY SCENIC_NAME DESC) RN
+		FROM sd_pro_route_scenic
+		)
+		START WITH RN = 1
+		CONNECT BY RN - 1 = PRIOR RN
+		AND route_id = PRIOR route_id
+		GROUP BY route_id) h7
+		<isNotEmpty property="ORDER">
+			,(select count(1) as order_cnt, t.produce_id from sd_order_base t
+			where 1 = 1
+			<isNotEmpty property="ORDER_STATUS">
+				and t.STATUS = #ORDER_STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="BUY_COMPANY_ID">
+				and t.CREATE_COMPANY_ID = #BUY_COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="IS_MINI">
+				and t.plat_from = 2
+			</isNotEmpty>
+			group by t.produce_id) t6
+		</isNotEmpty>
+		WHERE a.ID = b.ROUTE_ID and a.CREATE_USER_ID = c.ID and a.COMPANY_ID =
+		d.ID
+
+		AND a.id = h.route_id(+)
+		AND a.id = h1.entity_id(+)
+		AND a.id = h2.route_id(+)
+		AND a.id = h3.ROUTE_ID(+)
+		AND a.id = h4.ROUTE_ID(+)
+		AND a.id = h6.PRO_ID(+)
+		AND a.id = h7.ROUTE_ID(+)
+		<isNotEmpty property="DISCOUNT">
+			and a.id = h5.pro_id
+		</isNotEmpty>
+		<isEmpty property="DISCOUNT">
+			and a.id = h5.pro_id(+)
+		</isEmpty>
+		<isNotEmpty property="ORDER">
+			<isEqual property="ORDER" compareValue="BUY">
+				and a.id = t6.produce_id
+			</isEqual>
+			<isEqual property="ORDER" compareValue="HOT">
+				and a.id = t6.produce_id(+)
+			</isEqual>
+		</isNotEmpty>
+
+		<isNotEmpty property="query">
+			AND ( a.TITLE like '%$query$%' or a.NO like '%$query$%' or h4.end_city
+			like '%$query$%' or h2.themes like '%$query$%' or a.attr like
+			'%$query$%' or h7.SCENIC_NAME like '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="BRAND_NAME">
+			and
+			<iterate property="BRAND_NAME" conjunction="or" open="("
+				close=")">
+				d.BRAND_NAME = #BRAND_NAME[]#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_TYPE">
+			and a.TYPE = #ROUTE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="DAY_COUNT">
+			<isEqual property="DAY_COUNT" compareValue="7">
+				and a.DAY_COUNT > 6
+			</isEqual>
+			<isNotEqual property="DAY_COUNT" compareValue="7">
+				and a.DAY_COUNT = #DAY_COUNT#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="ATTR">
+			and a.ATTR = #ATTR#
+		</isNotEmpty>
+		<isNotEmpty property="END_CITY">
+			and h4.END_CITY like '%$END_CITY$%'
+		</isNotEmpty>
+		<isNotEmpty property="BEGIN_CITY">
+			and h3.begin_city like '%$BEGIN_CITY$%'
+		</isNotEmpty>
+		<isNotEmpty property="MAX_PRICE">
+					<![CDATA[ and decode(h6.PRICE, null, b.SUM_PRICE, (b.SUM_INTER_PRICE + h6.price)) <= $MAX_PRICE$ ]]>
+		</isNotEmpty>
+		<isNotEmpty property="MIN_PRICE">
+			and decode(h6.PRICE, null, b.SUM_PRICE, (b.SUM_INTER_PRICE + h6.price))
+			>= $MIN_PRICE$
+		</isNotEmpty>
+		) a,
+			(SELECT 
+			      a.ID,
+			      a.ROUTE_ID,
+			      a.TYPE,
+			      a.ORDER_BY,
+			      a.COMPANY_ID,
+			      a.USER_ID,
+			      a.CREATE_TIME,
+			      a.WAP_ID,
+			      a.CATEGORY_ID,
+			      a.IS_TOP,
+			      a.TOP_ORDER_BY
+			      FROM 
+			    (SELECT a.ID,
+			      a.ROUTE_ID,
+			      a.TYPE,
+			      a.ORDER_BY,
+			      a.COMPANY_ID,
+			      a.USER_ID,
+			      a.CREATE_TIME,
+			      a.WAP_ID,
+			      a.CATEGORY_ID,
+			      a.IS_TOP,
+			      a.TOP_ORDER_BY,
+			      row_number() OVER(PARTITION BY a.ROUTE_ID ORDER BY a.CREATE_TIME DESC) AS ROW_FLG
+			    FROM SD_WEB_RECOMMEND a,
+			      SD_WEB_CATEGORY b
+			    WHERE a.CATEGORY_id = b.ID
+			    <isNotEmpty property="WAP_ID">
+					and a.WAP_ID = #WAP_ID#
+				</isNotEmpty>
+				<isNotEmpty property="COMPANY_ID">
+					AND b.COMPANY_ID = #COMPANY_ID#
+				</isNotEmpty>
+				<isNotEmpty property="PID">
+					AND b.PID = #PID#
+				</isNotEmpty>
+			    ) a
+			  WHERE a.ROW_FLG = 1
+			<isNotEmpty property="COMPANY_PID">
+				UNION
+				SELECT a.*
+				FROM SD_WEB_RECOMMEND a,
+				SD_WEB_CATEGORY b
+				WHERE a.CATEGORY_id = b.ID
+				AND a.route_id NOT IN
+				(SELECT a.route_id
+				FROM SD_WEB_RECOMMEND a,
+				SD_WEB_CATEGORY b
+				WHERE a.CATEGORY_id = b.ID
+				AND b.COMPANY_ID = #COMPANY_ID#
+				<isNotEmpty property="PID">
+				AND b.PID = #PID#
+				</isNotEmpty>
+				)
+				<isNotEmpty property="WAP_ID">
+					and a.WAP_ID = #WAP_ID#
+				</isNotEmpty>
+				AND b.COMPANY_ID = #COMPANY_PID#
+				<isNotEmpty property="PID">
+				AND b.PID = #PID#
+				</isNotEmpty>
+			</isNotEmpty>
+			)b,
+			(SELECT t.id as COLLECT_ID, t.PRODUCE_ID FROM SD_WEB_COLLECT t WHERE t.USER_ID = #COLLECT_USER_ID#) c
+		where 1 = 1 and a.id = b.ROUTE_ID and a.id = c.PRODUCE_ID(+)
+		<isNotEmpty property="IS_TOP">
+			and b.IS_TOP = #IS_TOP#
+		</isNotEmpty>
+		<isNotEmpty property="themes">
+			and
+			<iterate property="themes" conjunction="or" open="(" close=")">
+				a.themes like '%$themes[]$%'
+			</iterate>
+		</isNotEmpty>
+		and a.ROUTE_TRAFFIC_CNT > 0
+		ORDER BY
+		<isNotEmpty property="index_order">
+			<isEqual property="index_order" compareValue="top">
+				b.TOP_ORDER_BY
+			</isEqual>
+			<isEqual property="index_order" compareValue="hot">
+				b.ORDER_BY
+			</isEqual>
+		</isNotEmpty>
+		<isEmpty property="index_order">
+			<isNotEmpty property="orderby">
+				<isEqual property="" compareValue="price">
+					a.sum_price DESC,
+				</isEqual>
+				<isEqual property="" compareValue="saleNum">
+					a.ORDER_CNT DESC,
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="ORDER">
+				a.ORDER_CNT DESC
+			</isNotEmpty>
+			<isEmpty property="ORDER">
+			a.CREATE_TIME DESC
+			</isEmpty>
+		
+		</isEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+
+	<statement id="countRoute" parameterClass="java.util.Map" resultClass="java.lang.Integer" remapResults="true">
+		select count(1) as cnt
+		from (
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		c.china_name as PORDUCE_CONCAT,
+		c.mobile as PRODUCE_MOBILE,
+		c.PHONE,
+		a.CREATE_USER,
+		TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		TO_CHAR(a.UPDATE_TIME, 'yyyy-mm-dd hh24:mm:ss') UPDATE_TIME,
+		a.UPDATE_USER_ID,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM,
+		decode(h6.PRICE, null, b.SUM_PRICE, (b.SUM_INTER_PRICE + h6.price)) as sum_price,
+		to_char(to_date(b.rq, 'YYYY/MM/DD'),'YYYY/MM/DD') rq,
+		c.QQ1,
+		c.QQ2,
+		DECODE(h.ROUTE_TRAFFIC_CNT, null, 0, h.ROUTE_TRAFFIC_CNT) ROUTE_TRAFFIC_CNT,
+		DECODE(h1.BASE_PRICE_CNT, null, 0, h1.BASE_PRICE_CNT) BASE_PRICE_CNT,
+		h2.themes,
+		h3.begin_city,
+		h4.end_city,
+		h5.discount_info,
+		h5.DISCOUNT_ID,
+		h7.SCENIC_NAME
+		<isNotEmpty property="ORDER">
+			,nvl(t6.ORDER_CNT, 0) as ORDER_CNT
+		</isNotEmpty>
+		FROM
+		(
+		<isNotEmpty property="IS_ALONE">
+			SELECT a.ID,
+			a.NO,
+			a.FACE,
+			a.TITLE,
+			a.FEATURE,
+			a.NOTICE,
+			a.TYPE,
+			a.COMPANY_ID,
+			a.COMPANY_NAME,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+			a.CREATE_USER,
+			a.CREATE_TIME,
+			a.CREATE_USER_ID,
+			a.UPDATE_USER,
+			a.UPDATE_TIME,
+			a.CITY_ID,
+			a.CITY_NAME,
+			a.IS_DEL,
+			a.IS_PUB,
+			a.SOURCE_URL,
+			a.IS_SINGLE_PUB,
+			a.IS_GRANT,
+			a.IS_SHARE,
+			a.UPDATE_USER_ID,
+			a.DAY_COUNT,
+			a.ATTR,
+			a.CITY_NUM,
+			a.SINGLE_REMARK,
+			a.RETAIL_SINGLE_ROOM,
+			a.INTER_SINGLE_ROOM
+			FROM sd_pro_route a, sd_user_company b
+			WHERE a.IS_SHARE = 1
+			AND a.IS_DEL =0
+			AND a.IS_PUB =1
+			and a.COMPANY_ID = b.id
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_IDS">
+				and a.CITY_ID in ($CITY_IDS$)
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				and a.CITY_ID = #CITY_ID#
+			</isNotEmpty>
+			UNION
+		</isNotEmpty>
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		a.PORDUCE_CONCAT,
+		a.PRODUCE_MOBILE,
+		a.CREATE_USER,
+		a.CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		a.UPDATE_TIME,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.UPDATE_USER_ID,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.CITY_NUM,
+		a.SINGLE_REMARK,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM
+		FROM SD_PRO_ROUTE a,
+		(select distinct b.route_id from SD_PRO_ROUTE_GRANT b where 1 = 1
+		<isNotEmpty property="COMPANY_ID">
+			and (b.COMPANY_ID = #COMPANY_ID#
+			<isNotEmpty property="COMPANY_PID">
+				or b.COMPANY_ID = #COMPANY_PID#
+			</isNotEmpty>
+			)
+		</isNotEmpty>
+		) b
+		WHERE a.ID = b.ROUTE_ID
+		AND a.IS_DEL =0
+		AND a.IS_PUB =1
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_IDS">
+			and a.CITY_ID in ($CITY_IDS$)
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			and a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+
+		) a,
+		(SELECT a.ROUTE_ID,
+		a.RQ,
+		a.ACTUAL_PRICE,
+		a.ACTUAL_INTER_PRICE,
+		a.PLANID,
+		a.RN,
+		b.ROUTE_PRICE,
+		b.ROUTE_INTER_PRICE,
+		(a.ACTUAL_PRICE + b.ROUTE_PRICE) SUM_PRICE,
+		(a.ACTUAL_INTER_PRICE + b.ROUTE_INTER_PRICE) SUM_INTER_PRICE
+		FROM
+		(SELECT a.ROUTE_ID,
+		a.RQ,
+		a.ACTUAL_PRICE,
+		a.ACTUAL_INTER_PRICE,
+		a.PLANID,
+		a.RN
+		FROM
+		(SELECT a.ROUTE_ID,
+		a.RQ,
+		a.ACTUAL_PRICE,
+		a.ACTUAL_INTER_PRICE,
+		a.PLANID,
+		ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+		FROM SD_PRO_ROUTE_CALENDAR a
+				      <![CDATA[ WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq
+					    ||' '
+					    || a.END_TIME
+					  ]]>
+
+		<isNotEmpty property="BEGIN_DATE">
+			and a.RQ >= to_char(to_date(#BEGIN_DATE#, 'yyyy-mm-dd'), 'yyyymmdd')
+		</isNotEmpty>
+		<isNotEmpty property="END_DATE">
+					  	<![CDATA[ and a.RQ <= to_char(to_date(#END_DATE#, 'yyyy-mm-dd'), 'yyyymmdd') ]]>
+		</isNotEmpty>
+
+		) a
+		WHERE rn = 1
+		) a,
+		(SELECT a.entity_id,
+		SUM(DECODE(a.TYPE_ID, '0FA5123749D28C87E050007F0100BCAD', a.PRICE,0)) AS ROUTE_PRICE,
+		SUM(DECODE(a.TYPE_ID, '0FA5123749D38C87E050007F0100BCAD', a.PRICE,0))
+		AS ROUTE_INTER_PRICE
+		FROM SD_PRO_BASE_PRICE a
+		WHERE a.ATTR_ID = '0FA5123749CF8C87E050007F0100BCAD'
+		GROUP BY a.ENTITY_ID
+		) b,
+		sd_pro_route_city_labels c
+
+		WHERE a.ROUTE_ID = b.ENTITY_ID
+		and a.route_id = c.route_id(+)
+		<isNotEmpty property="LABEL_IDS">
+			and
+			<iterate property="LABEL_IDS" conjunction="or" open="("
+				close=")">
+				c.label_ids like '%$LABEL_IDS[]$%'
+			</iterate>
+		</isNotEmpty>
+		) b, SD_USER c, SD_USER_COMPANY d,
+		(select count(b.id) as ROUTE_TRAFFIC_CNT , b.route_id from
+		sd_pro_route_traffic b, sd_pro_route_traffic_detail c where b.id =
+		c.plan_id and b.is_del = 0 and c.is_del = 0 group by b.route_id) h,
+
+		(select count(b.id) as BASE_PRICE_CNT,b.entity_id from
+		SD_PRO_BASE_PRICE b group by b.entity_id ) h1,
+
+		(SELECT route_id,
+		LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+		FROM
+		(SELECT tag_name,
+		route_id,
+		ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+		FROM sd_pro_route_tag
+		)
+		START WITH RN = 1
+		CONNECT BY RN - 1 = PRIOR RN
+		AND route_id = PRIOR route_id
+		GROUP BY route_id
+		)h2,
+
+
+		(SELECT route_id,
+		LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') begin_city
+		FROM
+		(SELECT CITY_NAME,
+		route_id,
+		ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+		FROM SD_PRO_ROUTE_CITY
+		WHERE type = 1
+		)
+		START WITH RN = 1
+		CONNECT BY RN - 1 = PRIOR RN
+		AND route_id = PRIOR route_id
+		GROUP BY route_id
+		)h3,
+		(SELECT route_id,
+		LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') end_city
+		FROM
+		(SELECT CITY_NAME,
+		route_id,
+		ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+		FROM SD_PRO_ROUTE_CITY
+		WHERE type = 2
+		)
+		START WITH RN = 1
+		CONNECT BY RN - 1 = PRIOR RN
+		AND route_id = PRIOR route_id
+		GROUP BY route_id
+		)h4,
+		(SELECT t.PRO_ID,
+		t.DISCOUNT_ID,
+		t.title||'('||MAX(SYS_CONNECT_BY_PATH(t.discount_info, ' 套餐*：'))||')' as discount_info
+		FROM
+		(SELECT t.PRO_ID,
+		t.DISCOUNT_ID,
+		t1.title,
+		DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: '
+		|| t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') as discount_info,
+		ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+		FROM SD_DISCOUNT_PRODUCT t,
+		SD_DISCOUNT t1,
+		sd_discount_rule t2
+		WHERE t.discount_id = t1.id
+		AND t.discount_rule_id = t2.id
+		AND t1.is_use = 0
+		AND t2.is_use = 0
+		) t
+		START WITH t.RN = 1
+		CONNECT BY t.RN - 1 = PRIOR t.RN
+		AND t.PRO_ID = PRIOR t.PRO_ID
+		GROUP BY t.PRO_ID,
+		t.DISCOUNT_ID,
+		t.title) h5,
+		(select * from sd_wap_price where AGENCY_ID = #AGENCY_ID#) h6,
+		(SELECT route_id,
+		LTRIM(MAX(SYS_CONNECT_BY_PATH(SCENIC_NAME, ',')), ',') SCENIC_NAME
+		FROM
+		(SELECT SCENIC_NAME,
+		route_id,
+		ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY SCENIC_NAME DESC) RN
+		FROM sd_pro_route_scenic
+		)
+		START WITH RN = 1
+		CONNECT BY RN - 1 = PRIOR RN
+		AND route_id = PRIOR route_id
+		GROUP BY route_id) h7
+		<isNotEmpty property="ORDER">
+			,(select count(1) as order_cnt, t.produce_id from sd_order_base t
+			where 1 = 1
+			<isNotEmpty property="ORDER_STATUS">
+				and t.STATUS = #ORDER_STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="BUY_COMPANY_ID">
+				and t.CREATE_COMPANY_ID = #BUY_COMPANY_ID#
+			</isNotEmpty>
+			group by t.produce_id) t6
+		</isNotEmpty>
+		WHERE a.ID = b.ROUTE_ID and a.CREATE_USER_ID = c.ID and a.COMPANY_ID =
+		d.ID
+
+		AND a.id = h.route_id(+)
+		AND a.id = h1.entity_id(+)
+		AND a.id = h2.route_id(+)
+		AND a.id = h3.ROUTE_ID(+)
+		AND a.id = h4.ROUTE_ID(+)
+		AND a.id = h6.PRO_ID(+)
+		AND a.id = h7.ROUTE_ID(+)
+		<isNotEmpty property="DISCOUNT">
+			and a.id = h5.pro_id
+		</isNotEmpty>
+		<isEmpty property="DISCOUNT">
+			and a.id = h5.pro_id(+)
+		</isEmpty>
+		<isNotEmpty property="ORDER">
+			<isEqual property="ORDER" compareValue="BUY">
+				and a.id = t6.produce_id
+			</isEqual>
+			<isEqual property="ORDER" compareValue="HOT">
+				and a.id = t6.produce_id(+)
+			</isEqual>
+		</isNotEmpty>
+
+		<isNotEmpty property="query">
+			AND ( a.TITLE like '%$query$%' or a.NO like '%$query$%' or h4.end_city
+			like '%$query$%' or h2.themes like '%$query$%' or a.attr like
+			'%$query$%' or h7.SCENIC_NAME like '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="BRAND_NAME">
+			and
+			<iterate property="BRAND_NAME" conjunction="or" open="("
+				close=")">
+				d.BRAND_NAME = #BRAND_NAME[]#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_TYPE">
+			and a.TYPE = #ROUTE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="DAY_COUNT">
+			<isEqual property="DAY_COUNT" compareValue="7">
+				and a.DAY_COUNT > 6
+			</isEqual>
+			<isNotEqual property="DAY_COUNT" compareValue="7">
+				and a.DAY_COUNT = #DAY_COUNT#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="ATTR">
+			and a.ATTR = #ATTR#
+		</isNotEmpty>
+		<isNotEmpty property="END_CITY">
+			and h4.END_CITY like '%$END_CITY$%'
+		</isNotEmpty>
+		<isNotEmpty property="BEGIN_CITY">
+			and h3.begin_city like '%$BEGIN_CITY$%'
+		</isNotEmpty>
+		<isNotEmpty property="MAX_PRICE">
+					<![CDATA[ and decode(h6.PRICE, null, b.SUM_PRICE, (b.SUM_INTER_PRICE + h6.price)) <= $MAX_PRICE$ ]]>
+		</isNotEmpty>
+		<isNotEmpty property="MIN_PRICE">
+			and decode(h6.PRICE, null, b.SUM_PRICE, (b.SUM_INTER_PRICE + h6.price))
+			>= $MIN_PRICE$
+		</isNotEmpty>
+
+		) a,(SELECT *
+			  FROM
+			    (SELECT a.ID,
+			      a.ROUTE_ID,
+			      a.TYPE,
+			      a.ORDER_BY,
+			      a.COMPANY_ID,
+			      a.USER_ID,
+			      a.CREATE_TIME,
+			      a.WAP_ID,
+			      a.CATEGORY_ID,
+			      a.IS_TOP,
+			      a.TOP_ORDER_BY,
+			      row_number() OVER(PARTITION BY a.ROUTE_ID ORDER BY a.CREATE_TIME DESC) AS ROW_FLG
+			    FROM SD_WEB_RECOMMEND a,
+			      SD_WEB_CATEGORY b
+			    WHERE a.CATEGORY_id = b.ID
+			    <isNotEmpty property="WAP_ID">
+					and a.WAP_ID = #WAP_ID#
+				</isNotEmpty>
+				<isNotEmpty property="COMPANY_ID">
+					AND b.COMPANY_ID = #COMPANY_ID#
+				</isNotEmpty>
+				<isNotEmpty property="PID">
+					AND b.PID = #PID#
+				</isNotEmpty>
+			    ) a
+			  WHERE a.ROW_FLG = 1
+			<isNotEmpty property="COMPANY_PID">
+				UNION
+				SELECT a.*
+				FROM SD_WEB_RECOMMEND
+				a,
+				SD_WEB_CATEGORY b
+				WHERE a.CATEGORY_id = b.ID
+				AND a.route_id NOT IN
+				(SELECT a.route_id
+				FROM SD_WEB_RECOMMEND a,
+				SD_WEB_CATEGORY b
+				WHERE a.CATEGORY_id = b.ID
+				AND b.COMPANY_ID = #COMPANY_ID#
+				<isNotEmpty property="PID">
+				AND b.PID = #PID#
+				</isNotEmpty>
+				)
+				<isNotEmpty property="WAP_ID">
+					and a.WAP_ID = #WAP_ID#
+				</isNotEmpty>
+				AND b.COMPANY_ID = #COMPANY_PID#
+				AND b.PID = #PID#
+			</isNotEmpty>
+			)b,
+		(SELECT t.id as COLLECT_ID, t.PRODUCE_ID FROM SD_WEB_COLLECT t WHERE t.USER_ID = #COLLECT_USER_ID#) c
+		where 1 = 1 and a.id = b.ROUTE_ID and a.id = c.PRODUCE_ID(+)
+		<isNotEmpty property="IS_TOP">
+			and b.IS_TOP = #IS_TOP#
+		</isNotEmpty>
+		<isNotEmpty property="themes">
+			and
+			<iterate property="themes" conjunction="or" open="(" close=")">
+				a.themes like '%$themes[]$%'
+			</iterate>
+		</isNotEmpty>
+		and a.ROUTE_TRAFFIC_CNT > 0
+	</statement>
+
+	<statement id="searchRouteLabelAndCity" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+
+		select wm_concat(a.city_name) as city_name,
+		a.id,
+		a.text,
+		a.type
+		from (
+		SELECT DISTINCT
+		c.city_id,
+		c.city_name,
+		e.id,
+		e.text,
+		e.type
+		FROM
+		(
+		<isNotEmpty property="IS_ALONE">
+			SELECT a.ID,
+			a.NO,
+			a.FACE,
+			a.TITLE,
+			a.FEATURE,
+			a.NOTICE,
+			a.TYPE,
+			a.COMPANY_ID,
+			a.COMPANY_NAME,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+			a.CREATE_USER,
+			a.CREATE_TIME,
+			a.CREATE_USER_ID,
+			a.UPDATE_USER,
+			a.UPDATE_TIME,
+			a.CITY_ID,
+			a.CITY_NAME,
+			a.IS_DEL,
+			a.IS_PUB,
+			a.SOURCE_URL,
+			a.IS_SINGLE_PUB,
+			a.IS_GRANT,
+			a.IS_SHARE,
+			a.UPDATE_USER_ID,
+			a.DAY_COUNT,
+			a.ATTR,
+			a.CITY_NUM,
+			a.SINGLE_REMARK,
+			a.RETAIL_SINGLE_ROOM,
+			a.INTER_SINGLE_ROOM
+			FROM sd_pro_route a
+			WHERE a.IS_SHARE = 1
+			AND a.IS_DEL =0
+			AND a.IS_PUB =1
+			<isNotEmpty property="ROUTE_TYPE">
+				and a.type = #ROUTE_TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				and a.CITY_ID = #CITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="NOTCOMPANYID">
+				and a.COMPANY_ID != #NOTCOMPANYID#
+			</isNotEmpty>
+			<isNotEmpty property="ROUTE_TYPE">
+				and a.TYPE = #ROUTE_TYPE#
+			</isNotEmpty>
+			UNION
+		</isNotEmpty>
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		a.PORDUCE_CONCAT,
+		a.PRODUCE_MOBILE,
+		a.CREATE_USER,
+		a.CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		a.UPDATE_TIME,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.UPDATE_USER_ID,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.CITY_NUM,
+		a.SINGLE_REMARK,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM
+		FROM SD_PRO_ROUTE a,
+		SD_PRO_ROUTE_GRANT b
+		WHERE a.ID = b.ROUTE_ID
+		AND a.IS_DEL =0
+		AND a.IS_PUB =1
+
+		<isNotEmpty property="ROUTE_TYPE">
+			and a.type = #ROUTE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			and b.COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			and a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="NOTCOMPANYID">
+			and a.COMPANY_ID != #NOTCOMPANYID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_TYPE">
+			and a.TYPE = #ROUTE_TYPE#
+		</isNotEmpty>
+		) a,
+		(SELECT a.ROUTE_ID
+		FROM SD_PRO_ROUTE_CALENDAR a
+			  <![CDATA[ WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq
+			    ||' '
+			    || a.END_TIME
+			  ]]>
+		GROUP BY a.route_id
+		) b,
+		SD_PRO_ROUTE_CITY c,
+		(select t.entity_id,
+		t.ENTITY_NAME,
+		t1.id,
+		t1.text,
+		t1.type from sd_city_label t, sd_label t1
+		where t.label_id = t1.id
+		and t1.IS_USE = 0
+		and t.type != 2) e,
+		(select a.* from SD_WEB_RECOMMEND a, SD_WEB_CATEGORY b where
+		a.CATEGORY_id = b.ID and (
+			b.COMPANY_ID = #COMPANY_ID#
+		<isNotEmpty property="COMPANY_PID"> 
+			or b.COMPANY_ID = #COMPANY_PID#
+		</isNotEmpty>
+		) 
+		<isNotEmpty property="PID">
+			and b.PID = #PID#
+		</isNotEmpty>
+		)g
+		WHERE a.ID = c.ROUTE_ID
+		AND a.ID = b.ROUTE_ID
+		and c.CITY_ID = e.entity_id(+) and a.id = g.ROUTE_ID AND c.TYPE = 2
+		<isNotEmpty property="TYPE">
+			and a.type = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="labelNotNull">
+			and e.TEXT IS NOT NULL
+		</isNotEmpty>
+		)a
+		group by a.id,
+		a.text,
+		a.type
+	</statement>
+
+	<statement id="searchRouteOther" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+		a.ROUTE_ID,
+		a.TITLE,
+		a.CONTENT,
+		a.TYPE
+		from SD_PRO_ROUTE_OTHER a
+		where 1 = 1
+		<isNotEmpty property="ROUTE_ID">
+			AND a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and a.TYPE = #TYPE#
+		</isNotEmpty>
+		order by order_by
+	</statement>
+
+	<statement id="searchRouteCity" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		SELECT a.ID,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.TYPE,
+		a.ORDER_BY,
+		a.ROUTE_ID,
+		a.STAY_COUNT
+		FROM SD_PRO_ROUTE_CITY a
+		WHERE 1 = 1
+		<isNotEmpty property="TYPE">
+			AND a.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_ID">
+			AND a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		ORDER BY a.TYPE, a.ORDER_BY
+	</statement>
+
+	<statement id="searchRouteDay" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+		a.ROUTE_ID,
+		a.NO,
+		a.TODAY_TIPS,
+		a.HOTEL_TIPS,
+		a.PAY_TIPS,
+		a.BREAKFAST,
+		a.LUNCH,
+		a.DINNER,
+		a.TITLE_TYPE,
+		a.TITLE,
+		a.BEGIN_CITY,
+		a.TOOL,
+		a.END_CITY,
+		a.TOOL1,
+		a.END_CITY1,
+		a.IS_DEL,
+		a.ROUTE_CITY_ID,
+		b.CITY_ID,
+		b.CITY_NAME
+		from SD_PRO_ROUTE_DAY a, SD_PRO_ROUTE_CITY b
+		where 1 = 1 and a.IS_DEL =
+		0
+		and a.ROUTE_CITY_ID = b.ID
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			and a.NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_CITY_ID">
+			and a.ROUTE_CITY_ID = #ROUTE_CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		ORDER BY a.NO
+	</statement>
+
+	<resultMap id="routeDayDetailResult" class="cn.sd.entity.produce.RouteDayDetail">
+		<result column="ID" property="ID" jdbcType="VARCHAR" />
+		<result column="DAY_ID" property="DAY_ID" jdbcType="VARCHAR" />
+		<result column="TITLE" property="TITLE" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="CONTENT" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<statement id="searchRouteDayDetail" parameterClass="java.util.Map"
+		resultMap="routeDayDetailResult">
+		select * from (
+		select a.ID,
+		a.DAY_ID,
+		a.TITLE,
+		a.CONTENT,
+		to_number(replace(decode(a.title,'上午','07:59','下午','12:59','全天','00:00',a.title),':',''))
+		order_des
+		from SD_PRO_ROUTE_DAY_DETAIL a, SD_PRO_ROUTE_DAY b
+		where 1 = 1
+		and a.day_id = b.id
+		<isNotEmpty property="DAY_ID">
+			and a.DAY_ID = #DAY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_ID">
+			and b.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		) a order by a.order_des
+	</statement>
+
+	<statement id="searchRouteScenic" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		select a.ID,
+		a.ROUTE_ID,
+		a.DAY_DETAIL_ID,
+		a.SCENIC_ID,
+		a.SCENIC_NAME
+		from SD_PRO_ROUTE_SCENIC a
+		where 1 = 1
+		<isNotEmpty property="DAY_DETAIL_ID">
+			and a.DAY_DETAIL_ID = #DAY_DETAIL_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SCENIC_ID">
+			and a.SCENIC_ID = #SCENIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+
+	<statement id="saerchRouteAlbum" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+		a.ROUTE_ID,
+		a.IMG_PATH,
+		a.REMARK,
+		a.IS_FACE
+		from SD_PRO_ROUTE_ALBUM a
+		where 1 = 1
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		ORDER BY A.CREATE_TIME DESC
+	</statement>
+
+	<statement id="searchCalendar" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		a.RQ,
+		a.ACTUAL_INTER_PRICE,
+		a.PLANID,
+		a.RULEIDS,
+		a.PLANIDGROUP,
+		a.RULEIDGROUP,
+		a.ROUTE_ID,
+		a.DAY_NUM,
+		a.END_TIME,
+		a.TRAFFIC_ID,
+		to_date(a.rq, 'yyyy-mm-dd') as d,
+		to_char(to_date(a.rq, 'yyyy-mm-dd'),'day') week,
+		(a.ACTUAL_PRICE + b.route_price) as T_ACTUAL_PRICE,
+		DECODE(c.PRICE, NULL, (a.ACTUAL_PRICE + b.route_price), (a.actual_inter_price +
+		b.route_inter_price + c.PRICE)) AS ACTUAL_PRICE
+		FROM
+		(SELECT a.ID,
+		a.RQ,
+		a.ACTUAL_PRICE,
+		a.ACTUAL_INTER_PRICE,
+		a.PLANID,
+		a.RULEIDS,
+		a.PLANIDGROUP,
+		a.RULEIDGROUP,
+		a.ROUTE_ID,
+		a.DAY_NUM,
+		a.END_TIME,
+		a.TRAFFIC_ID
+		FROM SD_PRO_ROUTE_CALENDAR a
+		     <![CDATA[ WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a. rq ]]>
+		||' '
+		|| a.END_TIME
+		<isNotEmpty property="START_DATE">
+		      	<![CDATA[ AND a.rq >= #START_DATE#  AND a.rq <= #END_DATE# ]]>
+		</isNotEmpty>
+		AND a.route_id = #ROUTE_ID#
+		<isNotEmpty property="RQ">
+			and a.rq = #RQ#
+		</isNotEmpty>
+		) a,
+		(SELECT a.entity_id,
+		SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+		SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0))
+		AS route_inter_price
+		FROM sd_pro_base_price a
+		where a.entity_id = #ROUTE_ID#
+		AND a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+		GROUP BY a.entity_id
+		) b,
+		(select * from SD_WAP_PRICE c where c.AGENCY_ID = #AGENCY_ID# and c.pro_id =
+		#ROUTE_ID#) c
+		WHERE a.route_id = b.entity_id
+		and a.route_id =
+		c.pro_id(+)
+		order by a.rq
+	</statement>
+
+	<statement id="searchRouteTraffic" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		SELECT a.ID,
+		a.ROUTE_ID,
+		a.NO,
+		a.TITLE,
+		a.TITLE as PLAN_TITLE,
+		a.ID as PLANID
+		FROM SD_PRO_ROUTE_TRAFFIC a
+		WHERE a.IS_DEL = 0
+		<isNotEmpty property="ROUTE_ID">
+			AND a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			AND a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="IDS">
+			AND a.ID in ($IDS$)
+		</isNotEmpty>
+		ORDER BY a.NO
+	</statement>
+
+	<statement id="listRouteCalendarDao" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		SELECT a.ID,
+		a.RQ,
+		a.ACTUAL_PRICE,
+		a.ACTUAL_INTER_PRICE,
+		a.PLANID,
+		a.RULEIDS,
+		a.PLANIDGROUP,
+		a.RULEIDGROUP,
+		a.ROUTE_ID,
+		a.DAY_NUM,
+		a.END_TIME,
+		a.TRAFFIC_ID
+		FROM sd_pro_route_calendar a
+		WHERE 1 = 1
+		<isNotEmpty property="ROUTE_ID">
+			and a.route_id = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="RQ">
+			and a.rq = #RQ#
+		</isNotEmpty>
+	</statement>
+
+	<statement id="sumPricesDao" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap" remapResults="true">
+		$sql$
+	</statement>
+
+	<statement id="searchWapPrice" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		select * from SD_WAP_PRICE c where c.AGENCY_ID =
+		#AGENCY_ID# and c.pro_id = #ROUTE_ID#
+	</statement>
+
+	<statement id="searchRouteDetail" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		SELECT a.ID,
+		a.NO,
+		a.FACE,
+		a.TITLE,
+		a.FEATURE,
+		a.NOTICE,
+		a.TYPE,
+		a.COMPANY_ID,
+		a.COMPANY_NAME,
+		a.CREATE_USER,
+		TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') CREATE_TIME,
+		a.CREATE_USER_ID,
+		a.UPDATE_USER,
+		TO_CHAR(a.UPDATE_TIME, 'yyyy-mm-dd hh24:mm:ss') UPDATE_TIME,
+		a.UPDATE_USER_ID,
+		a.CITY_ID,
+		a.CITY_NAME,
+		a.IS_DEL,
+		a.IS_PUB,
+		a.SOURCE_URL,
+		a.IS_SINGLE_PUB,
+		a.IS_GRANT,
+		a.IS_SHARE,
+		a.DAY_COUNT,
+		a.ATTR,
+		a.RETAIL_SINGLE_ROOM,
+		a.INTER_SINGLE_ROOM,
+		a.PORDUCE_CONCAT
+		FROM SD_PRO_ROUTE a
+		WHERE 1 = 1
+		<isNotEmpty property="ID">
+			AND a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+
+	<statement id="searchRouteTrafficDetail" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		SELECT a.ID,
+		a.PLAN_ID,
+		a.ORDER_BY,
+		a.BEGIN_CITY_ID,
+		a.BEGIN_CITY_NAME,
+		a.END_CITY_ID,
+		a.END_CITY_NAME,
+		a.TRAFFIC_ID,
+		a.TRAFFIC_NAME,
+		a.STAY_CNT,
+		b.TITLE,
+		c.TITLE as ROUTE_TITLE,
+		c.NO as ROUTE_NO,
+		('方案'|| b.no || ' ' || b.title) as PLAN_NAME ,
+		t.BEGIN_STATION,
+		t.END_STATION,
+		t.TYPE,
+		t.IS_SINGLE
+		FROM SD_PRO_ROUTE_TRAFFIC_DETAIL a,
+		SD_PRO_ROUTE_TRAFFIC b,
+		SD_PRO_ROUTE c,
+		sd_pro_traffic t
+		WHERE a.PLAN_ID = b.ID
+		AND b.ROUTE_ID = c.ID
+		AND a.traffic_id = t.id
+		AND a.IS_DEL = 0
+		AND b.IS_DEL = 0
+		AND c.IS_DEL = 0
+		<isNotEmpty property="PLAN_ID">
+			AND a.PLAN_ID = #PLAN_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TRAFFIC_ID">
+			AND a.TRAFFIC_ID = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_PUB">
+			AND c.IS_PUB = #ROUTE_PUB#
+		</isNotEmpty>
+		ORDER BY c.id, b.NO
+	</statement>
+	
+	<statement id="searchRecommendCity" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT distinct t.city_name FROM SD_WAP_RECOMMEND_CITY t WHERE 1 = 1
+		<isNotEmpty property="WAP_ID">
+			and t.WAP_ID = #WAP_ID# 
+		</isNotEmpty>
+		<isNotEmpty property="CATEGORY_ID">
+			and t.CATEGORY_ID = #CATEGORY_ID# 
+		</isNotEmpty>
+	</statement>
+
+</sqlMap>

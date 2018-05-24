@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="module">
+	<resultMap id="moduleEntityResult" class="cn.sd.entity.b2b.ModuleEntity">
+	    	<result column="ID" property="id" jdbcType="VARCHAR" />
+	    	<result column="PID" property="parentId" jdbcType="VARCHAR" />
+	    	<result column="TEXT" property="text" jdbcType="VARCHAR" />
+	    	<result column="IS_USE" property="isUse" jdbcType="VARCHAR" />
+	    	<result column="HREF"  property="url" jdbcType="VARCHAR" />
+	    	<result column="ICONCLS"  property="iconCls" jdbcType="VARCHAR" />
+	    	<result column="GLYPH"  property="glyph" jdbcType="VARCHAR" />
+	    	<result column="LEAF"  property="leaf" jdbcType="NUMBER" />
+	    	<result column="EXPANDED"  property="expanded" jdbcType="NUMBER" />
+	</resultMap> 
+	
+	<insert id="syncRoleModuleDao" parameterClass="java.util.Map">
+		INSERT INTO SD_ROLE_MODULE
+		  (ID, ROLE_ID, MODULE_ID
+		  )
+		SELECT SYS_GUID(),
+		  #ROLE_ID#,
+		  t.MODULE_ID
+		FROM SD_ROLE_MODULE t
+		WHERE t.ROLE_ID = #SYNC_ROLE_ID#
+	</insert>
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultMap="moduleEntityResult">
+		select a.ID		 ,
+		   a.PID         ,
+		   a.TEXT        ,
+		   a.IS_USE      ,
+		   a.HREF        ,
+		   a.ICONCLS     ,
+		   a.LEAF        ,
+		   a.GLYPH		 ,
+		   a.EXPANDED                     from SD_MODULE a 
+		   where a.PID=#PID#
+		   
+		   <isNotEmpty prepend=" and " property="IS_USE">
+		   		a.IS_USE = #IS_USE#
+		    </isNotEmpty>
+		   order　by a.ORDER_BY
+	</statement>
+	
+	
+	<statement id="listAllDao" resultClass="java.lang.String">
+		select '/'||a.HREF as HREF from SD_MODULE a 
+	</statement>
+	
+	<select id="roldModuleDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+        select MODULE_ID  from SD_ROLE_MODULE where ROLE_ID=#VALUE#
+	</select>
+	
+	
+	<statement id="userRoleModuleDao" parameterClass="java.util.Map" resultMap="moduleEntityResult">
+		select a.ID		 ,
+		   a.PID         ,
+		   a.TEXT        ,
+		   a.IS_USE      ,
+		   a.HREF        ,
+		   a.ICONCLS     ,
+		   a.LEAF        ,
+		   a.GLYPH		 ,
+		   a.EXPANDED                     from SD_MODULE a,SD_ROLE_MODULE b, sd_role c 
+		   where a.ID = b.MODULE_ID 
+		   and a.PID=#PID#
+		   and b.ROLE_ID = #ROLE_ID#
+		   and a.IS_USE = 0
+		   and b.role_id = c.id
+		   and c.is_del = 0
+		   order　by a.ORDER_BY
+	</statement>
+	
+	<statement id="userRoleModuleByStringDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select 
+		   '/'||a.HREF as HREF       
+		   from SD_MODULE a,SD_ROLE_MODULE b 
+		   where a.ID = b.MODULE_ID 
+		   and b.ROLE_ID=#VALUE#
+		   and a.IS_USE = 0
+	</statement>
+	
+	<statement id="listRoleOfModuleDao" parameterClass="java.util.Map" resultMap="moduleEntityResult">
+		SELECT c.ID,
+			c.PID,
+			c.TEXT,
+			c.IS_USE,
+			c.HREF,
+			c.ICONCLS,
+			c.LEAF,
+			c.GLYPH,
+			c.EXPANDED     
+		FROM SD_ROLE a,
+		  SD_ROLE_MODULE b,
+		  SD_MODULE c
+		WHERE 1         = 1
+		AND a.ID        = b.ROLE_ID
+		AND b.MODULE_ID = c.ID
+		AND a.IS_USE    = 0
+		AND c.IS_USE    = 0
+		AND a.ID        = #ROLE_ID#
+		<isNotEmpty property="PID">
+		and c.PID = #PID#
+		</isNotEmpty>
+		ORDER BY c.ORDER_BY ASC
+	</statement>
+	
+	<statement id="listUserOfModuleIDDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select MODULE_ID from SD_USER_MODULE where USER_ID = #USER_ID#
+	</statement>
+	
+	<statement id="userModuleDao" parameterClass="java.util.Map" resultMap="moduleEntityResult">
+		SELECT DISTINCT a.* FROM (
+			SELECT * FROM (
+				SELECT a.ID,
+				  a.PID,
+				  a.TEXT,
+				  a.IS_USE,
+				  a.HREF,
+				  a.ICONCLS,
+				  a.LEAF,
+				  a.GLYPH,
+				  a.EXPANDED,
+				  a.ORDER_BY
+				FROM SD_MODULE a,
+				  SD_USER_MODULE b
+				WHERE a.ID    = b.MODULE_ID
+				AND a.PID     = #PID#
+				AND b.USER_ID = #USER_ID#
+				AND a.IS_USE  = 0 
+				union all
+				SELECT t2.ID,
+				  t2.PID,
+				  t2.TEXT,
+				  t2.IS_USE,
+				  t2.HREF,
+				  t2.ICONCLS,
+				  t2.LEAF,
+				  t2.GLYPH,
+				  t2.EXPANDED,
+				  t2.ORDER_BY
+				FROM SD_COMPANY_USER_ROLE t,
+				  SD_ROLE_MODULE t1,
+				  SD_MODULE T2
+				WHERE t.ROLE_ID  = t1.ROLE_ID
+				AND t1.module_id = t2.id
+				AND t2.PID     = #PID#
+				AND t.USER_ID  = #USER_ID#
+			) a
+			
+			<isNotEmpty property="companyType">
+			
+			Intersect
+			
+			SELECT * FROM (
+				SELECT a.ID,
+				  a.PID,
+				  a.TEXT,
+				  a.IS_USE,
+				  a.HREF,
+				  a.ICONCLS,
+				  a.LEAF,
+				  a.GLYPH,
+				  a.EXPANDED,
+				  a.ORDER_BY
+				FROM SD_MODULE a,
+				  SD_USER_MODULE b
+				WHERE a.ID    = b.MODULE_ID
+				AND a.PID     = #PID#
+				AND b.USER_ID = #COMPANY_USER_ID#
+				AND a.IS_USE  = 0 
+				union all
+				SELECT t2.ID,
+				  t2.PID,
+				  t2.TEXT,
+				  t2.IS_USE,
+				  t2.HREF,
+				  t2.ICONCLS,
+				  t2.LEAF,
+				  t2.GLYPH,
+				  t2.EXPANDED,
+				  t2.ORDER_BY
+				FROM SD_COMPANY_USER_ROLE t,
+				  SD_ROLE_MODULE t1,
+				  SD_MODULE T2
+				WHERE t.ROLE_ID  = t1.ROLE_ID
+				AND t1.module_id = t2.id
+				AND t2.PID     = #PID#
+				AND t.USER_ID  = #COMPANY_USER_ID#
+			) b
+			</isNotEmpty>	
+		) a ORDER BY a.ORDER_BY
+	</statement>
+	
+</sqlMap>

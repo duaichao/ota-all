@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="traffic">
+	
+	<statement id="getPlanTraffic" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select a.plan_id,a.traffic_id,a.stay_cnt,b.TITLE, b.IS_FULL_PRICE from SD_PRO_ROUTE_TRAFFIC_DETAIL a,SD_PRO_TRAFFIC b
+		 where b.id = a.TRAFFIC_id and a.plan_id = #VALUE# and a.is_del = 0 and b.is_del = 0
+		 order by a.order_by
+	</statement>
+	
+	<statement id="getRidTraffidIdByRuleId" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		  select a.traffic_id,a.id from sd_pro_traffic_rule a where a.id in ($VALUE$)
+	</statement>
+	
+	<statement id="getDateSeatByRuleId" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		  select a.traffic_id,a.id,DECODE(NVL(f.id,'0'),'0',a.SEAT_COUNT,f.seat)-NVL(b.SALE_SEAT,0) AS actual_seat
+		  from 
+		  sd_pro_traffic_rule a,
+		  (SELECT b.SALE_DATE,b.RULE_ID,
+		    SUM(b.SALE_SEAT) AS SALE_SEAT
+		  FROM SD_PRO_TRAFFIC_SEAT b
+		  WHERE b.RULE_ID = #RULE_ID# and b.SALE_DATE = #PARAM_DATE#
+		  GROUP BY RULE_ID,
+		    SALE_DATE
+		  ) b ,
+		  ( select * from SD_PRO_TRAFFIC_RULE_SEAT f  where f.rule_id = #RULE_ID#
+		  and f.edit_date = #PARAM_DATE# ) f  
+		  
+		  where a.id = b.rule_id(+) and a.id = f.rule_id(+)
+		  and a.id = #RULE_ID#
+	</statement>
+	
+	<statement id="searchPriceAttr" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, 
+			a.TITLE, 
+			a.ORDER_BY, 
+			a.IS_USE,
+			a.CON_NAME
+		FROM SD_PRO_PRICE_ATTR a
+		WHERE 1       = 1
+		and a.IS_USE = 0 
+		<isNotEmpty property="PID">
+			and a.pid = #PID#
+		</isNotEmpty>
+		<isEmpty property="PID">
+			and a.pid = '-1'
+		</isEmpty>
+		order by a.ORDER_BY 
+	</statement>
+	
+	<statement id="searchTrafficMuster" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.TRAFFIC_ID,
+		  t.MUSTER_TIME,
+		  t.MUSTER_PLACE
+		FROM SD_PRO_TRAFFIC_MUSTER t
+		WHERE t.IS_DEL       = 0
+		AND t.TRAFFIC_ID = #TRAFFIC_ID#
+		
+	</statement>
+	
+</sqlMap>

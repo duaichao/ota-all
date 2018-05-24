@@ -1,0 +1,2506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="trafficOrder">
+	
+	<update id="delOrderDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET IS_DEL = 1, DEL_USER = #DEL_USER#, DEL_TIME = SYSDATE WHERE ID = #ORDER_ID#
+	</update>
+	
+	<insert id="saveOrderContactDao" parameterClass="java.util.Map">
+		INSERT INTO SD_ORDER_CONTACT(
+			ID,
+			CHINA_NAME,
+			MOBILE,
+			ORDER_ID,
+			CREATE_TIME,
+			CREATE_USER_ID,
+			COMPANY_ID)
+		VALUES
+			(#ID#,
+			#CHINA_NAME#,
+			#MOBILE#,
+			#ORDER_ID#,
+			sysdate,
+			#CREATE_USER_ID#,
+			#COMPANY_ID#)
+	</insert>
+	
+	<delete id="delOrderContactDao" parameterClass="java.util.Map">
+		DELETE FROM SD_ORDER_CONTACT WHERE ORDER_ID = #ORDER_ID#
+	</delete>
+	
+	<statement id="listOrderContactDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+			t.CHINA_NAME,
+			t.MOBILE,
+			t.ORDER_ID,
+			t.CREATE_TIME,
+			t.CREATE_USER_ID,
+			t.COMPANY_ID 
+		from SD_ORDER_CONTACT t 
+		WHERE 1 = 1
+		<isNotEmpty property="ORDER_ID">
+			and t.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="listRefundEarnestDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		      t.EARNEST_INTER_AMOUNT,
+		      t.PRODUCE_TYPE,
+		      t.PRODUCE_ID,
+		      t.SITE_RELA_ID,
+		      t.CREATE_COMPANY_ID,
+		      t.COMPANY_ID,
+		      t.CREATE_USER, 
+		      t.CREATE_USER_ID, 
+		      t.PRODUCE_ID,
+		      t.D,
+		      t.PAY_TYPE,
+		      t.NO
+			FROM
+			  (SELECT (t.EARNEST_EXIT_DATE + t1.EARNEST_REFUND_AUDIT_DATE) d,
+			    t.ID,
+			    t.EARNEST_INTER_AMOUNT,
+			    t.CREATE_USER, 
+			    t.CREATE_USER_ID,
+			    t.PRODUCE_ID,
+			    t.SITE_RELA_ID,
+			    t.CREATE_COMPANY_ID,
+			    t.COMPANY_ID,
+			    t.PAY_TYPE,
+			    t.NO,
+			    t.PRODUCE_TYPE
+			  FROM SD_ORDER_BASE t,
+			    SD_USER_COMPANY t1
+			  WHERE t.COMPANY_ID       = t1.ID
+			  AND t.IS_EARNEST         = 5
+			  AND t.STATUS             = 0
+			  AND t.IS_LOST            = 0
+			  AND t.IS_DEL = 0 
+			  AND t.EARNEST_EXIT_DATE IS NOT NULL
+			  ) t
+			WHERE SYSDATE > t.D
+	</statement>
+	
+	
+	<insert id="batchSaveAutoRefunEarnestStepDao" parameterClass="java.util.Map">
+	  	insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID, 
+			REMARK)
+		SELECT sys_guid(), t.id, sysdate,'系统自动退款','','','退款金额: '||t.EARNEST_INTER_AMOUNT
+		  FROM
+			  (SELECT (t.EARNEST_EXIT_DATE + t1.EARNEST_REFUND_AUDIT_DATE) d,
+			    t.ID,
+			    t.EARNEST_INTER_AMOUNT,
+			    t.CREATE_USER, 
+			    t.CREATE_USER_ID,
+			    t.PRODUCE_ID,
+			    t.SITE_RELA_ID,
+			    t.CREATE_COMPANY_ID,
+			    t.COMPANY_ID,
+			    t.PAY_TYPE,
+			    t.NO,
+			    t.PRODUCE_TYPE
+			  FROM SD_ORDER_BASE t,
+			    SD_USER_COMPANY t1
+			  WHERE t.COMPANY_ID       = t1.ID
+			  AND t.IS_EARNEST         = 5
+			  AND t.STATUS             = 0
+			  AND t.IS_LOST            = 0
+			  AND t.IS_DEL = 0 
+			  AND t.EARNEST_EXIT_DATE IS NOT NULL
+			  ) t
+			WHERE SYSDATE > t.D
+	</insert>
+	
+	<update id="batchUpdateAtuoRefunEarnestStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE
+		SET STATUS   = 5,
+		  IS_EARNEST = 10
+		WHERE ID    IN
+		  (SELECT t.id
+		  FROM
+		    (SELECT (t.EARNEST_EXIT_DATE + t1.EARNEST_REFUND_AUDIT_DATE) d,
+			    t.ID,
+			    t.EARNEST_INTER_AMOUNT,
+			    t.CREATE_USER, 
+			    t.CREATE_USER_ID,
+			    t.PRODUCE_ID,
+			    t.SITE_RELA_ID,
+			    t.CREATE_COMPANY_ID,
+			    t.COMPANY_ID,
+			    t.PAY_TYPE,
+			    t.NO,
+			    t.PRODUCE_TYPE
+			  FROM SD_ORDER_BASE t,
+			    SD_USER_COMPANY t1
+			  WHERE t.COMPANY_ID       = t1.ID
+			  AND t.IS_EARNEST         = 5
+			  AND t.STATUS             = 0
+			  AND t.IS_LOST            = 0
+			  AND t.IS_DEL = 0 
+			  AND t.EARNEST_EXIT_DATE IS NOT NULL
+		    ) t
+		  WHERE SYSDATE > t.D
+		  )
+	</update>
+	<insert id="batchSaveSaleAtuoRefunEarnestFundsDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_FUNDS
+		  (
+		    ID,
+		    ORDER_ID,
+		    TYPE,
+		    AMOUNT,
+		    REMARKS,
+		    ACCOUNT_TYPE,
+		    ACCOUNT_COMPANY_ID,
+		    SITE_RELA_ID,
+		    ENTITY_TYPE,
+		    CREATE_TIME,
+		    CREATE_USER,
+		    CREATE_USER_ID,
+		    ENTITY_ID,
+		    PID
+		  )
+		SELECT sys_guid(),
+		  t.id,
+		  8,
+		  (0-t.EARNEST_INTER_AMOUNT) as EARNEST_INTER_AMOUNT,
+		  '定金自动退款,退款金额: '
+		  ||t.EARNEST_INTER_AMOUNT,
+		  2,
+		  t.CREATE_COMPANY_ID,
+		  t.SITE_RELA_ID,
+		  t.PRODUCE_TYPE,
+		  sysdate,
+		  '',
+		  '',
+		  t.PRODUCE_ID,
+		  ''
+		FROM
+		  (SELECT (t.EARNEST_EXIT_DATE + t1.EARNEST_REFUND_AUDIT_DATE) d,
+			    t.ID,
+			    t.EARNEST_INTER_AMOUNT,
+			    t.CREATE_USER, 
+			    t.CREATE_USER_ID,
+			    t.PRODUCE_ID,
+			    t.SITE_RELA_ID,
+			    t.CREATE_COMPANY_ID,
+			    t.COMPANY_ID,
+			    t.PAY_TYPE,
+			    t.NO,
+			    t.PRODUCE_TYPE
+			  FROM SD_ORDER_BASE t,
+			    SD_USER_COMPANY t1
+			  WHERE t.COMPANY_ID       = t1.ID
+			  AND t.IS_EARNEST         = 5
+			  AND t.STATUS             = 0
+			  AND t.IS_LOST            = 0
+			  AND t.IS_DEL = 0 
+			  AND t.EARNEST_EXIT_DATE IS NOT NULL) t
+		WHERE SYSDATE > t.D
+	</insert>
+	
+	<insert id="batchSaveBuyAtuoRefunEarnestFundsDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_FUNDS
+		  (
+		    ID,
+		    ORDER_ID,
+		    TYPE,
+		    AMOUNT,
+		    REMARKS,
+		    ACCOUNT_TYPE,
+		    ACCOUNT_COMPANY_ID,
+		    SITE_RELA_ID,
+		    ENTITY_TYPE,
+		    CREATE_TIME,
+		    CREATE_USER,
+		    CREATE_USER_ID,
+		    ENTITY_ID,
+		    PID
+		  )
+		SELECT sys_guid(),
+		  t.id,
+		  6,
+		  t.EARNEST_INTER_AMOUNT,
+		  '定金自动退款,退款金额: '
+		  ||t.EARNEST_INTER_AMOUNT,
+		  1,
+		  t.COMPANY_ID,
+		  t.SITE_RELA_ID,
+		  t.PRODUCE_TYPE,
+		  sysdate,
+		  '',
+		  '',
+		  t.PRODUCE_ID,
+		  ''
+		FROM
+		  (SELECT (t.EARNEST_EXIT_DATE + t1.EARNEST_REFUND_AUDIT_DATE) d,
+			    t.ID,
+			    t.EARNEST_INTER_AMOUNT,
+			    t.CREATE_USER, 
+			    t.CREATE_USER_ID,
+			    t.PRODUCE_ID,
+			    t.SITE_RELA_ID,
+			    t.CREATE_COMPANY_ID,
+			    t.COMPANY_ID,
+			    t.PAY_TYPE,
+			    t.NO,
+			    t.PRODUCE_TYPE
+			  FROM SD_ORDER_BASE t,
+			    SD_USER_COMPANY t1
+			  WHERE t.COMPANY_ID       = t1.ID
+			  AND t.IS_EARNEST         = 5
+			  AND t.STATUS             = 0
+			  AND t.IS_LOST            = 0
+			  AND t.IS_DEL = 0 
+			  AND t.EARNEST_EXIT_DATE IS NOT NULL
+		  ) t
+		WHERE SYSDATE > t.D
+	</insert>
+	
+	<update id="batchResetEarnestTypeDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE t 
+		SET t.IS_EARNEST = 5, EARNEST_EXIT_DATE = SYSDATE
+		WHERE t.ID    IN
+		  (SELECT t.ID
+		  FROM
+		    (SELECT DECODE(t.EARNEST_TYPE, 0, to_date(t.START_DATE, 'yyyy-mm-dd') - t.EARNEST_DAY_COUNT, 1, to_date(t.START_DATE, 'yyyy-mm-dd') + t.EARNEST_DAY_COUNT) d,
+		      t.ID
+		    FROM SD_ORDER_BASE t
+		    WHERE t.IS_EARNEST = 1 and t.STATUS = 0 AND t.IS_DEL = 0 
+		    ) t
+		  WHERE SYSDATE > t.D
+		  )
+  	</update>
+  	
+  	<insert id="batchSaveEarnestTypeStepDao" parameterClass="java.util.Map">
+	  	insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID, 
+			REMARK)
+		SELECT sys_guid(), t.id, sysdate,'系统自动退团',t.CREATE_USER,t.CREATE_USER_ID,''
+		  FROM
+		    (SELECT DECODE(t.EARNEST_TYPE, 0, to_date(t.START_DATE, 'yyyy-mm-dd') - t.EARNEST_DAY_COUNT, 1, to_date(t.START_DATE, 'yyyy-mm-dd') + t.EARNEST_DAY_COUNT) d,
+		      t.ID,
+		      t.CREATE_USER,
+		      t.CREATE_USER_ID
+		    FROM SD_ORDER_BASE t
+		    WHERE t.IS_EARNEST = 1 and t.STATUS = 0 AND t.IS_DEL = 0 
+		    ) t
+		  WHERE SYSDATE > t.D
+	</insert>
+  	
+	<update id="updateOrderBaseStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET STATUS = #STATUS# WHERE ID = #ID#
+	</update>
+	
+	<update id="confirmInsteadPayDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET INTER_AMOUNT = #INTER_AMOUNT#, SALE_AMOUNT = #SALE_AMOUNT#, 
+		OLD_INTER_AMOUNT = #OLD_INTER_AMOUNT#, OLD_RETAIL_AMOUNT = #OLD_RETAIL_AMOUNT#,
+		STATUS = #STATUS#, IS_EARNEST = #IS_EARNEST#
+		WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderEarnestStatusByIdDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET IS_EARNEST = #IS_EARNEST#
+		<isNotEmpty property="STATUS">
+		, STATUS = #STATUS#
+		</isNotEmpty> 
+		WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderEarnestInfoDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET 
+		<isNotEmpty property="IS_EARNEST">
+			IS_EARNEST = #IS_EARNEST#, 
+		</isNotEmpty>
+		EARNEST_INTER = #EARNEST_INTER#,
+		EARNEST_RETAIL = #EARNEST_RETAIL#,  
+		EARNEST_INTER_AMOUNT = #EARNEST_INTER_AMOUNT#, 
+		EARNEST_RETAIL_AMOUNT = #EARNEST_RETAIL_AMOUNT#, 
+		EARNEST_DAY_COUNT = #EARNEST_DAY_COUNT#, 
+		EARNEST_TYPE = #EARNEST_TYPE#
+		<isNotEmpty property="PAY_TYPE">
+		,PAY_TYPE = #PAY_TYPE# 
+		</isNotEmpty>
+		<isNotEmpty property="PLATFORM_PAY">
+		, PLATFORM_PAY = #PLATFORM_PAY#
+		</isNotEmpty>
+		WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderEarnestStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET IS_EARNEST = #IS_EARNEST# 
+		<isNotEmpty property="PLATFORM_PAY">
+		, PLATFORM_PAY = #PLATFORM_PAY#
+		</isNotEmpty>
+		WHERE NO = #NO#
+	</update>
+	
+	<update id="updateOrderBaseRemarkDao" parameterClass="java.util.Map">
+		update sd_order_base set remark = #REMARK# where id = #ID#
+	</update>
+	
+	<update id="updateStartConfirmByIdDao" parameterClass="java.util.Map">
+		update sd_order_base set start_confirm = 1 where id = #orderId#
+	</update>
+	
+	<update id="updateRenewStatusDao" parameterClass="java.util.Map">
+		update SD_ORDER_BASE set RENEW_STATUS = #RENEW_STATUS# 
+		<isNotEmpty property="OTHER_SUPPLY_AUDIT">
+		,OTHER_SUPPLY_AUDIT = #OTHER_SUPPLY_AUDIT#
+		</isNotEmpty>
+		where id = #ID#
+	</update>
+	
+	<update id="restContractAgencyDao" parameterClass="java.util.Map">
+		update SD_ORDER_CONTRACT_AGENCY set STATUS=0,USE_USER='', USE_TIME = null,USE_USER_ID='',ORDER_NO='',ORDER_ID='' where no = #CONTRACT_AGENCY_NO#
+	</update>
+	
+	<update id="restOrderContractAgencyDao" parameterClass="java.util.Map">
+		update sd_order_base set con_no='' where id = #ORDER_ID# 
+	</update>
+
+	<update id="updateOrderSaleFloatDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET SALE_AMOUNT = #SALE_AMOUNT#, SALE_FLOAT = #SALE_FLOAT# WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderInterFloatDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET INTER_AMOUNT = #INTER_AMOUNT#, INTER_FLOAT = #INTER_FLOAT# WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderInterFloatTempDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET INTER_FLOAT_TEMP = #INTER_FLOAT#, AUDIT_INTER_FLOAT = 1 WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderInterAuditDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET AUDIT_INTER_FLOAT = #AUDIT_INTER_FLOAT# WHERE ID = #ID#
+	</update>
+	
+	<statement id="listOrderOtherPriceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT * FROM SD_ORDER_OTHER_PRICE WHERE ORDER_ID = #ORDER_ID# 
+	</statement>
+	
+	<update id="updateOrderOtherAuditDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE set OTHER_SUPPLY_AUDIT = #OTHER_SUPPLY_AUDIT#, OTHER_SUPPLY_CONTENT = #OTHER_SUPPLY_CONTENT# WHERE ID = #ID# 
+	</update>
+	
+	<update id="updateOrderConNoDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE set CON_NO = #CON_NO# WHERE ID = #ID# 
+	</update>
+	
+	<statement id="existOrderNo" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(1) as cnt from SD_PRO_ORDER_NO where PREFIX=#VALUE# 
+	</statement>
+
+	<insert id="saveOrderNo" parameterClass="java.util.Map">
+		insert into SD_PRO_ORDER_NO(
+		   PREFIX,
+		   CURR_NO
+		)values(
+		   #PREFIX#,
+		   #CURR_NO#
+		)
+	</insert>
+	
+	<statement id="getOrderNo" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select PREFIX||lpad(to_number(CURR_NO)+1,#LEN#,'0')  as a from (
+			select CURR_NO,PREFIX  from SD_PRO_ORDER_NO where PREFIX=#PREFIX#
+		) b
+	</statement>
+	
+	<update id="updateOrderNo" parameterClass="java.util.Map">
+		update SD_PRO_ORDER_NO set CURR_NO=#CURR_NO# where PREFIX=#PREFIX# 
+	</update>
+	
+	<statement id="getPrefix" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select code from sd_user_company where id = #VALUE#
+	</statement>
+	
+	<statement id="listOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select a.ID,
+				a.NO,
+				a.PLATFORM_PAY,
+				a.PRODUCE_ID,
+				a.TRAFFIC_ID,
+				a.PRODUCE_TYPE,
+				a.COMPANY_ID,
+				a.COMPANY_NAME,
+				a.PORDUCE_CONCAT,
+				a.PRODUCE_MOBILE,
+				a.START_DATE,
+				a.MUSTER_TIME,
+				a.MUSTER_PLACE,
+				a.VISITOR_CONCAT,
+				a.VISITOR_MOBILE,
+				a.MAN_COUNT,
+				a.CHILD_COUNT,
+				a.STATUS,
+				a.SALE_AMOUNT,
+				a.INTER_AMOUNT,
+				a.PAY_TYPE,
+				a.ACCOUNT_STATUS,
+				a.CREATE_USER,
+				a.CREATE_USER_ID,
+				a.CREATE_COMPANY_ID,
+				a.CREATE_DEPART_ID,
+				to_char(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME,
+				a.SITE_RELA_ID,
+				a.IS_LOST,
+				to_char(a.LOST_TIME, 'yyyy-mm-dd HH24:mi:ss') LOST_TIME,
+				a.RULE_ID,
+				a.SOURCES,
+				a.IS_ALONE,
+				a.CON_NO,
+				a.OTHER_SUPPLY_AUDIT,
+				 <![CDATA[  REPLACE(a.OTHER_SUPPLY_CONTENT, chr(10), '</br>') as OTHER_SUPPLY_CONTENT,  ]]>
+				
+				a.OTHER_AMOUNT,
+				
+				a.RETAIL_SINGLE_ROOM,
+				a.INTER_SINGLE_ROOM,
+				a.SINGLE_ROOM_CNT,
+				
+				t1.TITLE as PLAN_NAME,
+				t2.PRODUCE_NAME,
+				t3.user_name, 
+				t3.china_name,
+				t3.mobile as buy_mobile,
+				t4.company as buy_company,
+
+				t5.STATUS as CONTRACT_STATUS,
+				
+				a.sale_float,
+				a.inter_float,
+				
+				a.EARNEST_TYPE,
+				a.EARNEST_DAY_COUNT,
+				a.IS_EARNEST,
+				a.EARNEST_INTER,
+				a.EARNEST_INTER_AMOUNT,
+				a.EARNEST_RETAIL_AMOUNT,
+				a.EARNEST_RETAIL,
+
+				t12.DISCOUNT_ID,
+				t12.TITLE as DISCOUNT_TITLE,
+				nvl(t12.TOTAL_AMOUNT, 0)as DISCOUNT_TOTAL_AMOUNT,
+				decode(t12.IS_REFUND, null, 1, '', 1, 0, 0, 1) as IS_REFUND,
+				t2.day_count
+				
+			from SD_ORDER_BASE a,
+			(select t.* from SD_ORDER_ROUTE_TRAFFIC t where t.is_del = 0) t1,
+			(SELECT a.id, TO_CHAR(a.type) AS type, a.CREATE_USER_ID, a.TITLE AS PRODUCE_NAME, a.DAY_COUNT FROM sd_pro_route a 
+		    UNION ALL 
+		    SELECT b.id, '100' AS type, b.CREATE_USER_ID, b.TITLE AS PRODUCE_NAME, 0 as DAY_COUNT FROM sd_pro_traffic b) t2,
+		    sd_user t3, 
+		    sd_user_company t4,
+		    SD_ORDER_CONTRACT_AGENCY t5,
+			(SELECT t.ID,
+			    t.ORDER_ID,
+			    t.DISCOUNT_ID,
+			    t.IS_REFUND,
+			    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+			    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+			   
+			    t.RULE_TYPE,
+			    t.MONEY,
+			    t.PAY_WAY,
+			    t.PLATFROM,
+			    t.TOTAL_AMOUNT,
+	   
+	   			t1.TITLE
+			FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+			where 1 = 1
+			and t.DISCOUNT_ID = t1.ID) t12
+			
+			where 1 = 1
+			and a.id = t1.order_id(+)
+			and a.PRODUCE_ID = t2.id
+			and a.id = t12.order_id(+)
+			and a.create_user_id = t3.id
+			and a.create_company_id = t4.id
+			and a.con_no = t5.no(+)
+			AND a.IS_DEL = 0 
+			<isNotEmpty property="PLAN_ID">
+				and t1.ID = #PLAN_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PRODUCE_ID">
+				and a.PRODUCE_ID = #PRODUCE_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATE">
+				and a.START_DATE = #START_DATE#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="NO">
+				and a.NO = #NO#
+			</isNotEmpty>
+			<isNotEmpty property="CON_NO">
+				and a.CON_NO = #CON_NO#
+			</isNotEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select a.ID,
+				a.NO,
+				a.REMARK,
+				a.PLATFORM_PAY,
+				a.PRODUCE_ID,
+				a.TRAFFIC_ID,
+				a.PRODUCE_TYPE,
+				a.COMPANY_ID,
+				a.COMPANY_NAME,
+				i.CHINA_NAME as PORDUCE_CONCAT,
+				i.MOBILE as PRODUCE_MOBILE,
+				a.START_DATE,
+				a.MUSTER_TIME,
+				a.MUSTER_PLACE,
+				a.VISITOR_CONCAT,
+				a.VISITOR_MOBILE,
+				a.MAN_COUNT,
+				a.CHILD_COUNT,
+				a.STATUS,
+				a.SALE_AMOUNT,
+				a.INTER_AMOUNT,
+				a.PAY_TYPE,
+				a.ACCOUNT_STATUS,
+				a.CREATE_USER,
+				a.CREATE_USER_ID,
+				a.CREATE_COMPANY_ID,
+				a.CREATE_DEPART_ID,
+				to_char(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME,
+				a.SITE_RELA_ID,
+				a.IS_LOST,
+				to_char(a.LOST_TIME, 'yyyy-mm-dd HH24:mi:ss') LOST_TIME,
+				VISITOR_EMAIL,
+				RULE_ID,
+				b.TITLE as PRODUCE_NAME,
+				to_char(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') PAY_TIME,
+				d.COMPANY SALE_COMPANY,
+				d.USER_NAME SALE_USER_NAME,
+				i.MOBILE SALE_PHONE,
+				e.COMPANY BUY_COMPANY,
+				f.CHINA_NAME BUY_USER_NAME,
+				f.MOBILE BUY_PHONE,
+				a.CON_NO,
+				a.SOURCES,
+				a.IS_ALONE,
+				a.OTHER_SUPPLY_AUDIT,
+				<![CDATA[  REPLACE(a.OTHER_SUPPLY_CONTENT, chr(10), '</br>') as OTHER_SUPPLY_CONTENT,  ]]>
+				
+				a.OTHER_AMOUNT,
+				a.INTER_SINGLE_ROOM,
+				a.SINGLE_ROOM_CNT,
+				a.EARNEST_TYPE,
+				a.EARNEST_DAY_COUNT,
+				a.IS_EARNEST,
+				a.EARNEST_INTER,
+				a.EARNEST_INTER_AMOUNT,
+				a.EARNEST_RETAIL_AMOUNT,
+				a.EARNEST_RETAIL
+			from SD_ORDER_BASE a, sd_pro_traffic b,
+			(SELECT a.order_id funds_order_id,
+		        max(a.create_time) pay_time
+		      FROM sd_order_funds a
+		      WHERE a.type = 2
+		      group by a.order_id) c,
+			sd_user_company d, (select a.id, a.company, decode(a.pid, '-1', a.id, a.pid) as pid from sd_user_company a) e,
+			sd_user f, sd_user i,
+			
+			sd_site_manager t10,
+    		sd_site t11
+    		
+			where 1 = 1
+			and a.traffic_id = b.id
+			and a.id = c.funds_order_id(+)
+			and a.CREATE_USER_ID = f.ID
+			and a.company_id = d.id
+			and a.CREATE_COMPANY_ID = e.id
+			and a.PRODUCE_USER_ID = i.ID
+			
+			AND a.SITE_RELA_ID                      = t10.id
+		  	AND t10.site_id                         = t11.id
+		  	AND a.IS_DEL = 0 
+		  	<isNotEmpty property="CREATE_TIME">
+				and to_char(a.create_time, 'yyyy-mm-dd') = #CREATE_TIME#
+			</isNotEmpty>
+			<isNotEmpty property="SALE_USER_ID">
+				AND i.CREATE_USER_ID = #SALE_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="SALE_DEPART_ID">
+				AND i.depart_id = #SALE_DEPART_ID#
+			</isNotEmpty>
+			<isNotEmpty property="SALE_COMPANY_ID">
+				AND a.COMPANY_ID = #SALE_COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				AND t11.city_id = #CITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="SITE_USER_ID">
+				AND t10.user_id = #SITE_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and e.pid = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="BUY_DEPART_ID">
+				and f.depart_id = #BUY_DEPART_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATES">
+				and a.start_date in ($START_DATES$)
+			</isNotEmpty>
+			
+		  	
+			<isNotEmpty property="ACCOUNT_STATUS">
+		    	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS# 
+		    </isNotEmpty>
+			<isNotEmpty property="SITE_RELA_ID">
+		    	and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+		    </isNotEmpty>
+		    <isNotEmpty property="STATUS">
+		    	and a.STATUS = #STATUS# 
+		    </isNotEmpty>
+		    <isNotEmpty property="STATUSES">
+		    	and a.STATUS in ($STATUSES$) 
+		    </isNotEmpty>
+			<isNotEmpty property="BEGIN_CITY">
+		    	and b.START_CITY = #BEGIN_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="END_CITY">
+		    	and b.END_CITY = #END_CITY# 
+		    </isNotEmpty>
+			<isNotEmpty property="query">
+				and (b.title like '%$query$%' or a.no like '%$query$%')
+			</isNotEmpty>
+			<isNotEmpty property="SALER">
+				and d.company like '%$SALER$%'
+			</isNotEmpty>
+			<isNotEmpty property="BUYER">
+				and e.company like '%$BUYER$%'
+			</isNotEmpty>
+			<isNotEmpty property="PRODUCE_TYPE">
+				and a.PRODUCE_TYPE = #PRODUCE_TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="NO">
+				and a.NO = #NO#
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_COMPANY_ID">
+				and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_USER_ID">
+				and a.CREATE_USER_ID = #CREATE_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PUB_USER_ID">
+				and b.CREATE_USER_ID = #PUB_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				and a.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="TRAFFIC_ID">
+				and a.TRAFFIC_ID = #TRAFFIC_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATE">
+				and a.START_DATE = #START_DATE#
+			</isNotEmpty>
+			
+			<isNotEmpty property="CREATE_BEGIN_TIME">
+				and a.CREATE_TIME >= to_date(#CREATE_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			
+			<isNotEmpty property="CREATE_END_TIME">
+				<![CDATA[ and a.CREATE_TIME <= to_date(#CREATE_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+			</isNotEmpty>
+			
+			<isNotEmpty property="PAY_BEGIN_TIME">
+				and c.pay_time >= to_date(#PAY_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			
+			<isNotEmpty property="PAY_END_TIME">
+				<![CDATA[ and c.pay_time <= to_date(#PAY_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+			</isNotEmpty>
+			
+			
+			order by a.CREATE_TIME desc
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) as cnt
+		from SD_ORDER_BASE a, sd_pro_traffic b,
+		(SELECT a.order_id funds_order_id,
+	        max(a.create_time) pay_time
+	      FROM sd_order_funds a
+	      WHERE a.type = 2
+	      group by a.order_id) c,
+		sd_user_company d, (select a.id, a.company, decode(a.pid, '-1', a.id, a.pid) as pid from sd_user_company a) e,
+		sd_user f, sd_user i,
+		
+		sd_site_manager t10,
+   		sd_site t11
+   		
+		where 1 = 1
+		and a.traffic_id = b.id
+		and a.id = c.funds_order_id(+)
+		and a.CREATE_USER_ID = f.ID
+		and a.company_id = d.id
+		and a.CREATE_COMPANY_ID = e.id
+		and a.PRODUCE_USER_ID = i.ID
+		
+		AND a.SITE_RELA_ID                      = t10.id
+	  	AND t10.site_id                         = t11.id
+	  	
+	  	AND a.IS_DEL = 0 
+	  	
+	  	<isNotEmpty property="CREATE_TIME">
+			and to_char(a.create_time, 'yyyy-mm-dd') = #CREATE_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_USER_ID">
+			AND i.CREATE_USER_ID = #SALE_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_DEPART_ID">
+			AND i.depart_id = #SALE_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_COMPANY_ID">
+			AND a.COMPANY_ID = #SALE_COMPANY_ID#
+		</isNotEmpty>
+		
+		<isNotEmpty property="SUPPLY_USER_ID">
+			AND i.ID = #SUPPLY_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SUPPLY_DEPART_ID">
+			AND i.depart_id = #SUPPLY_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SUPPLY_COMPANY_ID">
+			AND a.COMPANY_ID = #SUPPLY_COMPANY_ID#
+		</isNotEmpty>
+		
+		<isNotEmpty property="CITY_ID">
+			AND t11.city_id = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SITE_USER_ID">
+			AND t10.user_id = #SITE_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PID">
+			and e.pid = #PID#
+		</isNotEmpty>
+		<isNotEmpty property="BUY_DEPART_ID">
+			and f.depart_id = #BUY_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="START_DATES">
+			and a.start_date in ($START_DATES$)
+		</isNotEmpty>
+	  	
+		<isNotEmpty property="ACCOUNT_STATUS">
+	    	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS# 
+	    </isNotEmpty>
+		<isNotEmpty property="SITE_RELA_ID">
+	    	and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+	    </isNotEmpty>
+	    <isNotEmpty property="STATUS">
+	    	and a.STATUS = #STATUS# 
+	    </isNotEmpty>
+	    <isNotEmpty property="STATUSES">
+	    	and a.STATUS in ($STATUSES$) 
+	    </isNotEmpty>
+		<isNotEmpty property="BEGIN_CITY">
+	    	and b.START_CITY = #BEGIN_CITY# 
+	    </isNotEmpty>
+	    <isNotEmpty property="END_CITY">
+	    	and b.END_CITY = #END_CITY# 
+	    </isNotEmpty>
+		<isNotEmpty property="query">
+			and (b.title like '%$query$%' or a.no like '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="SALER">
+			and d.company like '%$SALER$%'
+		</isNotEmpty>
+		<isNotEmpty property="BUYER">
+			and e.company like '%$BUYER$%'
+		</isNotEmpty>
+		<isNotEmpty property="PRODUCE_TYPE">
+			and a.PRODUCE_TYPE = #PRODUCE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			and a.NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_COMPANY_ID">
+			and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_USER_ID">
+			and a.CREATE_USER_ID = #CREATE_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PUB_USER_ID">
+			and b.CREATE_USER_ID = #PUB_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			and a.COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TRAFFIC_ID">
+			and a.TRAFFIC_ID = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="START_DATE">
+			and a.START_DATE = #START_DATE#
+		</isNotEmpty>
+	
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+			and a.CREATE_TIME >= to_date(#CREATE_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+		</isNotEmpty>
+		
+		<isNotEmpty property="CREATE_END_TIME">
+			<![CDATA[ and a.CREATE_TIME <= to_date(#CREATE_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PAY_BEGIN_TIME">
+			and c.pay_time >= to_date(#PAY_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+		</isNotEmpty>
+		
+		<isNotEmpty property="PAY_END_TIME">
+			<![CDATA[ and c.pay_time <= to_date(#PAY_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="listRouteOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		select a.* from (select a.*, rownum as myrownum from (
+			select a.ID,
+				a.NO,
+				a.REMARK,
+				a.PLATFORM_PAY,
+				a.RENEW_STATUS,
+				a.PRODUCE_ID,
+				a.TRAFFIC_ID,
+				a.PRODUCE_TYPE,
+				a.COMPANY_ID,
+				a.COMPANY_NAME,
+				i.CHINA_NAME as PORDUCE_CONCAT,
+				i.MOBILE as PRODUCE_MOBILE,
+				a.START_DATE,
+				a.MUSTER_TIME,
+				a.MUSTER_PLACE,
+				a.VISITOR_CONCAT,
+				a.VISITOR_MOBILE,
+				a.MAN_COUNT,
+				a.CHILD_COUNT,
+				a.STATUS,
+				a.SALE_AMOUNT,
+				a.INTER_AMOUNT,
+				a.PAY_TYPE,
+				a.ACCOUNT_STATUS,
+				a.CREATE_USER,
+				a.CREATE_USER_ID,
+				a.CREATE_COMPANY_ID,
+				a.CREATE_DEPART_ID,
+				a.PLAT_FROM,
+				to_char(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME,
+				a.SITE_RELA_ID,
+				a.IS_LOST,
+				a.CON_NO,
+				to_char(a.LOST_TIME, 'yyyy-mm-dd HH24:mi:ss') LOST_TIME,
+				a.RETAIL_SINGLE_ROOM,
+				a.INTER_SINGLE_ROOM,
+				a.SINGLE_ROOM_CNT,
+				VISITOR_EMAIL,
+				RULE_ID,
+				b.TITLE as PRODUCE_NAME,
+				b.DAY_COUNT,
+				to_char(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') PAY_TIME,
+				d.COMPANY SALE_COMPANY,
+				d.COMPANY_SIGN as SALE_COMPANY_SIGN, 
+				d.USER_NAME as SALE_USER_NAME,
+				t9.CHINA_NAME as SALE_CHINA_NAME,
+				e.COMPANY as BUY_COMPANY,
+				e.company_sign as BUY_COMPANY_SIGN,
+				h.CHINA_NAME as BUY_USER_NAME,
+				h.MOBILE as BUY_PHONE,
+				g.CON_ATTR,
+				g.STEP as CON_STEP,
+				i.MOBILE as SALE_PHONE,
+				a.SOURCES,
+				a.IS_ALONE,
+				a.OTHER_SUPPLY_AUDIT,
+				<![CDATA[  REPLACE(a.OTHER_SUPPLY_CONTENT, chr(10), '</br>') as OTHER_SUPPLY_CONTENT,  ]]>
+				
+				a.OTHER_AMOUNT,
+				
+				a.start_confirm,
+				
+				a.SALE_FLOAT,
+				(a.SALE_AMOUNT - a.SALE_FLOAT) as OLD_SALE_AMOUNT,
+				
+				a.EARNEST_TYPE,
+				a.EARNEST_DAY_COUNT,
+				a.IS_EARNEST,
+				a.EARNEST_INTER,
+				a.EARNEST_INTER_AMOUNT,
+				a.EARNEST_RETAIL_AMOUNT,
+				a.EARNEST_RETAIL,
+				
+				a.INTER_FLOAT,
+				a.INTER_FLOAT_TEMP,
+				a.AUDIT_INTER_FLOAT,
+				(a.INTER_AMOUNT - a.INTER_FLOAT) as OLD_INTER_AMOUNT,
+				
+				t12.DISCOUNT_ID,
+				t12.TITLE DISCOUNT_TITLE,
+				t12.TOTAL_AMOUNT DISCOUNT_TOTAL_AMOUNT,
+				decode(t12.IS_REFUND, null, 1, '', 1, 0, 0, 1) as IS_REFUND,
+				b.no as PRODUCE_NO
+				<isEmpty property="TYPE">
+					,f.TITLE as PLAN_NAME
+				</isEmpty>
+			from SD_ORDER_BASE a, sd_pro_route b,
+			(SELECT a.order_id funds_order_id,
+		        max(a.create_time) pay_time
+		      FROM sd_order_funds a
+		      WHERE a.type = 2
+		      group by a.order_id) c,
+			sd_user_company d, 
+			(select a.id, a.company, decode(a.pid, '-1', a.id, a.pid) as pid, a.company_sign, a.pid as company_pid from sd_user_company a) e,
+			SD_ORDER_CONTRACT g, sd_user h, sd_user i,
+			sd_user t9,
+			sd_site_manager t10,
+    		sd_site t11,
+    		(
+    		SELECT t.ID,
+			    t.ORDER_ID,
+			    t.DISCOUNT_ID,
+			    t.IS_REFUND,
+			    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+			    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+			   
+			    t.RULE_TYPE,
+			    t.MONEY,
+			    t.PAY_WAY,
+			    t.PLATFROM,
+			    t.TOTAL_AMOUNT,
+	   
+	   			t1.TITLE
+			FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+			where 1 = 1
+			and t.DISCOUNT_ID = t1.ID) t12
+    
+			<isEmpty property="TYPE">
+				, sd_pro_route_traffic f
+			</isEmpty>
+			where 1 = 1
+			and a.produce_id = b.id
+			and b.create_user_id = t9.id
+			and a.id = c.funds_order_id(+)
+			and a.company_id = d.id
+			and a.CREATE_COMPANY_ID = e.id
+			and a.id = g.order_id(+)
+			and a.create_user_id = h.id
+			and a.PRODUCE_USER_ID = i.ID
+			
+			AND a.SITE_RELA_ID                      = t10.id
+		  	AND t10.site_id                         = t11.id
+		  	AND a.id = t12.order_id(+)
+		  	AND a.IS_DEL = 0
+  			
+  			<isNotEmpty property="RENEW_STATUS">
+				<isEqual property="RENEW_STATUS" compareValue="3">
+					and a.RENEW_STATUS in (2,3)
+				</isEqual>
+				<isEqual property="RENEW_STATUS" compareValue="1">
+					and a.RENEW_STATUS = 1
+				</isEqual>
+			</isNotEmpty>
+  			<isNotEmpty property="IS_RENEW">
+  				and a.IS_RENEW = #IS_RENEW#
+  			</isNotEmpty>
+  			<isNotEmpty property="CREATE_TIME">
+  				and to_char(a.create_time, 'yyyy-mm-dd') = #CREATE_TIME#
+  			</isNotEmpty>
+  			<isNotEmpty property="SALE_USER_ID">
+  				AND i.CREATE_USER_ID = #SALE_USER_ID#
+  			</isNotEmpty>
+  			<isNotEmpty property="SALE_DEPART_IDS">
+  				and (
+  				<iterate property="SALE_DEPART_IDS" conjunction=" or " open="" close="">
+					i.depart_id = #SALE_DEPART_IDS[]#
+				</iterate>
+				)
+  			</isNotEmpty>
+  			<isNotEmpty property="SALE_DEPART_ID">
+  				AND i.depart_id = #SALE_DEPART_ID#
+  			</isNotEmpty>
+  			<isNotEmpty property="SALE_COMPANY_ID">
+  				AND a.COMPANY_ID = #SALE_COMPANY_ID#
+  			</isNotEmpty>
+  			<isNotEmpty property="CITY_ID">
+  				AND t11.city_id = #CITY_ID#
+  			</isNotEmpty>
+  			<isNotEmpty property="SITE_USER_ID">
+  				AND t10.user_id = #SITE_USER_ID#
+  			</isNotEmpty>
+			<isNotEmpty property="PID">
+				and e.pid = #PID#
+			</isNotEmpty>
+			<isNotEmpty property="BUY_DEPART_IDS">
+				and (			
+  				<iterate property="BUY_DEPART_IDS" conjunction=" or " open="" close="">
+					h.depart_id = #BUY_DEPART_IDS[]#
+				</iterate>
+				<isNotEmpty property="buyUserId">
+					or a.CREATE_USER_ID = #buyUserId#
+				</isNotEmpty>
+				)
+  			</isNotEmpty>
+			<isNotEmpty property="BUY_DEPART_ID">
+				and h.depart_id = #BUY_DEPART_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATES">
+				and a.start_date in ($START_DATES$)
+			</isNotEmpty>
+			
+			<isNotEmpty property="ACCOUNT_STATUS">
+		    	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS# 
+		    </isNotEmpty>
+			<isEmpty property="TYPE">
+				and a.TRAFFIC_ID = f.ID(+)
+			</isEmpty>
+			<isNotEmpty property="SITE_RELA_ID">
+		    	and a.SITE_RELA_ID in ($SITE_RELA_ID$) 
+		    </isNotEmpty>
+		    <isNotEmpty property="STATUS">
+		    	and a.STATUS = #STATUS# 
+		    </isNotEmpty>
+		    <isNotEmpty property="STATUSES">
+		    	and a.STATUS in ($STATUSES$) 
+		    </isNotEmpty>
+			<isNotEmpty property="query">
+				and (b.title like '%$query$%' or a.no like '%$query$%')
+			</isNotEmpty>
+			<isNotEmpty property="SALER">
+				and d.company like '%$SALER$%'
+			</isNotEmpty>
+			<isNotEmpty property="BUYER">
+				and e.company like '%$BUYER$%'
+			</isNotEmpty>
+			<isNotEmpty property="PRODUCE_TYPE">
+				and a.PRODUCE_TYPE = #PRODUCE_TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="PRODUCE_TYPES">
+				and a.PRODUCE_TYPE in ($PRODUCE_TYPES$)
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="NO">
+				and a.NO = #NO#
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_COMPANY_ID">
+				and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CREATE_USER_ID">
+				and a.CREATE_USER_ID = #CREATE_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PUB_USER_ID">
+				and b.CREATE_USER_ID = #PUB_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				and a.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="TRAFFIC_ID">
+				and a.TRAFFIC_ID = #TRAFFIC_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATE">
+				and a.START_DATE = #START_DATE#
+			</isNotEmpty>
+			<isEmpty property="IS_CANCEL">
+				and a.STATUS != 6 and a.STATUS != 7
+			</isEmpty>
+			<isNotEmpty property="IS_CANCEL">
+				and (a.STATUS = 6 or a.STATUS = 7)
+			</isNotEmpty>
+			
+			<isNotEmpty property="PAY_WAY">
+				<isEqual property="PAY_WAY" compareValue="0">
+					and a.PAY_TYPE = 0
+				</isEqual>
+				<isEqual property="PAY_WAY" compareValue="1">
+					and a.PAY_TYPE != 0
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="GO_BEGIN_TIME">
+				and a.START_DATE >= #GO_BEGIN_TIME#
+			</isNotEmpty>
+			
+			<isNotEmpty property="GO_END_TIME">
+				<![CDATA[ and a.START_DATE <= #GO_END_TIME# ]]>
+			</isNotEmpty>
+			
+			<isNotEmpty property="CREATE_BEGIN_TIME">
+				and a.CREATE_TIME >= to_date(#CREATE_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			
+			<isNotEmpty property="CREATE_END_TIME">
+				<![CDATA[ and a.CREATE_TIME <= to_date(#CREATE_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+			</isNotEmpty>
+			
+			<isNotEmpty property="PAY_BEGIN_TIME">
+				and c.pay_time >= to_date(#PAY_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			
+			<isNotEmpty property="PAY_END_TIME">
+				<![CDATA[ and c.pay_time <= to_date(#PAY_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+			</isNotEmpty>
+			
+			<isNotEmpty property="COMPANY_PID">
+			and (e.id = #COMPANY_PID# or e.pid = #COMPANY_PID#)
+			</isNotEmpty>
+			
+			order by a.CREATE_TIME desc
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countRouteOrderDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) as cnt
+		from SD_ORDER_BASE a, sd_pro_route b,
+		(SELECT a.order_id funds_order_id,
+	        max(a.create_time) pay_time
+	      FROM sd_order_funds a
+	      WHERE a.type = 2
+	      group by a.order_id) c,
+		sd_user_company d, 
+		(select a.id, a.company, decode(a.pid, '-1', a.id, a.pid) as pid from sd_user_company a) e,
+		SD_ORDER_CONTRACT g, sd_user h, sd_user i,
+		
+		sd_site_manager t10,
+   		sd_site t11,
+   		(
+   		SELECT t.ID,
+		    t.ORDER_ID,
+		    t.DISCOUNT_ID,
+		    t.IS_REFUND,
+		    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+		   
+		    t.RULE_TYPE,
+		    t.MONEY,
+		    t.PAY_WAY,
+		    t.PLATFROM,
+		    t.TOTAL_AMOUNT,
+   
+   			t1.TITLE
+		FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+		where 1 = 1
+		and t.DISCOUNT_ID = t1.ID) t12
+   
+		<isEmpty property="TYPE">
+			, sd_pro_route_traffic f
+		</isEmpty>
+		where 1 = 1
+		and a.produce_id = b.id
+		and a.id = c.funds_order_id(+)
+		and a.company_id = d.id
+		and a.CREATE_COMPANY_ID = e.id
+		and a.id = g.order_id(+)
+		and a.create_user_id = h.id
+		and a.PRODUCE_USER_ID = i.ID
+		
+		AND a.SITE_RELA_ID                      = t10.id
+	  	AND t10.site_id                         = t11.id
+ 		AND a.id = t12.order_id(+)
+ 		AND a.IS_DEL = 0
+ 		<isNotEmpty property="RENEW_STATUS">
+			<isEqual property="RENEW_STATUS" compareValue="3">
+				and a.RENEW_STATUS in (2,3)
+			</isEqual>
+			<isEqual property="RENEW_STATUS" compareValue="1">
+				and a.RENEW_STATUS = 1
+			</isEqual>
+		</isNotEmpty>
+ 		<isNotEmpty property="IS_RENEW">
+			and a.IS_RENEW = #IS_RENEW#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_TIME">
+			and to_char(a.create_time, 'yyyy-mm-dd') = #CREATE_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_USER_ID">
+			AND i.CREATE_USER_ID = #SALE_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_DEPART_IDS">
+			<iterate property="SALE_DEPART_IDS" conjunction=" or " open=" and ( " close=")">
+				i.depart_id = #SALE_DEPART_IDS[]#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="SALE_DEPART_ID">
+			AND i.depart_id = #SALE_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_COMPANY_ID">
+			AND a.COMPANY_ID = #SALE_COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SUPPLY_USER_ID">
+			AND i.ID = #SUPPLY_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SUPPLY_DEPART_ID">
+			AND i.depart_id = #SUPPLY_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SUPPLY_COMPANY_ID">
+			AND a.COMPANY_ID = #SUPPLY_COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			AND t11.city_id = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SITE_USER_ID">
+			AND t10.user_id = #SITE_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PID">
+			and e.pid = #PID#
+		</isNotEmpty>
+		<isNotEmpty property="BUY_DEPART_IDS">
+			and (			
+  			<iterate property="BUY_DEPART_IDS" conjunction=" or " open="" close="">
+				h.depart_id = #BUY_DEPART_IDS[]#
+			</iterate>
+			<isNotEmpty property="buyUserId">
+				or a.CREATE_USER_ID = #buyUserId#
+			</isNotEmpty>
+			)
+  		</isNotEmpty>
+		<isNotEmpty property="BUY_DEPART_ID">
+			and h.depart_id = #BUY_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="START_DATES">
+			and a.start_date in ($START_DATES$)
+		</isNotEmpty>
+		
+		<isNotEmpty property="ACCOUNT_STATUS">
+	    	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS# 
+	    </isNotEmpty>
+		<isEmpty property="TYPE">
+			and a.TRAFFIC_ID = f.ID(+)
+		</isEmpty>
+		<isNotEmpty property="SITE_RELA_ID">
+	    	and a.SITE_RELA_ID in ($SITE_RELA_ID$) 
+	    </isNotEmpty>
+	    <isNotEmpty property="STATUS">
+	    	and a.STATUS = #STATUS# 
+	    </isNotEmpty>
+	    <isNotEmpty property="STATUSES">
+	    	and a.STATUS in ($STATUSES$) 
+	    </isNotEmpty>
+		<isNotEmpty property="query">
+			and (b.title like '%$query$%' or a.no like '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="SALER">
+			and d.company like '%$SALER$%'
+		</isNotEmpty>
+		<isNotEmpty property="BUYER">
+			and e.company like '%$BUYER$%'
+		</isNotEmpty>
+		<isNotEmpty property="PRODUCE_TYPE">
+			and a.PRODUCE_TYPE = #PRODUCE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="PRODUCE_TYPES">
+			and a.PRODUCE_TYPE in ($PRODUCE_TYPES$)
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			and a.NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_COMPANY_ID">
+			and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_USER_ID">
+			and a.CREATE_USER_ID = #CREATE_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PUB_USER_ID">
+			and b.CREATE_USER_ID = #PUB_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			and a.COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TRAFFIC_ID">
+			and a.TRAFFIC_ID = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="START_DATE">
+			and a.START_DATE = #START_DATE#
+		</isNotEmpty>
+		<isEmpty property="IS_CANCEL">
+			and a.STATUS != 6 and a.STATUS != 7
+		</isEmpty>
+		<isNotEmpty property="IS_CANCEL">
+			and (a.STATUS = 6 or a.STATUS = 7)
+		</isNotEmpty>
+		
+		<isNotEmpty property="PAY_WAY">
+			<isEqual property="PAY_WAY" compareValue="0">
+				and a.PAY_TYPE = 0
+			</isEqual>
+			<isEqual property="PAY_WAY" compareValue="1">
+				and a.PAY_TYPE != 0
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="GO_BEGIN_TIME">
+			and a.START_DATE >= #GO_BEGIN_TIME#
+		</isNotEmpty>
+		
+		<isNotEmpty property="GO_END_TIME">
+			<![CDATA[ and a.START_DATE <= #GO_END_TIME# ]]>
+		</isNotEmpty>
+			
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+			and a.CREATE_TIME >= to_date(#CREATE_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+		</isNotEmpty>
+		
+		<isNotEmpty property="CREATE_END_TIME">
+			<![CDATA[ and a.CREATE_TIME <= to_date(#CREATE_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PAY_BEGIN_TIME">
+			and c.pay_time >= to_date(#PAY_BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss')
+		</isNotEmpty>
+		
+		<isNotEmpty property="PAY_END_TIME">
+			<![CDATA[ and c.pay_time <= to_date(#PAY_END_TIME#, 'yyyy-mm-dd HH24:mi:ss') ]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="COMPANY_PID">
+		and (e.id = #COMPANY_PID# or e.pid = #COMPANY_PID#)
+		</isNotEmpty>
+	</statement>
+
+	<insert id="saveDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_BASE(
+			ID,
+			NO,
+			PRODUCE_ID,
+			TRAFFIC_ID,
+			PRODUCE_TYPE,
+			COMPANY_ID,
+			COMPANY_NAME,
+			PORDUCE_CONCAT,
+			PRODUCE_MOBILE,
+			START_DATE,
+			MUSTER_TIME,
+			MUSTER_PLACE,
+			VISITOR_CONCAT,
+			VISITOR_MOBILE,
+			MAN_COUNT,
+			CHILD_COUNT,
+			STATUS,
+			SALE_AMOUNT,
+			INTER_AMOUNT,
+			PAY_TYPE,
+			ACCOUNT_STATUS,
+			CREATE_USER,
+			CREATE_USER_ID,
+			CREATE_COMPANY_ID,
+			CREATE_DEPART_ID,
+			CREATE_TIME,
+			SITE_RELA_ID,
+			VISITOR_EMAIL,
+			RULE_ID,
+			PRODUCE_USER_ID,
+			IS_ALONE,
+			START_CITY,
+			END_CITY,
+			CON_NO,
+			RETAIL_SINGLE_ROOM,
+			INTER_SINGLE_ROOM,
+			SINGLE_ROOM_CNT,
+			OTHER_SUPPLY_AUDIT,
+			OTHER_AMOUNT,
+			ACCOUNT_WAY,
+			REMARK
+			<isNotEmpty property="IS_RENEW">
+			,IS_RENEW
+			</isNotEmpty>
+			<isNotEmpty property="RENEW_STATUS">
+			,RENEW_STATUS
+			</isNotEmpty>
+			)
+		values(
+			#ID#,
+			#NO#,
+			#PRODUCE_ID#,
+			#TRAFFIC_ID#,
+			#PRODUCE_TYPE#,
+			#COMPANY_ID#,
+			#COMPANY_NAME#,
+			#PORDUCE_CONCAT#,
+			#PRODUCE_MOBILE#,
+			#START_DATE#,
+			#MUSTER_TIME#,
+			#MUSTER_PLACE#,
+			#VISITOR_CONCAT#,
+			#VISITOR_MOBILE#,
+			#MAN_COUNT#,
+			#CHILD_COUNT#,
+			#STATUS#,
+			#SALE_AMOUNT#,
+			#INTER_AMOUNT#,
+			#PAY_TYPE#,
+			#ACCOUNT_STATUS#,
+			#CREATE_USER#,
+			#CREATE_USER_ID#,
+			#CREATE_COMPANY_ID#,
+			#CREATE_DEPART_ID#,
+			sysdate,
+			#SITE_RELA_ID#,
+			#VISITOR_EMAIL#,
+			#RULE_ID#,
+			#PRODUCE_USER_ID#,
+			#IS_ALONE#,
+			#START_CITY#,
+			#END_CITY#,
+			#CON_NO#,
+			#RETAIL_SINGLE_ROOM#,
+			#INTER_SINGLE_ROOM#,
+			#SINGLE_ROOM_CNT#,
+			#OTHER_SUPPLY_AUDIT#,
+			#OTHER_AMOUNT#,
+			#ACCOUNT_WAY#,
+			#REMARK#
+			<isNotEmpty property="IS_RENEW">
+			,#IS_RENEW#
+			</isNotEmpty>
+			<isNotEmpty property="RENEW_STATUS">
+			,#RENEW_STATUS#
+			</isNotEmpty>
+		)
+	</insert>
+	
+	<update id="morePayCheckDao" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_BASE SET STATUS = 1, PAY_TYPE = #PAY_TYPE# where id = #ID# and STATUS = 0
+	</update>
+	
+	<update id="updateDao" parameterClass="java.util.HashMap">
+		update SD_ORDER_BASE set ID = ID
+		<isNotEmpty property="REMARK">
+			,REMARK = #REMARK#
+		</isNotEmpty>
+		<isNotEmpty property="ACCOUNT_WAY">
+			,ACCOUNT_WAY = #ACCOUNT_WAY#
+		</isNotEmpty>
+		<isNotEmpty property="PLATFORM_PAY">
+			,PLATFORM_PAY = #PLATFORM_PAY#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			,COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_NAME">
+			,COMPANY_NAME = #COMPANY_NAME#
+		</isNotEmpty>
+		<isNotEmpty property="PORDUCE_CONCAT">
+			,PORDUCE_CONCAT = #PORDUCE_CONCAT#
+		</isNotEmpty>
+		<isNotEmpty property="PRODUCE_MOBILE">
+			,PRODUCE_MOBILE = #PRODUCE_MOBILE#
+		</isNotEmpty>
+		<isNotEmpty property="START_DATE">
+			,START_DATE = #START_DATE#
+		</isNotEmpty>
+		<isNotEmpty property="MUSTER_TIME">
+			,MUSTER_TIME = #MUSTER_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="MUSTER_PLACE">
+			,MUSTER_PLACE = #MUSTER_PLACE#
+		</isNotEmpty>
+		<isNotEmpty property="VISITOR_CONCAT">
+			,VISITOR_CONCAT = #VISITOR_CONCAT#
+		</isNotEmpty>
+		<isNotEmpty property="VISITOR_MOBILE">
+			,VISITOR_MOBILE = #VISITOR_MOBILE#
+		</isNotEmpty>
+		<isNotEmpty property="MAN_COUNT">
+			,MAN_COUNT = #MAN_COUNT#
+		</isNotEmpty>
+		<isNotEmpty property="CHILD_COUNT">
+			,CHILD_COUNT = #CHILD_COUNT#
+		</isNotEmpty>
+		<isNotEmpty property="STATUS">
+			,STATUS = #STATUS#
+		</isNotEmpty>
+		<isNotEmpty property="SALE_AMOUNT">
+			,SALE_AMOUNT = #SALE_AMOUNT#
+		</isNotEmpty>
+		<isNotEmpty property="INTER_AMOUNT">
+			,INTER_AMOUNT = #INTER_AMOUNT#
+		</isNotEmpty>
+		<isNotEmpty property="PAY_TYPE">
+			,PAY_TYPE = #PAY_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ACCOUNT_STATUS">
+			,ACCOUNT_STATUS = #ACCOUNT_STATUS#
+		</isNotEmpty>
+		<isNotEmpty property="IS_LOST">
+			,IS_LOST = #IS_LOST#
+		</isNotEmpty>
+		<isNotEmpty property="LOST_TIME">
+			,LOST_TIME = sysdate
+		</isNotEmpty>
+		<isNotEmpty property="LOST_TIME_NULL">
+			,LOST_TIME = null
+		</isNotEmpty>
+		<isNotEmpty property="VISITOR_EMAIL">
+			,VISITOR_EMAIL = #VISITOR_EMAIL#
+		</isNotEmpty>
+		<isNotEmpty property="CON_NO">
+			,CON_NO = #CON_NO#
+		</isNotEmpty>
+		<isNotEmpty property="RETAIL_SINGLE_ROOM">
+			,RETAIL_SINGLE_ROOM = #RETAIL_SINGLE_ROOM#
+		</isNotEmpty>
+		<isNotEmpty property="INTER_SINGLE_ROOM">
+			,INTER_SINGLE_ROOM = #INTER_SINGLE_ROOM#
+		</isNotEmpty>
+		<isNotEmpty property="SINGLE_ROOM_CNT">
+			,SINGLE_ROOM_CNT = #SINGLE_ROOM_CNT#
+		</isNotEmpty>
+		<isNotEmpty property="OTHER_SUPPLY_AUDIT">
+			,OTHER_SUPPLY_AUDIT = #OTHER_SUPPLY_AUDIT#
+		</isNotEmpty>
+		<isNotEmpty property="OTHER_AMOUNT">
+			,OTHER_AMOUNT = #OTHER_AMOUNT#
+		</isNotEmpty>
+		where ID = #ID#
+	</update>
+	
+	<statement id="listOrderPriceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ORDER_ID,
+			a.TYPE_ID,
+			a.TYPE_NAME,
+			a.ATTR_ID,
+			a.ATTR_NAME,
+			a.PRICE,
+			a.entity_id,
+			a.entity_type
+		from SD_ORDER_PRICE a 
+		where 1 = 1 
+		<isNotEmpty property="ORDER_ID">
+			and a.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_ID">
+			and a.ENTITY_ID = #ENTITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ENTITY_TYPE">
+			and a.ENTITY_TYPE = #ENTITY_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE_ID">
+			and a.TYPE_ID = #TYPE_ID#
+		</isNotEmpty>
+		order by a.ORDER_ID, a.ENTITY_ID
+	</statement>
+	
+	<insert id="saveOrderPriceDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_PRICE(
+			ID,
+			ORDER_ID,
+			TYPE_ID,
+			TYPE_NAME,
+			ATTR_ID,
+			ATTR_NAME,
+			PRICE,
+			ENTITY_ID,
+			ENTITY_TYPE)
+		select sys_guid(), #ORDER_ID#, a.TYPE_ID, a.TYPE_NAME, a.ATTR_ID, a.ATTR_NAME, a.PRICE, a.ENTITY_ID, #ENTITY_TYPE#  
+		from sd_pro_base_price a
+		where 1 = 1 and a.entity_id in ($ENTITY_ID$) 
+	</insert>
+	
+	<insert id="saveOrderRenewPriceDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_PRICE(
+			ID,
+			ORDER_ID,
+			TYPE_ID,
+			TYPE_NAME,
+			ATTR_ID,
+			ATTR_NAME,
+			PRICE,
+			ENTITY_ID,
+			ENTITY_TYPE)
+		values (#ID#,
+			#ORDER_ID#,
+			#TYPE_ID#,
+			#TYPE_NAME#,
+			#ATTR_ID#,
+			#ATTR_NAME#,
+			#PRICE#,
+			#ENTITY_ID#,
+			#ENTITY_TYPE#)
+	</insert>
+	
+	<statement id="listOrderStepDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ORDER_ID,
+			to_char(a.STEP_TIME, 'yyyy-mm-dd hh24:mi:ss') STEP_TIME,
+			a.TITLE,
+			a.STEP_USER,
+			a.STEP_USER_ID,
+			a.REMARK,
+			b.CHINA_NAME,
+			b.MOBILE,
+			c.COMPANY
+		from SD_ORDER_STEP a, SD_USER b, SD_USER_COMPANY c
+		where 1 = 1 
+		and a.STEP_USER_ID = b.ID
+		and b.COMPANY_ID = c.ID
+		<isNotEmpty property="ORDER_ID">
+			and a.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="STEP_USER">
+			and a.STEP_USER like '%$STEP_USER$%'
+		</isNotEmpty>
+		order by a.STEP_TIME asc
+	</statement>
+	
+	<insert id="saveOrderStepDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID,
+			REMARK)
+		values(
+			#ID#,
+			#ORDER_ID#,
+			sysdate,
+			#TITLE#,
+			#STEP_USER#,
+			#STEP_USER_ID#,
+			#REMARK#
+		)
+	</insert>
+	
+	<statement id="listOrderFundsDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.id,
+		  a.order_id,
+		  a.type,
+		  a.amount,
+		  a.remarks,
+		  a.account_type,
+		  a.account_company_id,
+		  a.site_rela_id,
+		  a.entity_type,
+		  TO_CHAR(a.create_time, 'yyyy-mm-dd') AS create_time,
+		  a.create_user_id,
+		  a.create_user,
+		  a.pid,
+		  a.entity_id,
+		  DECODE(a.account_company_id, b.company_id, '1', '0') AS is_self,
+		  t12.DISCOUNT_ID,
+		  t12.TITLE DISCOUNT_TITLE,
+		  t12.TOTAL_AMOUNT DISCOUNT_TOTAL_AMOUNT,
+		  t13.USER_NAME,
+		  t13.TITLE,
+		  t13.CHINA_NAME,
+		  t13.COMPANY,
+		  t13.MOBILE,
+		  t13.IS_FULL_PRICE,
+		  b.IS_RENEW
+		FROM sd_order_funds a,
+		  sd_order_base b,
+		  (SELECT t.ID,
+		    t.ORDER_ID,
+		    t.DISCOUNT_ID,
+		    t.IS_REFUND,
+		    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+		   
+		    t.RULE_TYPE,
+		    t.MONEY,
+		    t.PAY_WAY,
+		    t.PLATFROM,
+		    t.TOTAL_AMOUNT,
+	
+			t1.TITLE
+		FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+		where 1 = 1
+		and t.DISCOUNT_ID = t1.ID) t12,
+		(
+		
+		
+		SELECT a.id,
+		  DECODE(a.IS_FULL_PRICE, 1, '打包价', a.TITLE) AS TITLE,
+		  a1.COMPANY,
+		  a2.china_name AS user_name,
+		  a2.china_name,
+		  a2.mobile,
+		  a.is_full_price
+		FROM sd_pro_route a,
+		  sd_user_company a1,
+		  sd_user a2
+		WHERE a.COMPANY_ID   = a1.id
+		AND a.create_user_id = a2.id
+		UNION ALL
+		SELECT b.id,
+		  DECODE(b.IS_FULL_PRICE, 1, '打包价', b.TITLE) AS TITLE,
+		  b1.COMPANY,
+		  b2.china_name AS user_name,
+		  b2.china_name,
+		  b2.mobile,
+		  b.is_full_price
+		FROM sd_pro_traffic b,
+		  sd_user_company b1,
+		  sd_user b2
+		WHERE b.COMPANY_ID   = b1.id
+		AND b.create_user_id = b2.id
+		
+		
+		) t13
+		WHERE a.order_id   = b.id
+		and a.order_id = t12.order_id(+)
+		AND a.entity_id   = t13.id(+)
+		and b.is_del = 0
+		<isNotEmpty property="ACCOUNT_TYPE">
+			and a.ACCOUNT_TYPE = #ACCOUNT_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ORDER_ID">
+			and a.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and a.TYPE = #TYPE#
+		</isNotEmpty>
+		order by a.account_type, a.CREATE_TIME
+	</statement>
+	
+	<insert id="saveOrderFundsDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_FUNDS(
+			ID,
+			ORDER_ID,
+			TYPE,
+			AMOUNT,
+			REMARKS,
+			ACCOUNT_TYPE,
+			ACCOUNT_COMPANY_ID,
+			SITE_RELA_ID,
+			ENTITY_TYPE,
+			CREATE_TIME,
+			CREATE_USER,
+			CREATE_USER_ID,
+			ENTITY_ID,
+			PID)
+		values(
+			#ID#,
+			#ORDER_ID#,
+			#TYPE#,
+			#AMOUNT#,
+			#REMARKS#,
+			#ACCOUNT_TYPE#,
+			#ACCOUNT_COMPANY_ID#,
+			#SITE_RELA_ID#,
+			#ENTITY_TYPE#,
+			sysdate,
+			#CREATE_USER#,
+			#CREATE_USER_ID#,
+			#ENTITY_ID#,
+			#PID#
+		)
+	</insert>
+	
+	<statement id="searchOrderPriceMainDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.ORDER_ID,
+			a.TYPE_ID,
+			a.TYPE_NAME,
+			a.ATTR_ID,
+			a.ATTR_NAME,
+			a.PRICE,
+			a.IS_DEL 
+		FROM SD_ORDER_PRICE_MAIN a WHERE 1 = 1 and a.IS_DEL = 0
+		<isNotEmpty property="ORDER_ID">
+			AND a.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="searchOrderPriceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.ORDER_ID,
+			a.TYPE_ID,
+			a.TYPE_NAME,
+			a.ATTR_ID,
+			a.ATTR_NAME,
+			a.PRICE,
+			a.ENTITY_ID,
+			a.ENTITY_TYPE
+		FROM SD_ORDER_PRICE a WHERE 1 = 1
+		<isNotEmpty property="ORDER_ID">
+			AND a.ORDER_ID = #ORDER_ID#
+		</isNotEmpty>
+	</statement>
+	
+	
+	<insert id="saveOrderPriceMainDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_PRICE_MAIN(
+			ID,
+			ORDER_ID,
+			TYPE_ID,
+			TYPE_NAME,
+			ATTR_ID,
+			ATTR_NAME,
+			PRICE,
+			IS_DEL
+		)VALUES(
+			#ID#,
+			#ORDER_ID#,
+			#TYPE_ID#,
+			#TYPE_NAME#,
+			#ATTR_ID#,
+			#ATTR_NAME#,
+			#PRICE#,
+			0
+		)
+	</insert>
+	
+	<update id="delOrderPriceDao" parameterClass="java.util.Map">
+		DELETE FROM SD_ORDER_PRICE WHERE ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<update id="delOrderPriceMainDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_PRICE_MAIN SET IS_DEL = 1 where ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<statement id="listOrderTrafficDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.ORDER_ID,
+		  a.ROUTE_ID,
+		  a.NO,
+		  a.IS_DEL,
+		  a.TITLE
+		FROM SD_ORDER_ROUTE_TRAFFIC a
+		WHERE a.is_del = 0
+		AND a.order_id = #ORDER_ID#
+	</statement>
+	
+	<update id="delOrderTrafficDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_ROUTE_TRAFFIC SET IS_DEL = 1 where ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<insert id="saveOrderTrafficDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_ROUTE_TRAFFIC
+		  (
+			ID,
+			ORDER_ID,
+			ROUTE_ID,
+			NO,
+			IS_DEL,
+			TITLE,
+			BEFORE_ID
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ORDER_ID#,
+			#ROUTE_ID#,
+			#NO#,
+			0,
+			#TITLE#,
+			#BEFORE_ID#
+		  )
+	</insert>
+	
+	<statement id="listOrderTrafficDetailDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.ORDER_ID,
+			a.PLAN_ID,
+			a.ORDER_BY,
+			a.BEGIN_CITY_ID,
+			a.BEGIN_CITY_NAME,
+			a.END_CITY_ID,
+			a.END_CITY_NAME,
+			a.TRAFFIC_ID,
+			a.TRAFFIC_NAME,
+			a.STAY_CNT,
+			a.IS_DEL,
+			a.BEFORE_DETAIL_ID,
+			a.BEFORE_PLAN_ID,
+			a.BEGIN_STATION,
+			a.END_STATION,
+			a.TYPE,
+			a.IS_SINGLE
+		FROM SD_ORDER_ROUTE_TRAFFIC_DETAIL a
+		WHERE a.is_del = 0
+		AND a.order_id = #ORDER_ID#
+	</statement>
+	
+	<update id="delOrderTrafficDetailDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_ROUTE_TRAFFIC_DETAIL SET IS_DEL = 1 where ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<insert id="saveOrderTrafficDetailDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_ROUTE_TRAFFIC_DETAIL
+		  (
+			ID,
+			ORDER_ID,
+			PLAN_ID,
+			ORDER_BY,
+			BEGIN_CITY_ID,
+			BEGIN_CITY_NAME,
+			END_CITY_ID,
+			END_CITY_NAME,
+			TRAFFIC_ID,
+			TRAFFIC_NAME,
+			STAY_CNT,
+			IS_DEL,
+			BEFORE_DETAIL_ID,
+			BEFORE_PLAN_ID,
+			BEGIN_STATION,
+			END_STATION,
+			TYPE,
+			IS_SINGLE
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ORDER_ID#,
+			#PLAN_ID#,
+			#ORDER_BY#,
+			#BEGIN_CITY_ID#,
+			#BEGIN_CITY_NAME#,
+			#END_CITY_ID#,
+			#END_CITY_NAME#,
+			#TRAFFIC_ID#,
+			#TRAFFIC_NAME#,
+			#STAY_CNT#,
+			0,
+			#BEFORE_DETAIL_ID#,
+			#BEFORE_PLAN_ID#,
+			#BEGIN_STATION#,
+			#END_STATION#,
+			#TYPE#,
+			#IS_SINGLE#
+		  )
+	</insert>
+	
+	
+	<statement id="listVisitorGroupByTrafficAttrDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select c.entity_id,c.entity_type,sum(price*num) as price from (
+		select a.*,nvl(b.num,0) as num from (
+		SELECT b.traffic_id as entity_id,
+		  a.entity_type,
+		  a.price,
+		  a.attr_name,
+		  a.attr_id
+		FROM sd_order_price a,sd_pro_traffic_rule b
+		WHERE a.order_id         =#ORDER_ID#
+		AND a.entity_type= 1
+    and a.entity_id = b.id
+		AND a.type_id    = '0FA5123749D38C87E050007F0100BCAD'
+		) a,(
+		SELECT count(b.id) as num,
+			  c.PID
+			FROM sd_order_visitor a,
+			  sd_visitor b,
+			  (select id,decode(pid,'-1',id,pid) as pid from sd_pro_price_attr) c
+			WHERE a.visitor_id = b.id
+			and a.order_id = #ORDER_ID#
+			and b.ATTR_ID = c.id
+			group by c.PID
+		) b where a.attr_id = b.pid(+)
+		) c group by c.entity_id,c.entity_type
+
+	</statement>
+	
+	<statement id="listRefundsDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.TYPE,
+		  a.AMOUNT,
+		  a.REMARKS,
+		  a.ACCOUNT_TYPE,
+		  a.CREATE_TIME,
+		  a.CREATE_USER
+		FROM
+		  (SELECT a.TYPE,
+		    SUM(a.AMOUNT)              AS AMOUNT,
+		    wmsys.wm_concat(a.REMARKS) AS REMARKS,
+		    a.ACCOUNT_TYPE,
+		    TO_CHAR(MIN(a.CREATE_TIME), 'yyyy-mm-dd HH24:mi:ss') AS CREATE_TIME,
+		    MIN(a.CREATE_USER)                                   AS CREATE_USER
+		  FROM SD_ORDER_FUNDS a,
+		    SD_ORDER_BASE b
+		  WHERE a.ORDER_ID = b.ID
+		  and b.is_del = 0
+		  AND a.ORDER_ID   = #ORDER_ID#
+		  
+		  GROUP BY a.ACCOUNT_TYPE,
+		    a.TYPE
+		  ) a
+		ORDER BY a.account_type,
+		  a.CREATE_TIME
+	</statement>
+	
+	<insert id="saveContractLogDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_CONTRACT_LOG
+		  (
+		    ID,
+		    ORDER_ID,
+		    CON_NO,
+		    CREATE_TIME,
+		    CREATE_USER,
+		    TYPE
+		  )
+		  VALUES
+		  (
+		    #ID#,
+		    #ORDER_ID#,
+		    #CON_NO#,
+		    sysdate,
+		    #CREATE_USER#,
+		    #TYPE#
+		  )
+	</insert>
+	
+	<insert id="saveOrderContractDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_CONTRACT
+		  (
+		    ID,
+			CON_ATTR,
+			ORDER_ID,
+			CREATE_TIME,
+			CREATE_USER,
+			CREATE_USER_ID,
+			STEP
+		  )
+		  VALUES
+		  (
+		    #ID#,
+			#CON_ATTR#,
+			#ORDER_ID#,
+			sysdate,
+			#CREATE_USER#,
+			#CREATE_USER_ID#,
+			0
+		  )
+	</insert>
+	
+	<update id="updateOrderContractDao" parameterClass="java.util.Map">
+		update SD_ORDER_CONTRACT set ORDER_ID = #ORDER_ID#
+		<isNotEmpty property="APPLY_USER">
+			,APPLY_USER = #APPLY_USER#
+		</isNotEmpty>
+		<isNotEmpty property="APPLY_USER_ID">
+			,APPLY_USER_ID = #APPLY_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="APPLY_USER">
+			,APPLY_TIME = sysdate
+		</isNotEmpty>
+		<isNotEmpty property="CONFIRM_USER">
+			,CONFIRM_USER = #CONFIRM_USER#
+		</isNotEmpty>
+		<isNotEmpty property="CONFIRM_USER_ID">
+			,CONFIRM_USER_ID = #CONFIRM_USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CONFIRM_USER">
+			,CONFIRM_TIME = sysdate
+		</isNotEmpty>
+		<isNotEmpty property="STEP">
+			,STEP = #STEP#
+		</isNotEmpty>
+		where ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<insert id="saveOrderBankDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_ORDER_BANK
+		  (
+		    ID, 
+			COMPANY_ID, 
+			BANK_NO, 
+			BANK_NAME, 
+			OPEN_ADDRESS, 
+			OPER_NAME, 
+			SITE_RELA_ID, 
+			ENTITY_TYPE  
+		  )
+		  VALUES
+		  (
+		    #ID#, 
+			#COMPANY_ID#, 
+			#BANK_NO#, 
+			#BANK_NAME#, 
+			#OPEN_ADDRESS#, 
+			#OPER_NAME#, 
+			#SITE_RELA_ID#, 
+			#ENTITY_TYPE#
+		  )
+	</insert>
+	
+	<update id="updateOrderBankDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BANK SET 
+			BANK_NO = #BANK_NO#, 
+			BANK_NAME = #BANK_NAME#, 
+			OPEN_ADDRESS = #OPEN_ADDRESS#, 
+			OPER_NAME = #OPER_NAME#, 
+			SITE_RELA_ID = #SITE_RELA_ID#, 
+			ENTITY_TYPE = #ENTITY_TYPE#
+		where ID = #ID#
+	</update>
+	
+	
+	<delete id="reSeatOnlineDao" parameterClass="java.lang.String">
+		delete from sd_pro_traffic_seat where entity_id = #VALUE#
+	</delete>
+	
+	<insert id="saveTrafficSeatTempDao" parameterClass="java.lang.String">
+		INSERT INTO SD_PRO_TRAFFIC_SEAT_TEMP (
+			ID,
+			SALE_DATE,
+			SALE_SEAT,
+			ENTITY_ID,
+			TYPE,
+			RULE_ID,
+			TRAFFIC_ID,
+			CREATE_TIME)
+		select ID,
+			SALE_DATE,
+			SALE_SEAT,
+			ENTITY_ID,
+			TYPE,
+			RULE_ID,
+			TRAFFIC_ID,
+			CREATE_TIME from SD_PRO_TRAFFIC_SEAT where entity_id = #VALUE#
+	</insert>
+	
+	<insert id="reSeatStepOnlineDao" parameterClass="java.util.Map">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID, 
+			REMARK)
+		select sys_guid(),id,sysdate,'手动取消',CREATE_USER,CREATE_USER_ID,#remark# from sd_order_base where id = #orderId# and is_del = 0
+	</insert>
+	
+	<statement id="batchRestContractAgencyOnlineDao" parameterClass="java.lang.String">
+		update SD_ORDER_CONTRACT_AGENCY set STATUS=0,USE_USER='', USE_TIME = null,USE_USER_ID='',ORDER_NO='',ORDER_ID='' where no in (select con_no from sd_order_base 
+		where id = #VALUE# and is_del = 0)
+	</statement>
+	
+	<update id="reSeatStatusOnlineDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 6, con_no = ''
+		where id = #VALUE#
+	</update>
+	
+	
+	<update id="cancelRenewOrderDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 7, con_no = '', RENEW_STATUS = 4
+		 where id in (SELECT t.id
+		FROM sd_order_base t,
+		  (SELECT DECODE(t.OLD_DELAY_DAY, NULL, t1.OLD_DELAY_DAY, 0, t1.OLD_DELAY_DAY, t.OLD_DELAY_DAY) AS DELAY_DAY,
+			  DECODE(t.OLD_AUDIT_DAY, NULL, t1.OLD_AUDIT_DAY, 0, t1.OLD_AUDIT_DAY, t.OLD_AUDIT_DAY) AS AUDIT_DAY,
+			  t.*
+			FROM sd_user_company t,
+			  sd_user_company t1
+			  where t.pid = t1.id(+)) t1
+		WHERE t.IS_RENEW                     = 1
+		and t.is_del = 0
+		AND t.RENEW_STATUS                   = 1
+		AND t.create_company_id              = t1.id
+		<![CDATA[ AND (t.create_time+t1.AUDIT_DAY) < sysdate) ]]> 
+	</update>
+	
+	<statement id="batchRenewRestContractAgencyDao" parameterClass="java.lang.String">
+		update SD_ORDER_CONTRACT_AGENCY set STATUS=0,USE_USER='', USE_TIME = null,USE_USER_ID='',ORDER_NO='',ORDER_ID='' where no in (
+			SELECT t.con_no
+			FROM sd_order_base t,
+			  (SELECT DECODE(t.OLD_DELAY_DAY, NULL, t1.OLD_DELAY_DAY, 0, t1.OLD_DELAY_DAY, t.OLD_DELAY_DAY) AS DELAY_DAY,
+			  DECODE(t.OLD_AUDIT_DAY, NULL, t1.OLD_AUDIT_DAY, 0, t1.OLD_AUDIT_DAY, t.OLD_AUDIT_DAY) AS AUDIT_DAY,
+			  t.*
+			FROM sd_user_company t,
+			  sd_user_company t1
+			  where t.pid = t1.id(+)) t1
+			WHERE t.IS_RENEW                     = 1
+			and t.is_del = 0
+			AND t.RENEW_STATUS                   = 1
+			AND t.create_company_id              = t1.id
+			<![CDATA[ AND (t.create_time+t1.AUDIT_DAY) < sysdate ]]> 
+		)
+	</statement>
+	
+	<insert id="saveCancelRenewOrderStepDao" parameterClass="java.lang.String">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID, 
+			REMARK)
+			SELECT sys_guid(), t.id,sysdate, '系统自动取消', t.CREATE_USER, t.CREATE_USER_ID, '审核超时'
+			FROM sd_order_base t,
+			  (SELECT DECODE(t.OLD_DELAY_DAY, NULL, t1.OLD_DELAY_DAY, 0, t1.OLD_DELAY_DAY, t.OLD_DELAY_DAY) AS DELAY_DAY,
+			  DECODE(t.OLD_AUDIT_DAY, NULL, t1.OLD_AUDIT_DAY, 0, t1.OLD_AUDIT_DAY, t.OLD_AUDIT_DAY) AS AUDIT_DAY,
+			  t.*
+			FROM sd_user_company t,
+			  sd_user_company t1
+			  where t.pid = t1.id(+)) t1
+			WHERE t.IS_RENEW                     = 1
+			AND t.RENEW_STATUS                   = 1
+			AND t.create_company_id              = t1.id
+			<![CDATA[ AND (t.create_time+t1.AUDIT_DAY) < sysdate ]]> 
+	</insert>
+	
+	<delete id="reSeatEarnestDao" parameterClass="java.lang.String">
+		delete from sd_pro_traffic_seat where entity_id in  (select id from sd_order_base where STATUS = 0 and IS_LOST = 0 and IS_EARNEST = 4 and is_del = 0
+		 <![CDATA[ and to_char(CREATE_TIME+1/3,'yyyy-mm-dd HH24:mi:ss') <= #VALUE# ]]> 
+		)
+	</delete>
+	
+	<update id="reSeatEarnestStatusDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 7, con_no = '', is_earnest = 9
+		where STATUS = 0 and IS_LOST = 0 and IS_EARNEST = 4 <![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> 
+	</update>
+	
+	<statement id="batchEarnestRestContractAgencyDao" parameterClass="java.lang.String">
+		update SD_ORDER_CONTRACT_AGENCY set STATUS=0,USE_USER='', USE_TIME = null,USE_USER_ID='',ORDER_NO='',ORDER_ID='' where no in (select con_no from sd_order_base 
+		where STATUS = 0 and IS_LOST = 0 and IS_EARNEST = 4 and is_del = 0 <![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> )
+	</statement>
+	
+	<insert id="reSeatEarnestStepDao" parameterClass="java.lang.String">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID, 
+			REMARK)
+		select sys_guid(),id,sysdate,'系统自动取消',CREATE_USER,CREATE_USER_ID,'定金付款超时' from sd_order_base where STATUS = 0 and IS_LOST = 0 and IS_EARNEST = 4 and is_del = 0
+		<![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> 
+	</insert>
+	
+	<delete id="reSeatDao" parameterClass="java.lang.String">
+		delete from sd_pro_traffic_seat where entity_id in  (select id from sd_order_base where STATUS = 1 and PAY_TYPE!=0 and IS_LOST=0 and is_del = 0
+		 <![CDATA[ and to_char(CREATE_TIME+1/3,'yyyy-mm-dd HH24:mi:ss') <= #VALUE# ]]> 
+		)
+	</delete>
+	
+	<update id="reSeatStatusDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 7, con_no = ''
+		where STATUS = 1 and PAY_TYPE!=0 and IS_LOST=0 <![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> 
+	</update>
+	
+	<statement id="batchRestContractAgencyDao" parameterClass="java.lang.String">
+		update SD_ORDER_CONTRACT_AGENCY set STATUS=0,USE_USER='', USE_TIME = null,USE_USER_ID='',ORDER_NO='',ORDER_ID='' where no in (select con_no from sd_order_base 
+		where STATUS = 1 and PAY_TYPE!=0 and IS_LOST=0 and is_del = 0 <![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> )
+	</statement>
+	
+	<update id="reSeatYYStatusDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 7, con_no = ''
+		where STATUS = 0 and PAY_TYPE = 0 and IS_LOST = 0 <![CDATA[ and (CREATE_TIME + 3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> 
+	</update>
+	
+	<statement id="batchYYRestContractAgencyDao" parameterClass="java.lang.String">
+		update SD_ORDER_CONTRACT_AGENCY set STATUS=0,USE_USER='', USE_TIME = null,USE_USER_ID='',ORDER_NO='',ORDER_ID='' where no in (select con_no from sd_order_base 
+		where STATUS = 0 and PAY_TYPE = 0 and IS_LOST = 0 and is_del = 0 <![CDATA[ and (CREATE_TIME + 3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> )
+	</statement>
+	
+	<statement id="reSeatStatusListDao" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select IS_ALONE,SOURCES,COMPANY_ID,to_char(CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME from sd_order_base 
+		where STATUS = 1 and PAY_TYPE!=0 and IS_LOST=0 and is_del = 0 <![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> 
+	</statement>
+	
+	<insert id="reSeatStepDao" parameterClass="java.lang.String">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID, 
+			REMARK)
+		select sys_guid(),id,sysdate,'系统自动取消',CREATE_USER,CREATE_USER_ID,'付款超时' from sd_order_base where STATUS = 1 and PAY_TYPE!=0 and IS_LOST=0 and is_del = 0
+		
+		<![CDATA[ and (CREATE_TIME + 1/3) <= to_date(#VALUE#, 'yyyy-mm-dd HH24:mi:ss') ]]> 
+		
+	</insert>
+	
+	<delete id="reSeatByEntityIdDao" parameterClass="java.lang.String">
+		delete from sd_pro_traffic_seat where entity_id = #VALUE#
+	</delete>
+	
+	<update id="reSeatStatusByEntityIdDao" parameterClass="java.lang.String">
+		UPDATE sd_order_base SET 
+			STATUS = 7, IS_LOST = 0, LOST_TIME = null 
+		where id = #VALUE#
+	</update>
+	
+	<statement id="reSeatStatusByEntityIdListDao" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select IS_ALONE,SOURCES,COMPANY_ID,to_char(CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss') CREATE_TIME from sd_order_base  
+		where id = #VALUE#  and is_del = 0
+	</statement>
+	
+	<insert id="reSeatStepByEntityIdDao" parameterClass="java.util.Map">
+		insert into SD_ORDER_STEP(
+			ID,
+			ORDER_ID,
+			STEP_TIME,
+			TITLE,
+			STEP_USER,
+			STEP_USER_ID,
+			REMARK)
+		select sys_guid(),id,sysdate,'系统自动取消',#CREATE_USER#,#CREATE_USER_ID#,'在线支付失败' from sd_order_base where id = #ID# and is_del = 0
+	</insert>
+	
+	<statement id="listOrderAccountDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.START_DATE,
+		  a.END_DATE,
+		  a.COMPANY_ID,
+		  a.SITE_RELA_ID,
+		  a.ACCOUNT_STATUS
+		FROM SD_ORDER_ACCOUNT a
+		WHERE 1 = 1
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+		AND a.START_DATE = #CREATE_BEGIN_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_END_TIME">
+		AND a.END_DATE       = #CREATE_END_TIME#
+		</isNotEmpty>
+	  	<isNotEmpty property="COMPANY_ID">
+	  	AND a.COMPANY_ID     = #COMPANY_ID#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_TYPE">
+	  	AND a.ACCOUNT_TYPE     = #ACCOUNT_TYPE#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_COMPANY_ID">
+	  	AND a.ACCOUNT_COMPANY_ID     = #ACCOUNT_COMPANY_ID#
+	  	</isNotEmpty>
+	</statement>
+	
+	<statement id="searchOrderRouteTraffic" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT TO_CHAR(to_date(t.START_DATE,'yyyy-mm-dd')+(SUM(t.exca) over(partition BY t.ORDER_ID order by t.ORDER_BY)),'yyyy-mm-dd') AS exca,
+		  t.STAY_CNT,
+		  t.BEGIN_CITY_NAME,
+		  t.END_CITY_NAME,
+		  t.PRODUCE_NAME,
+		  t.ORDER_BY,
+		  t.START_DATE,
+		  t.ORDER_ID
+		FROM
+		  (SELECT DECODE(t1.order_by,1,0,first_value(t1.STAY_CNT) over(partition BY c.ID order by t1.ORDER_BY rows BETWEEN 1 preceding AND 1 following)) AS exca,
+		    c.ID                                                                                                                                         AS ORDER_ID,
+		    t1.BEGIN_CITY_NAME,
+		    t1.END_CITY_NAME,
+		    t1.ORDER_BY,
+		    c.START_DATE,
+		    t3.PRODUCE_NAME,
+		    t1.STAY_CNT
+		  FROM sd_order_base c,
+		    sd_order_route_traffic t,
+		    sd_order_route_traffic_detail t1,
+		    (SELECT b.id,
+		      '100' AS type,
+		      b.CREATE_USER_ID,
+		      b.TITLE AS PRODUCE_NAME
+		    FROM sd_pro_traffic b
+		    ) t3
+		  WHERE c.id        = t.order_id
+		  AND c.id          = t1.order_id
+		  AND t1.traffic_id = t3.id
+		  AND t1.IS_DEL = 0
+  		  AND t.IS_DEL = 0
+  		  AND c.IS_DEL = 0
+		  AND c.ID         = #ORDER_ID#
+		  ) t
+	  </statement>
+	  
+	  <statement id="detailContractAgencyByNoDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	  	SELECT a.STATUS FROM SD_ORDER_CONTRACT_AGENCY a WHERE a.NO = #NO#  
+	  </statement>
+				
+	  <statement id="detailOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	  	SELECT a.ID,
+	  	    a.NO,
+			a.RETAIL_SINGLE_ROOM,
+			a.INTER_SINGLE_ROOM,
+			a.SINGLE_ROOM_CNT,
+			a.OTHER_AMOUNT,
+			b.COMPANY as BUY_COMPANY,
+			c.COMPANY as SALE_COMPANY_NAME,
+			d.PHONE as SALE_PHONE,
+			d.MOBILE as SALE_MOBILE,
+			e.MOBILE as BUY_MOBILE,
+			a.SALE_AMOUNT,
+			a.SALE_FLOAT,
+			a.INTER_AMOUNT,
+			a.INTER_FLOAT,
+			a.INTER_FLOAT_TEMP,
+			a.STATUS,
+			a.IS_LOST,
+			a.EARNEST_TYPE,
+			a.EARNEST_DAY_COUNT,
+			a.IS_EARNEST,
+			a.EARNEST_INTER,
+			a.EARNEST_INTER_AMOUNT,
+			a.EARNEST_RETAIL_AMOUNT,
+			a.EARNEST_RETAIL
+		FROM SD_ORDER_BASE a, SD_USER_COMPANY b, SD_USER_COMPANY c,
+		(SELECT a.ID, c.PHONE, c.MOBILE FROM SD_PRO_ROUTE a, sd_user c where a.CREATE_USER_ID = c.ID
+		    UNION ALL 
+		    SELECT b.ID, d.PHONE, d.MOBILE FROM SD_PRO_TRAFFIC b, sd_user d where b.CREATE_USER_ID = d.id) d,
+		    SD_USER E
+		WHERE a.CREATE_COMPANY_ID = b.ID 
+		and a.COMPANY_ID = c.ID
+		and a.PRODUCE_ID = d.ID
+		and a.CREATE_USER_ID = e.ID
+		and a.is_del = 0
+		and a.id = #ID#
+	  </statement>
+	  
+	  <insert id="saveOrderOtherPriceDao" parameterClass="java.util.Map">
+	  	INSERT INTO SD_ORDER_OTHER_PRICE (
+	  		ID,
+	  		ORDER_ID,
+	  		ROUTE_ID,
+	  		OTHER_ID,
+	  		TITLE,
+	  		CONTENT,
+	  		PRICE,
+	  		NUM
+	  	) VALUES(
+	  		#ID#,
+	  		#ORDER_ID#,
+	  		#ROUTE_ID#,
+	  		#OTHER_ID#,
+	  		#TITLE#,
+	  		#CONTENT#,
+	  		#PRICE#,
+	  		#NUM#
+	  	)
+	  </insert>
+	  
+	  <delete id="delOrderOtherPriceDao" parameterClass="java.util.Map">
+	  	DELETE FROM  SD_ORDER_OTHER_PRICE WHERE ORDER_ID = #ORDER_ID#
+	  </delete>
+	  
+</sqlMap>

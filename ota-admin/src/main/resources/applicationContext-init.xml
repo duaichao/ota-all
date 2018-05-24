@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config library="system">
+    <PublicConfig>
+        <!-- 测试服务器 -->
+        <!--
+        <detail name="domain">http://test.xsx518.cn</detail>
+        <detail name="upload.path">/usr/local/webserver/tomcat-04-6.0.37/webapps/attachment</detail>
+        <detail name="visit.path">http://img.test.xsx518.cn/attachment</detail>
+         -->
+
+        <!-- 正式服务器 -->
+        <!--
+        <detail name="domain">http://test.xsx518.cn</detail>
+        <detail name="upload.path">/usr/local/webserver/tomcat-04-6.0.37/webapps/attachment</detail>
+        <detail name="visit.path">http://img.test.xsx518.cn/attachment</detail>
+         -->
+
+        <!-- 本地 -->
+        <!--  -->
+        <detail name="domain">http://localhost</detail>
+        <detail name="system.file.path">D:\apache-tomcat-7.0.63\webapps\ROOT\files</detail>
+        <detail name="upload.path">D:\apache-xsx\webapps\tattachment</detail>
+        <detail name="visit.path">http://localhost/tattachment</detail>
+
+        <detail name="press.image.path">D:/apache-tomcat-xsx/webapps/ROOT/resource/images/logo.png</detail>
+        <detail name="ireport">D:/apache-tomcat-xsx/webapps/ROOT/file/ireport</detail>
+        <detail name="word.path">D:/apache-tomcat-xsx/webapps/ROOT/file/word</detail>
+
+        <detail name="findPwd_tip">尊敬的会员user_name，您的新密码为：password，请在登录后及时修改。</detail>
+        <detail name="findPwd_email_tip">尊敬的逍遥会员，您好！您在新视线旅游分销平台的密码已重置为 password，点击链接: login_url 登录，请登陆后尽快修改您的密码。</detail>
+
+        <!-- 是否开启单登陆 -->
+        <detail name="security">1</detail>
+
+        <!-- webservice服务武器 -->
+        <!--
+        <detail name="remote_rmi">0</detail>
+        <detail name="remote_sms">0</detail>
+        -->
+
+        <!-- 客户端服务武器 -->
+        <!--
+        <detail name="remote_rmi">1</detail>
+        <detail name="remote_sms">1</detail>
+        -->
+
+        <detail name="remote_rmi">0</detail>
+        <detail name="remote_sms">0</detail>
+
+        <detail name="ip.data.path">D:/17monipdb.dat</detail>
+
+    </PublicConfig>
+</config>

@@ -1,0 +1,582 @@
+/*
+KISSY CSS Reset
+*/
+
+/* 清除内外边距 */
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
+dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
+pre, /* text formatting elements 文本格式元素 */
+fieldset, lengend, button, input, textarea, /* form elements 表单元素 */
+th, td { /* table elements 表格元素 */
+    margin: 0;
+    padding: 0;
+}
+
+/* 设置默认字体 */
+body,
+button, input, select, textarea { /* for ie */
+    /*font: 12px/1 Tahoma, Helvetica, Arial, "宋体", sans-serif;*/
+    /*font: 12px/1 Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif;*/ /* 用 ascii 字符表示，使得在任何编码下都无问题 */
+    font: 12px/1 Tahoma, Helvetica, Arial, "Microsoft Yahei", sans-serif;
+}
+
+h1 { font-size: 18px; /* 18px / 12px = 1.5 */ }
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+h4, h5, h6 { font-size: 100%; }
+
+address, cite, dfn, em, var { font-style: normal; } /* 将斜体扶正 */
+code, kbd, pre, samp, tt { font-family: "Courier New", Courier, monospace; } /* 统一等宽字体 */
+small { font-size: 12px; } /* 小于 12px 的中文很难阅读，让 small 正常化 */
+
+/* 重置列表元素 */
+ul, ol { list-style: none; }
+
+/* 重置文本格式元素 */
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+abbr[title], acronym[title] { /* 注：1.ie6 不支持 abbr; 2.这里用了属性选择符，ie6 下无效果 */
+    border-bottom: 1px dotted;
+    cursor: help;
+}
+
+q:before, q:after { content: ''; }
+
+/* 重置表单元素 */
+legend { color: #000; } /* for ie6 */
+fieldset, img { border: none; } /* img 搭车：让链接里的 img 无边框 */
+/* 注：optgroup 无法扶正 */
+button, input, select, textarea {
+    font-size: 100%; /* 使得表单元素在 ie 下能继承字体大小 */
+}
+
+/* 重置表格元素 */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* 重置 hr */
+hr {
+    border: none;
+    height: 1px;
+}
+
+/* 让非ie浏览器默认也显示垂直滚动条，防止因滚动条引起的闪烁 */
+html { overflow-y: scroll; }
+body{
+	padding: 0;
+	margin: 0;
+	font: 12px/1 Tahoma, Helvetica, Arial, "Microsoft Yahei", sans-serif;
+	color: #222;
+	background: #fff;
+}
+a:hover{
+	text-decoration: none;
+}
+.wrapper{
+	width: 1000px;
+	margin: 0 auto;
+}
+.header{
+	height: 80px;
+	background: #fff;
+}
+.header .headerWrap{
+	width: 1000px;
+	height: 100%;
+	margin: 0 auto;
+	position: relative;
+}
+.header .headerWrap .loginLogo{
+	padding: 9px 0;
+	display: block;
+	overflow: hidden;
+}
+.city{ width:auto;padding:3px;font-size:18px;position: absolute;top:45px;left:130px;}
+.city a{color:#909090;background:#f5f5f5;padding:3px;}
+.city label{cursor:pointer;font-size:12px;color:#909090;padding:0 8px 0 0;}
+.city .more-city{position: absolute;top:26px;left:2px;display:none;padding:5px;width:300px;z-index:1000;border-radius: 3px;background: white;box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+.city .more-city a{background:#fff;padding:0;display: inline-block;font-size:16px;padding:8px;white-space:nowrap;}
+.city a:hover,.city .more-city a:hover{color:#427fed;}
+
+.header .headerWrap .nav{
+	width: auto;
+	line-height: 60px;
+}
+
+
+.header .headerWrap .contact{
+	position: absolute;
+	top:15px;
+	right:0px;
+}
+.header .headerWrap .contact span{
+	color: #999;
+	font-size: 26px;
+	position:relative;
+	top:-5px;
+	letter-spacing:2px;
+}
+
+.header .headerWrap .contact span.servicetime {
+	z-index: 1;
+	display: block;
+	font-size: 14px;
+	color: #999;
+	margin: 4px 0 0 38px;	
+	letter-spacing:0px;
+}
+.header .headerWrap .contact a.qq{
+	margin: 4px 0 0 38px;	
+}
+
+/* 焦点图 */
+.container{
+	background: #fff;
+	width: 100%;
+}
+.container .focusImg{
+	width: 100%;
+	height: 450px;
+	position: relative;
+	overflow: hidden;
+}
+.container .focusImg .sliderCon{
+	width: 100%;
+	position: relative;
+	height:450px;
+	overflow:hidden;
+}
+.container .focusImg .sliderCon li{
+	width:100%;
+	height:450px;
+	min-width:996px;
+}
+.container .focusImg .sliderCon li a{
+	height:320px;
+	width:1000px;
+	display:block;
+	position:absolute;
+	margin:-160px 0px 0px -508px; 
+	top: 50%; 
+	left: 50%; 
+}
+.container .focusImg .control{
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	margin-left: 432px;
+}
+.container .focusImg .control a {
+	float: left;
+	width: 24px;
+	height: 24px;
+	margin-left: 10px;
+	line-height: 10;
+	overflow: hidden;
+	opacity: 0.8;
+	filter: alpha(opacity=80);
+	background-image: url(../images/login/icon_main.png);
+	background-repeat: no-repeat;
+}
+.container .focusImg .control .prev {
+	background-position: 0 -18px;
+}
+.container .focusImg .control .next {
+	background-position: -24px -18px;
+}
+/* 登录框 */
+.container .loginWrap{
+	width: 1000px;
+	margin: 0 auto;
+	position: relative;
+	z-index: 9;
+}
+.container .loginWrap .loginBox{
+	width: 320px;
+	height: 280px;
+	position: absolute;
+	z-index: 8;
+	top: -385px;
+	right: 0;
+	padding: 20px;
+    border-radius: 3px;
+    background: white;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2)
+}
+.container .loginWrap .loginBox h1{
+	font-size: 18px;
+	font-weight: normal;
+	padding: 4px 0 8px 0;
+	margin-bottom:30px;
+}
+.container .loginWrap .loginBox .input-cell{
+	position:relative;
+	height:60px;
+}
+.login-status{
+	height: 18px;
+	margin-top: -5px;
+	margin-bottom: 10px;
+	line-height: 18px;
+	text-align: right;
+	font-size: 14px;
+	color: #999;
+}
+.login-status a {
+    color: #999
+}
+
+.login-status a:hover {
+    text-decoration: none;
+    color: #333
+}
+
+.login-status label {
+    float: left
+}
+
+.login-status .checkbox {
+    display: none
+}
+.login-status input {
+	float: left;
+	width: 14px;
+	height: 14px;
+	margin: 2px 8px 0 0;
+}
+html:root .login-status .checkbox {
+    display: block;
+    float: left;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    background-image: url(../images/login/checkbox.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    -webkit-appearance: none
+}
+
+html:root .login-status input[type="checkbox"] {
+    display: none
+}
+
+html:root .login-status input[type="checkbox"]:checked+.checkbox {
+    background-position: -18px 0
+}
+.container .loginWrap .loginBox .input-cell.btns{text-align:right;}
+.container .loginWrap .loginBox .input-cell .inputIcon{
+	position: absolute;
+	color: #999;
+	top: 0;
+    left: 0;
+	padding:13px 0 10px 8px;
+}
+.container .loginWrap .loginBox .input-cell .inputFields{
+	position: absolute;
+    top: 0;
+    left: 0;
+    width: 280px;
+    padding: 10px 10px 10px 35px;
+    line-height: 20px;
+    font-size: 18px;
+	background:transparent;
+    border: 1px solid #e2e5e9;
+    font-family: Tahoma,Geneva,'Heiti SC','Microsoft Yahei','Simsun';
+}
+.container .loginWrap .loginBox .input-cell label{
+	position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 0 11px 0 31px;
+    line-height: 45px;
+    font-size: 16px;
+    color: #999;
+    cursor: text;
+	z-index:-1;
+}
+.container .loginWrap .loginBox .input-cell b{
+	position: absolute;
+	display:none;
+	top: 12px;
+	right: 11px;
+	z-index: 3;
+	width: 18px;
+	height: 18px;
+	line-height: 10;
+	overflow: hidden;
+	background-image: url(../images/login/icon_form.gif);
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	cursor: pointer;
+}
+.container .loginWrap .loginBox .input-cell .toolTip{
+	position: absolute;
+	top: -35px;
+	right: 11px;
+	z-index:10;
+	display: none;
+	opacity: 1;
+	padding: 0 0 5px 0;
+}
+.container .loginWrap .loginBox .toolTip .tipArrow{
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	bottom: 0;
+	right:5px;;
+	margin-left: -5px;
+	border-width: 5px 5px 0;
+	border-top-color: #dd4b39;
+}
+.container .loginWrap .loginBox .toolTip .tipInner{
+	max-width: 320px;
+	padding: 7px 10px;
+	font-size:12px;
+	color: #fff;
+	text-decoration: none;
+	background-color: #dd4b39;
+	border-radius: 3px;
+}
+.container .loginWrap .loginBox .btnSign{
+	padding:0 20px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	background: #2b91e3;
+	display:inline-block;
+	font-size: 18px;
+	color: #fff;
+	border: 0;
+	cursor: pointer;
+	border-radius: 3px;
+	margin-top:10px;
+	border:1px solid transparent;
+}
+.container .loginWrap .loginBox .btnSign:hover{
+	text-decoration: none;
+    color: white;
+    background: #2d89cd
+}
+.container .loginWrap .loginBox .btnSign.loging{
+	border:1px solid #ddd;
+	background: #f1f1f1;
+	color:#aca899;
+}
+.container .loginWrap .loginBox .btnSign.loging:hover{
+	border:1px solid #ddd;
+	background: #f1f1f1;
+	color:#aca899;
+
+}
+.container .loginWrap .loginBox .btnSign.reg{
+	margin-left:5px;
+	background: #2fb746;
+}
+.container .loginWrap .loginBox .btnSign.reg:hover{
+	background: #2aa43e;
+}
+
+
+/* 品牌展示 */
+.tt-grid-wrapper{position: relative;overflow: hidden;padding:5px 0 10px 0;}
+.tt-grid-wrapper h1{color:#666;font-weight: normal;font-size: 24px;text-align: left;max-width: 1000px;padding: 5px 0 0 10px;margin: 3px auto;}
+.tt-grid {position: relative;margin: 5px auto;padding: 5px 3px 3px 3px;max-width: 1000px;list-style: none;text-align: center;font-size: 0px;}
+.tt-grid:before,
+.tt-grid:after {display: table;content: ' ';}
+.tt-grid:after {clear: both;}
+.tt-grid li {position: relative;display: inline-block;margin: 5px;width: 322px;height: 225px;-webkit-backface-visibility: hidden;backface-visibility: hidden;}
+.tt-grid li a img{width:100%;transition:margin 0.4s; -webkit-transition:margin 0.4s;border: none;}
+.tt-grid li a:hover img{margin-top:-10px;transition:margin 0.4s;-webkit-transition:margin 0.4s;}
+.tt-grid li a {width:100%;height:100%;display: block;border: 1px solid #f2f2f2;background: #fff;position: absolute;overflow:hidden;top: 0;left: 0;}
+.tt-grid li a.shadow{transition: box-shadow 0.3s ease;-moz-transition: box-shadow 0.3s ease;-webkit-transition: box-shadow 0.3s ease;-o-transition: box-shadow 0.3s ease;-ms-transition: box-shadow 0.3s ease}
+.tt-grid li a:hover{border-color: #e6e6e6;box-shadow: 0 0 10px rgba(0,0,0,0.2)}
+
+.tt-grid li a:nth-child(2) {z-index: 1;visibility: hidden;}
+.tt-grid li a span{display:block;width:100%;text-align: left;}
+.tt-grid li a .name {
+    color: #333;
+    font-size: 18px;
+	width:306px;
+    background: #fafafa;
+    color: #333;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 10px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0
+}
+
+/* Navigation */
+.tt-grid-wrapper nav {
+	padding:5px 0;
+	text-align: center;
+}
+
+.tt-grid-wrapper nav a {
+	display: inline-block;
+	margin: 0 8px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #b3b3b3;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: all 0.2s;
+}
+
+.touch .tt-grid-wrapper nav a {
+	width: 30px;
+	height: 30px;
+}
+
+.tt-grid-wrapper nav a:hover {
+	opacity: 1;
+}
+
+.tt-grid-wrapper nav a.tt-current {
+	opacity: 1;
+	box-shadow: 0 0 0 5px rgba(179,179,179,0.4);
+}
+
+.tt-grid.tt-effect-active li a {
+	pointer-events: none;
+}
+
+
+.container .por-warpper{
+	width: 1000px;
+	margin: 0 auto;
+}
+/* 入驻流程 */
+.container .process{
+	width: 600px;
+	height: 200px;
+	margin: 0 auto;
+	overflow:hidden;
+	position: relative;
+	float:left;
+}
+.container .process h1{
+	color:#666;
+	font-weight: normal;
+	font-size: 24px;
+	text-align: left;
+	max-width: 1000px;
+	padding: 20px 0 20px 10px;
+	
+}
+.container .process .step{
+	float:left;
+	width:110px;
+	height:200px;
+	text-align:left;
+
+}
+.container .process .step img{
+	width:100px;
+	height:100px;
+
+}
+.container .process .step span{
+	display:block;
+	height:22px;
+	width:90px;
+	text-align:center;
+	line-height:25px;
+	color:#666;
+	font-size:14px;
+}
+.container .process .arrow{
+	float:left;
+	width:100px;
+	height:100px;
+	background:url(../images/login/go-step.png) no-repeat center center;
+}
+/* 服务保障 */
+.promise{
+	float:left;
+}
+.promise h1{
+	color:#666;
+	font-weight: normal;
+	font-size: 24px;
+	text-align: left;
+	max-width: 1000px;
+	padding: 20px 0 20px 10px;
+}
+.promise .step{float:left;width:120px;
+	height:200px;
+	text-align:left;}
+/* 版权 */
+.footer{
+	background:#fff;
+	
+	padding: 20px 0;
+}
+.footer p{
+	text-align: center;
+}
+
+@font-face {
+  font-family: 'iconfont';
+  src: url('//at.alicdn.com/t/font_1470662122_3002403.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/font_1470662122_3002403.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/font_1470662122_3002403.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/font_1470662122_3002403.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/font_1470662122_3002403.svg#iconfont') format('svg'); /* iOS 4.1- */
+}
+                    
+                    
+                    
+                    
+      
+.iconfont {
+  font-family: "iconfont";
+  padding:2px;
+  top:0px;
+  font-size: 20px;
+  font-style: normal!important;
+  font-weight:100!important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; 
+  position:relative;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 9px
+}
+
+::-webkit-scrollbar-button:start:decrement,::-webkit-scrollbar-button:end:increment {
+    display: block;
+    height: 0;
+    background-color: transparent
+}
+
+::-webkit-scrollbar-track-piece{
+    margin: 10px 0;
+    -webkit-border-radius: 0;
+    -webkit-border-bottom-right-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: rgba(0,0,0,0.52);
+    -webkit-border-radius: 4px
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    width: 50px;
+    background-color: rgba(0,0,0,0.52);
+    -webkit-border-radius: 4px
+}

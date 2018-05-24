@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ota-admin:war">
+    <output-path>$PROJECT_DIR$/ota-admin/target</output-path>
+    <root id="archive" name="ota-admin.war">
+      <element id="artifact" artifact-name="ota-admin:war exploded" />
+    </root>
+  </artifact>
+</component>

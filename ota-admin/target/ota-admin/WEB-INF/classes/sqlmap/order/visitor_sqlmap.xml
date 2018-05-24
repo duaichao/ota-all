@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="visitorOrder">
+	
+	<statement id="listVisitorDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select a.ID,
+				a.NAME, 
+				a.MOBILE, 
+				a.SEX, 
+				a.CARD_TYPE, 
+				a.CARD_NO, 
+				a.CREATE_TIME,
+				a.EMAIL,
+				a.NATION
+				a.ATTR_ID
+				a.ATTR_NAME
+			from SD_VISITOR a 
+			where 1 = 1
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countVisitorDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(a.id) s
+		from SD_VISITOR a 
+		where 1 = 1 
+	</statement>
+	
+	<statement id="listOrderVisitorDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID,
+				a.NAME, 
+				a.MOBILE, 
+				a.SEX, 
+				a.CARD_TYPE, 
+				a.CARD_NO, 
+				a.create_time, 
+				a.EMAIL,
+				a.NATION,
+				a.ATTR_ID,
+				a.ATTR_NAME,
+				a.order_visitor_id,
+			  DECODE(a.contact_name
+			  || conatct_mobile, 11, 1, 0) contact,
+			  a.ORDER_ID,
+			  a.ORDER_NO,
+			  a.START_DATE,
+			  a.BUY_COMPANY,
+			  a.PAY_TIME,
+			  a.PRODUCE_NAME,
+			  a.PLAT_FROM,
+			  a.USER_NAME
+			FROM
+			  (SELECT a.ID,
+			    a.NAME,
+			    a.MOBILE,
+			    a.SEX,
+			    a.CARD_TYPE,
+			    a.CARD_NO,
+			    a.EMAIL,
+			    a.NATION,
+			    a.ATTR_ID,
+			    a.ATTR_NAME,
+			    b.id AS order_visitor_id,
+			    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') as create_time,
+			    DECODE(a.name, c.visitor_concat, 1, 0) as contact_name,
+			    DECODE(a.mobile, c.visitor_mobile, 1, 0) as conatct_mobile,
+			    c.ID as ORDER_ID,
+			    c.NO as ORDER_NO,
+			    c.START_DATE,
+			    d.COMPANY as BUY_COMPANY,
+			    to_char(e.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+			    f.PRODUCE_NAME,
+			    c.PLAT_FROM,
+			    t.USER_NAME
+			  FROM (SELECT a.*,
+				      TO_CHAR(sysdate, 'yyyy') - DECODE(LENGTH(a.card_no), 18, SUBSTR(a.card_no, 7, 4), NULL) AS age
+				    FROM SD_VISITOR a
+				  ) a,
+			    sd_order_visitor b,
+			    sd_order_base c,
+			    sd_user_company d,
+			    (SELECT a.order_id funds_order_id,
+		        max(a.create_time) pay_time
+		      FROM sd_order_funds a
+		      WHERE a.type = 2
+		      group by a.order_id) e,
+		      (SELECT a.id, TO_CHAR(a.type) AS type, a.CREATE_USER_ID, a.TITLE AS PRODUCE_NAME, a.ATTR as PRODUCE_ATTR FROM sd_pro_route a 
+		    UNION ALL 
+		    SELECT b.id, '100' AS type, b.CREATE_USER_ID, b.TITLE AS PRODUCE_NAME, '' as PRODUCE_ATTR FROM sd_pro_traffic b) f,
+		    sd_user t
+			  WHERE 1        = 1
+			  AND a.id       = b.VISITOR_ID
+			  AND b.order_id = c.id
+			  and c.CREATE_COMPANY_ID = d.ID 
+			  and c.id = e.funds_order_id(+)
+			  and c.PRODUCE_ID = f.id
+			  and c.create_user_id = t.id
+			  and c.is_del = 0
+			  <isNotEmpty property="ORDER_NO">
+			  and c.NO = #ORDER_NO# 
+			  </isNotEmpty>
+			  <isNotEmpty property="ORDER_IDS">
+			  and b.ORDER_ID in ($ORDER_IDS$) 
+			  </isNotEmpty>
+			  <isNotEmpty property="PRODUCE_ID">
+			  and c.PRODUCE_ID = #PRODUCE_ID# 
+			  </isNotEmpty>
+			  <isNotEmpty property="START_DATE">
+			  and c.START_DATE = #START_DATE# 
+			  </isNotEmpty>
+			  <isNotEmpty property="ORDER_ID">
+			  and b.order_id = #ORDER_ID# 
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_COMPANY_ID">
+			  and c.CREATE_COMPANY_ID = #CREATE_COMPANY_ID# 
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CREATE_COMPANY_PID">
+			  and (d.id = #CREATE_COMPANY_PID# or d.pid = #CREATE_COMPANY_PID#)
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="CREATE_DEPART_ID">
+			  and t.depart_id = #CREATE_DEPART_ID# 
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_DEPART_IDS">
+			  and (
+			  <iterate property="CREATE_DEPART_IDS" conjunction=" or " open=" "  close="  ">
+					t.depart_id = #CREATE_DEPART_IDS[]#
+		      </iterate>
+		      <isNotEmpty property="buyUserId">
+				or c.CREATE_USER_ID = #buyUserId#
+			  </isNotEmpty>
+			  )
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_USER_ID">
+			  AND c.create_user_id                    = #CREATE_USER_ID#
+			  </isNotEmpty> 
+			  
+			  <isNotEmpty property="PAY_BEGIN_TIME">
+				and to_char(e.pay_time, 'yyyy-mm-dd') >= #PAY_BEGIN_TIME#
+			  </isNotEmpty>
+			  <isNotEmpty property="PAY_END_TIME">
+				<![CDATA[ and to_char(e.pay_time, 'yyyy-mm-dd') <= #PAY_END_TIME# ]]>
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="PRODUCE_ATTR">
+			  and f.PRODUCE_ATTR = #PRODUCE_ATTR# 
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="MIN_AGE">
+			  and a.age >= #MIN_AGE#
+			  </isNotEmpty>
+			  <isNotEmpty property="MAX_AGE">
+			  <![CDATA[ and a.age <= #MAX_AGE# ]]>
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="query">
+			  and (a.name like '%$query$%' or a.mobile like '%$query$%' or a.card_no like '%$query$%')
+			  </isNotEmpty>
+			  
+			  order by e.PAY_TIME DESC NULLS LAST , c.CREATE_TIME DESC 
+			  ) a
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countOrderVisitorDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM
+		  (SELECT a.ID,
+		    a.NAME,
+		    a.MOBILE,
+		    a.SEX,
+		    a.CARD_TYPE,
+		    a.CARD_NO,
+		    a.EMAIL,
+		    a.NATION,
+		    a.ATTR_ID,
+		    a.ATTR_NAME,
+		    b.id AS order_visitor_id,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') as create_time,
+		    DECODE(a.name, c.visitor_concat, 1, 0) as contact_name,
+		    DECODE(a.mobile, c.visitor_mobile, 1, 0) as conatct_mobile,
+		    c.ID as ORDER_ID,
+		    c.NO as ORDER_NO,
+		    c.START_DATE,
+		    d.COMPANY as BUY_COMPANY,
+		    to_char(e.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    f.PRODUCE_NAME
+		  FROM (SELECT a.*,
+			      TO_CHAR(sysdate, 'yyyy') - DECODE(LENGTH(a.card_no), 18, SUBSTR(a.card_no, 7, 4), NULL) AS age
+			    FROM SD_VISITOR a
+			  ) a,
+		    sd_order_visitor b,
+		    sd_order_base c,
+		    sd_user_company d,
+		    (SELECT a.order_id funds_order_id,
+	        max(a.create_time) pay_time
+	      FROM sd_order_funds a
+	      WHERE a.type = 2
+	      group by a.order_id) e,
+	      (SELECT a.id, TO_CHAR(a.type) AS type, a.CREATE_USER_ID, a.TITLE AS PRODUCE_NAME, a.ATTR as PRODUCE_ATTR FROM sd_pro_route a 
+	    UNION ALL 
+	    SELECT b.id, '100' AS type, b.CREATE_USER_ID, b.TITLE AS PRODUCE_NAME, '' as PRODUCE_ATTR FROM sd_pro_traffic b) f,
+	    sd_user t
+		  WHERE 1        = 1
+		  AND a.id       = b.VISITOR_ID
+		  AND b.order_id = c.id
+		  and c.CREATE_COMPANY_ID = d.ID 
+		  and c.id = e.funds_order_id(+)
+		  and c.PRODUCE_ID = f.id
+		  and c.create_user_id = t.id
+		  and c.is_del = 0
+		  <isNotEmpty property="ORDER_NO">
+		  and c.NO = #ORDER_NO# 
+		  </isNotEmpty>
+		  <isNotEmpty property="ORDER_IDS">
+		  and b.ORDER_ID in ($ORDER_IDS$) 
+		  </isNotEmpty>
+		  <isNotEmpty property="PRODUCE_ID">
+		  and c.PRODUCE_ID = #PRODUCE_ID# 
+		  </isNotEmpty>
+		  <isNotEmpty property="START_DATE">
+		  and c.START_DATE = #START_DATE# 
+		  </isNotEmpty>
+		  <isNotEmpty property="ORDER_ID">
+		  and b.order_id = #ORDER_ID# 
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID">
+		  and c.CREATE_COMPANY_ID = #CREATE_COMPANY_ID# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CREATE_COMPANY_PID">
+		  and (d.id = #CREATE_COMPANY_PID# or d.pid = #CREATE_COMPANY_PID#)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CREATE_DEPART_ID">
+		  and t.depart_id = #CREATE_DEPART_ID# 
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_DEPART_IDS">
+		  and (
+		  <iterate property="CREATE_DEPART_IDS" conjunction=" or " open=" "  close="  ">
+				t.depart_id = #CREATE_DEPART_IDS[]#
+	      </iterate>
+	      <isNotEmpty property="buyUserId">
+			or c.CREATE_USER_ID = #buyUserId#
+		  </isNotEmpty>
+		  )
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_USER_ID">
+		  AND c.create_user_id                    = #CREATE_USER_ID#
+		  </isNotEmpty> 
+		  
+		  <isNotEmpty property="PAY_BEGIN_TIME">
+			and to_char(e.pay_time, 'yyyy-mm-dd') >= #PAY_BEGIN_TIME#
+		  </isNotEmpty>
+		  <isNotEmpty property="PAY_END_TIME">
+			<![CDATA[ and to_char(e.pay_time, 'yyyy-mm-dd') <= #PAY_END_TIME# ]]>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="PRODUCE_ATTR">
+		  and f.PRODUCE_ATTR = #PRODUCE_ATTR# 
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="MIN_AGE">
+		  and a.age >= #MIN_AGE#
+		  </isNotEmpty>
+		  <isNotEmpty property="MAX_AGE">
+		  <![CDATA[ and a.age <= #MAX_AGE# ]]>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="query">
+		  and (a.name like '%$query$%' or a.mobile like '%$query$%' or a.card_no like '%$query$%')
+		  </isNotEmpty>
+		  ) a
+	</statement>
+	
+	<insert id="saveVisitorDao" parameterClass="java.util.HashMap">
+		insert into SD_VISITOR(
+			ID,
+			NAME, 
+			MOBILE, 
+			SEX, 
+			CARD_TYPE, 
+			CARD_NO, 
+			CREATE_TIME,
+			EMAIL,
+			NATION,
+			ATTR_ID,
+			ATTR_NAME)
+		values(
+			#ID#,
+			#NAME#, 
+			#MOBILE#, 
+			#SEX#, 
+			#CARD_TYPE#, 
+			#CARD_NO#, 
+			sysdate,
+			#EMAIL#,
+			#NATION#,
+			#ATTR_ID#,
+			#ATTR_NAME#
+		)
+	</insert>
+	
+	<update id="updateOrderVisitorDao" parameterClass="java.util.HashMap">
+		update SD_VISITOR set
+			NAME = #NAME#, 
+			MOBILE = #MOBILE#, 
+			SEX = #SEX#, 
+			CARD_TYPE = #CARD_TYPE#, 
+			CARD_NO = #CARD_NO#, 
+			EMAIL = #EMAIL#,
+			<isNotEmpty property="TYPE_ID">
+			ATTR_ID = #TYPE_ID#,
+			</isNotEmpty>
+			<isNotEmpty property="TYPE_NAME">
+			ATTR_NAME = #TYPE_NAME#,
+			</isNotEmpty>
+			NATION = #NATION#
+			where ID = #ID#
+	</update>
+	
+	<delete id="delOrderVisitorByIDDao" parameterClass="java.util.HashMap">
+		delete from sd_order_visitor where  1 = 1 and ID = #ID#
+	</delete>
+	
+	<delete id="delOrderVisitorByOrderIDDao" parameterClass="java.util.HashMap">
+		delete from sd_order_visitor where  1 = 1 and ORDER_ID = #ORDER_ID#
+	</delete>
+	
+	<insert id="saveOrderVisitorDao" parameterClass="java.util.HashMap">
+		insert into sd_order_visitor(
+			ID,
+			ORDER_ID, 
+			VISITOR_ID)
+		values(
+			#ID#,
+			#ORDER_ID#, 
+			#VISITOR_ID#
+		)
+	</insert>
+	
+	
+	<statement id="listTrafficVisitorDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			select c.id order_id,
+		        d.title produce_name,
+		        c.no,
+		        c.start_date,
+		        c.man_count,
+		        c.child_count,
+		        c.muster_place,
+		        c.muster_time,
+		        c.company_name,
+		        c.porduce_concat,
+		        c.produce_mobile,
+		        e.company BUY_COMPANY,
+		        e.user_name BUY_USER_NAME,
+		        e.phone BUY_PHONE,
+		        d.start_city,
+		        d.end_city,
+		        d.type,
+		        d.IS_SINGLE,
+		        d.END_DATE,
+		        d.end_time,
+		        d.MIN_BUY,
+		        a.ID,
+				a.NAME, 
+				a.MOBILE, 
+				a.SEX, 
+				a.CARD_TYPE, 
+				a.CARD_NO, 
+				a.CREATE_TIME, 
+				a.EMAIL,
+				a.NATION,
+				a.ATTR_ID,
+				a.ATTR_NAME,
+				b.id as order_visitor_id
+			from SD_VISITOR a, sd_order_visitor b, sd_order_base c, sd_pro_traffic d, sd_user_company e
+			where 1 = 1
+			and a.id = b.VISITOR_ID
+			and b.order_id = c.id
+			and c.traffic_id = d.id
+			and c.create_company_id = e.id
+			and c.is_del = 0
+			<isNotEmpty property="TRAFFIC_ID">
+				and d.id = #TRAFFIC_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATE">
+				and c.START_DATE = #START_DATE#
+			</isNotEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countTrafficVisitorDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(c.id) s
+			from SD_VISITOR a, sd_order_visitor b, sd_order_base c, sd_pro_traffic d, sd_user_company e
+			where 1 = 1
+			and a.id = b.VISITOR_ID
+			and b.order_id = c.id
+			and c.traffic_id = d.id
+			and c.create_company_id = e.id
+			and c.is_del = 0
+			<isNotEmpty property="TRAFFIC_ID">
+				and d.id = #TRAFFIC_ID#
+			</isNotEmpty>
+			<isNotEmpty property="START_DATE">
+				and c.START_DATE = #START_DATE#
+			</isNotEmpty>
+	</statement>
+	
+	<statement id="listVisitorGroupByTypeDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT count(b.id) as num,
+	  b.ATTR_ID,
+	  b.ATTR_name
+	FROM sd_order_visitor a,
+	  sd_visitor b
+	WHERE a.visitor_id = b.id
+	and a.order_id = #ORDER_ID#
+	group by b.ATTR_ID, b.attr_name
+	</statement>
+	
+	<statement id="listOrderVisitorAndTrafficDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.*,
+		  rownum AS myrownum
+		FROM
+		  (SELECT a.*
+		  FROM
+		    (SELECT a.START_DATE,
+		      a.ORDER_BY,
+		      a.STAY_CNT,
+		      a.NAME,
+		      a.traffic_id,
+		      a.plan_id,
+		      a.ORDER_ID,
+		      TO_CHAR(to_date(a.START_DATE,'yyyy-mm-dd')+(SUM(a.exca) over(partition BY a.id,ORDER_ID order by ORDER_BY)),'yyyy-mm-dd') AS exca,
+		      a.exca_create_time,
+		      a.ID,
+		      a.MOBILE,
+		      a.SEX,
+		      a.CARD_TYPE,
+		      a.CARD_NO,
+		      a.create_time,
+		      a.EMAIL,
+		      a.NATION,
+		      a.ATTR_ID,
+		      a.ATTR_NAME,
+		      a.order_visitor_id,
+		      DECODE(a.contact_name
+		      || conatct_mobile, 11, 1, 0) contact,
+		      a.BEGIN_CITY_NAME,
+		      a.END_CITY_NAME,
+		      a.BUY_COMPANY,
+		      a.VISITOR_CONCAT,
+		      a.VISITOR_MOBILE,
+		      a.PRODUCE_NAME,
+		      a.china_name,
+		      a.BUY_MOBILE,
+		      a.no
+		    FROM
+		      (SELECT DECODE(t1.order_by,1,0,first_value(t1.STAY_CNT) over(partition BY a.id,c.ID order by t1.ORDER_BY rows BETWEEN 1 preceding AND 1 following)) AS exca,
+		        a.ID,
+		        a.NAME,
+		        a.MOBILE,
+		        a.SEX,
+		        a.CARD_TYPE,
+		        a.CARD_NO,
+		        a.EMAIL,
+		        a.NATION,
+		        a.ATTR_ID,
+		        a.ATTR_NAME,
+		        b.id AS order_visitor_id,
+		        TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') create_time,
+		        a.create_time AS exca_create_time,
+		        DECODE(a.name, c.visitor_concat, 1, 0) contact_name,
+		        DECODE(a.mobile, c.visitor_mobile, 1, 0) conatct_mobile,
+		        c.ID AS ORDER_ID,
+		        t1.BEGIN_CITY_NAME,
+		        t1.END_CITY_NAME,
+		        t1.STAY_CNT,
+		        t1.ORDER_BY,
+		        t2.company AS BUY_COMPANY,
+		        c.VISITOR_CONCAT,
+		        NVL(c.VISITOR_MOBILE, '') AS VISITOR_MOBILE,
+		        c.START_DATE,
+		        t1.traffic_id,
+		        t3.PRODUCE_NAME,
+		        t4.china_name,
+		        t4.mobile AS buy_mobile,
+		        c.no,
+		        t.id AS plan_id
+		      FROM SD_VISITOR a,
+		        sd_order_visitor b,
+		        sd_order_base c,
+		        sd_order_route_traffic t,
+		        sd_order_route_traffic_detail t1,
+		        sd_user_company t2,
+		        (SELECT a.id,
+		          TO_CHAR(a.type) AS type,
+		          a.CREATE_USER_ID,
+		          a.TITLE AS PRODUCE_NAME
+		        FROM sd_pro_route a
+		        UNION ALL
+		        SELECT b.id,
+		          '100' AS type,
+		          b.CREATE_USER_ID,
+		          b.TITLE AS PRODUCE_NAME
+		        FROM sd_pro_traffic b
+		        ) t3,
+		        sd_user t4
+		      WHERE 1                 = 1
+		      AND a.id                = b.VISITOR_ID
+		      AND b.order_id          = c.id
+		      AND b.order_id          = t.order_id
+		      AND t.id                = t1.plan_id
+		      AND c.create_company_id = t2.id
+		      AND c.produce_id        = t3.id
+		      AND c.create_user_id    = t4.id
+		      and c.is_del = 0
+		      <isNotEmpty property="ORDER_IDS">
+			  and b.ORDER_ID in ($ORDER_IDS$) 
+			  </isNotEmpty>
+			  <isNotEmpty property="PRODUCE_ID">
+			  and c.PRODUCE_ID = #PRODUCE_ID# 
+			  </isNotEmpty>
+			  <isNotEmpty property="START_DATE">
+			  and c.START_DATE = #START_DATE# 
+			  </isNotEmpty>
+			  <isNotEmpty property="ORDER_ID">
+			  and b.order_id = #ORDER_ID# 
+			  </isNotEmpty>
+			  <isNotEmpty property="CREATE_COMPANY_ID">
+			  and b.CREATE_COMPANY_ID = #CREATE_COMPANY_ID# 
+			  </isNotEmpty>
+			  
+		      ) a
+		    )a
+		  ORDER BY a.exca,
+		    a.exca_create_time,
+		    a.order_id
+		  )a
+	</statement>
+
+</sqlMap>

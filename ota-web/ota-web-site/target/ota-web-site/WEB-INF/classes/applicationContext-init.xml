@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config library="system">
+    <PublicConfig>
+        <!-- 本地 -->
+        <detail name="domain">http://localhost</detail>
+        <detail name="system.file.path">D:\apache-tomcat-7.0.63\webapps\ROOT\files</detail>
+        <detail name="upload.path">D:\apache-tomcat-7.0.63\webapps\tattachment</detail>
+        <detail name="visit.path">http://localhost/tattachment</detail>
+
+        <detail name="press.image.path">D:/apache-tomcat-xsx/webapps/ROOT/resource/images/logo.png</detail>
+        <detail name="ireport">D:/apache-tomcat-xsx/webapps/ROOT/file/ireport</detail>
+        <detail name="word.path">D:/apache-tomcat-xsx/webapps/ROOT/file/word</detail>
+
+        <detail name="reg_tip">您正在申请注册136旅游网，验证码为：code，验证码在五分钟内有效。</detail>
+        <detail name="find_pwd_tip">找回密码，验证码为：code，验证码在五分钟内有效。</detail>
+        <detail name="change_phone_tip">更换手机，验证码为：code，验证码在五分钟内有效。</detail>
+        <detail name="phone_tip">验证码为：code，验证码在五分钟内有效。</detail>
+
+        <detail name="ip.data.path">D:/17monipdb.dat</detail>
+
+    </PublicConfig>
+</config>

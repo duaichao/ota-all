@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="setting">
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		    a.CITY_ID,
+		    a.MAIN_AREA,
+		    a.SUB_AREA,
+		    a.OPEN_TIME,
+		    a.IS_USE,
+		    a.ORDER_BY,
+		    b.pinyin,
+		    b.jianpin
+		FROM SD_SITE a, sd_city b
+		WHERE 1 = 1 
+		and a.city_id = b.id
+		<isNotEmpty property="CITY_ID">
+			and a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="MAIN_AREA">
+			and a.MAIN_AREA = #MAIN_AREA#
+		</isNotEmpty>
+		<isNotEmpty property="SUB_AREA">
+			and a.SUB_AREA = #SUB_AREA#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		order by a.ORDER_BY, MAIN_AREA
+	</statement>
+	
+	<insert id="saveSiteDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_SITE
+		  (
+		    ID,
+		    CITY_ID,
+		    MAIN_AREA,
+		    SUB_AREA,
+		    OPEN_TIME,
+		    IS_USE,
+		    ORDER_BY,
+		    PINYIN
+		  )
+		  VALUES
+		  (
+		    #ID#,
+		    #CITY_ID#,
+		    #MAIN_AREA#,
+		    #SUB_AREA#,
+		    sysdate,
+		    0,
+		    0,
+		    #PINYIN#
+		  )
+	</insert>	
+	
+	<update id="editSiteUseStatusDao"  parameterClass="java.util.Map">
+		UPDATE SD_SITE SET IS_USE = #USE_STATUS# WHERE CITY_ID = #CITY_ID#
+	</update>
+	
+	
+	<statement id="usableSitesDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.CITY_ID,
+		  a.MAIN_AREA,
+		  a.SUB_AREA,
+		  a.OPEN_TIME,
+		  a.IS_USE,
+		  a.ORDER_BY
+		FROM SD_SITE a
+		WHERE 1        = 1
+		<isEmpty property="TYPE">
+			and a.id not in (select b.site_id from sd_site_manager b where 1 = 1 and b.is_del = 0)
+		</isEmpty>
+		<isNotEmpty property="TYPE">
+			and a.id not in (select b.site_id from sd_site_manager b where 1 = 1 and b.is_del = 0 and b.user_id != #USER_ID#)
+		</isNotEmpty>
+			AND a.IS_USE   = 0
+		<isNotEmpty property="MAIN_AREA">
+			and a.MAIN_AREA = #MAIN_AREA#
+		</isNotEmpty>
+		<isNotEmpty property="SUB_AREA">
+			and a.SUB_AREA = #SUB_AREA#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		order by a.ORDER_BY, MAIN_AREA
+	</statement>
+	
+	<statement id="listSiteAttrDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID, 
+			a.SERVICE_PHONE, 
+			a.QQ1, 
+			a.QQ2, 
+			a.CITY_ID, 
+			a.CITY_NAME, 
+			a.CREATE_ID, 
+			to_char(a.CREATE_TIME, 'yyyy-mm-dd') CREATE_TIME,
+			a.UPDATE_ID, 
+			to_char(a.UPDATE_TIME, 'yyyy-mm-dd') UPDATE_TIME
+		FROM SD_SITE_ATTR a
+		WHERE 1        = 1
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			and a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveSiteAttrDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_SITE_ATTR
+		  (
+		    ID, 
+			SERVICE_PHONE, 
+			QQ1, 
+			QQ2, 
+			CITY_ID, 
+			CITY_NAME, 
+			CREATE_ID, 
+			CREATE_TIME, 
+			UPDATE_ID, 
+			UPDATE_TIME
+		  )
+		  VALUES
+		  (
+		    #ID#,
+			#SERVICE_PHONE#, 
+			#QQ1#, 
+			#QQ2#, 
+			#CITY_ID#, 
+			#CITY_NAME#, 
+			#CREATE_ID#, 
+			sysdate, 
+			#UPDATE_ID#, 
+			sysdate
+		  )
+	</insert>
+	
+	<update id="updateSiteAttrDao" parameterClass="java.util.Map">
+		update SD_SITE_ATTR set UPDATE_ID = #UPDATE_ID#, UPDATE_TIME = sysdate,
+			SERVICE_PHONE = #SERVICE_PHONE#, 
+			QQ1 = #QQ1#, 
+			QQ2 = #QQ2#, 
+			CITY_ID = #CITY_ID#, 
+			CITY_NAME = #CITY_NAME#
+		where id = #ID#	 
+	</update>
+
+</sqlMap>

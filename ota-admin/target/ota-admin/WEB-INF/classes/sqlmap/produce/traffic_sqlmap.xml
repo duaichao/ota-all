@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="produceTraffic">
+	
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID, 
+				a.TITLE, 
+				a.END_DATE, 
+				a.END_TIME, 
+				a.IS_SALE, 
+				a.SALE_STATUS, 
+				a.MIN_BUY, 
+				a.TYPE, 
+				a.IS_SINGLE, 
+				a.ROTE, 
+				a.CREATE_USER, 
+				to_char(a.CREATE_TIME, 'YYYY-MM-DD HH24:mi:ss') CREATE_TIME, 
+				a.CREATE_USER_ID, 
+				a.UPDATE_USER, 
+				to_char(a.UPDATE_TIME, 'YYYY-MM-DD HH24:mi:ss') UPDATE_TIME, 
+				a.CITY_ID, 
+				a.CITY_NAME, 
+				a.IS_DEL, 
+				a.IS_PUB, 
+				a.MIN_DATE, 
+				a.MIN_PRICE, 
+				a.MIN_RULE_ID,
+				TO_CHAR(a.PUB_TIME, 'yyyy-mm-dd hh24:mi:ss') PUB_TIME,
+				a.PUB_USER,
+				a.COMPANY_ID,
+				a.START_CITY,
+				a.END_CITY,
+				a.SALE_AGIO
+			FROM SD_PRO_TRAFFIC a
+			WHERE 1       = 1
+			and a.is_del = 0 
+			<isNotEmpty property="query">
+		    	and a.TITLE like '%$query$%' 
+		    </isNotEmpty>
+		    <isNotEmpty property="TITLE">
+		    	and a.TITLE = #TITLE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_NAME">
+		       	and a.CITY_NAME = #CITY_NAME#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_ID">
+		       	and a.CITY_ID = #CITY_ID#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_USER">
+		       	and a.CREATE_USER = #CREATE_USER#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_USER_ID">
+		       	and a.CREATE_USER_ID = #CREATE_USER_ID#  
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_PUB">
+		       	and a.IS_PUB = #IS_PUB#  
+		    </isNotEmpty>
+		    <isNotEmpty property="UPDATE_USER">
+				and a.UPDATE_USER = #UPDATE_USER#  
+		    </isNotEmpty>
+		    <isNotEmpty property="NOTEQUALSID">
+		    	and a.ID != #NOTEQUALSID# 
+		    </isNotEmpty>
+		    <isNotEmpty property="SALE_STATUS">
+		    	and a.SALE_STATUS = #SALE_STATUS# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_SALE">
+		    	and a.IS_SALE = #IS_SALE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="ID">
+		    	and a.ID = #ID# 
+		    </isNotEmpty>
+		    <isNotEmpty property="START_CITY">
+		    	and a.START_CITY = #START_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="END_CITY">
+		    	and a.END_CITY = #END_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_SINGLE">
+		    	and a.IS_SINGLE = #IS_SINGLE# 
+		    </isNotEmpty>
+			ORDER BY a.UPDATE_TIME DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(a.ID) s 
+			FROM SD_PRO_TRAFFIC a
+			WHERE 1       = 1
+			and a.is_del = 0 
+			<isNotEmpty property="query">
+		    	and a.TITLE like '%$query$%' 
+		    </isNotEmpty>
+		    <isNotEmpty property="TITLE">
+		    	and a.TITLE = #TITLE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_NAME">
+		       	and a.CITY_NAME = #CITY_NAME#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CITY_ID">
+		       	and a.CITY_ID = #CITY_ID#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_USER">
+		       	and a.CREATE_USER = #CREATE_USER#  
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_USER_ID">
+		       	and a.CREATE_USER_ID = #CREATE_USER_ID#  
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_PUB">
+		       	and a.IS_PUB = #IS_PUB#  
+		    </isNotEmpty>
+		    <isNotEmpty property="UPDATE_USER">
+				and a.UPDATE_USER = #UPDATE_USER#  
+		    </isNotEmpty>
+		    <isNotEmpty property="NOTEQUALSID">
+		    	and a.ID != #NOTEQUALSID# 
+		    </isNotEmpty>
+		    <isNotEmpty property="SALE_STATUS">
+		    	and a.SALE_STATUS = #SALE_STATUS# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_SALE">
+		    	and a.IS_SALE = #IS_SALE# 
+		    </isNotEmpty>
+		    <isNotEmpty property="ID">
+		    	and a.ID = #ID# 
+		    </isNotEmpty>
+		    <isNotEmpty property="START_CITY">
+		    	and a.START_CITY = #START_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="END_CITY">
+		    	and a.END_CITY = #END_CITY# 
+		    </isNotEmpty>
+		    <isNotEmpty property="IS_SINGLE">
+		    	and a.IS_SINGLE = #IS_SINGLE# 
+		    </isNotEmpty>
+	</statement>
+	
+	<statement id="seatSql" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select rule_sql from sd_pro_traffic_rule_compile where rule_id = #VALUE#
+	</statement>
+	
+	<statement id="isSeatNum" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) as cnt from ($RULE_SQL$) a where a.rq = #SALE_DATE# and a.actual_seat >= $SALE_SEAT$
+	</statement>
+	
+	<insert id="saveTrafficSeat" parameterClass="java.util.Map">
+		insert into sd_pro_traffic_seat(ID,SALE_DATE,SALE_SEAT,ENTITY_ID,TYPE,RULE_ID,TRAFFIC_ID,CREATE_TIME)
+		values(
+			sys_guid(),
+			#SALE_DATE#,
+			$SALE_SEAT$,
+			#ENTITY_ID#,
+			$TYPE$,
+			#RULE_ID#,
+			#TRAFFIC_ID#,
+			sysdate
+		)
+	</insert>
+	
+	<statement id="getPlanTraffic" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select a.plan_id,a.traffic_id,a.stay_cnt,b.TITLE, b.IS_FULL_PRICE from SD_PRO_ROUTE_TRAFFIC_DETAIL a,SD_PRO_TRAFFIC b
+		 where b.id = a.TRAFFIC_id and a.plan_id = #VALUE# and a.is_del = 0 and b.is_del = 0
+		 order by a.order_by
+	</statement>
+	
+	<statement id="getRuleIdByDate" parameterClass="java.lang.String" resultClass="java.util.HashMap" remapResults="true">
+		select b.traffic_id,b.dt as SALE_DATE,a.rule_id,a.rule_sql as RULE_SQL from sd_pro_traffic_rule_compile a,($VALUE$) b where 
+		        <![CDATA[  a.begin_date <= b.dt AND a.end_date  >= b.dt  ]]>
+				 and a.traffic_id = b.traffic_id
+	</statement>
+	
+	<statement id="getDateSeatByRuleId" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	
+		  select a.traffic_id,a.id,DECODE(NVL(f.id,'0'),'0',a.SEAT_COUNT,f.seat)-NVL(b.SALE_SEAT,0) AS actual_seat
+		  from 
+		  sd_pro_traffic_rule a,
+		  (SELECT b.SALE_DATE,b.RULE_ID,
+		    SUM(b.SALE_SEAT) AS SALE_SEAT
+		  FROM SD_PRO_TRAFFIC_SEAT b
+		  WHERE b.RULE_ID = #RULE_ID# and b.SALE_DATE = #PARAM_DATE#
+		  GROUP BY RULE_ID,
+		    SALE_DATE
+		  ) b ,
+		  ( select * from SD_PRO_TRAFFIC_RULE_SEAT f  where f.rule_id = #RULE_ID#
+		  and f.edit_date = #PARAM_DATE# ) f  
+		  
+		  where a.id = b.rule_id(+) and a.id = f.rule_id(+)
+		  and a.id = #RULE_ID#
+	</statement>
+	
+	<statement id="getRidTraffidIdByRuleId" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		  select a.traffic_id,a.id from sd_pro_traffic_rule a where a.id in ($VALUE$)
+	</statement>
+	
+	
+</sqlMap>

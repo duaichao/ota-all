@@ -1,0 +1,181 @@
+.usr-menu a{
+	font-size: 14px;
+	padding: 15px 15px;
+}
+.usr-menu a span{
+	float: right;
+	color: #999;
+}
+.usr-menu a.usr-menu-cur{
+	background-color: #1569ec;
+	color: #fff;
+	border-color: #1569ec;
+}
+.usr-menu a.usr-menu-cur span{
+	color: #fff;
+}
+.usr-info{
+	overflow: hidden;
+	padding: 20px;
+}
+.up-btn{
+	padding: 5px;
+	margin: 5px 0 0 19px;
+}
+.usr-info .usr-info-left{
+	padding-left: 0;
+}
+.usr-info .usr-info-left .initial{
+	width: 100px;
+	height: 100px;
+	display: block;
+	float: right;
+	border: 1px solid #ccc;
+    background: #fff;
+    padding: 1px;
+}
+.initial{
+	width: 100px;
+	height: 100px;
+	display: block;
+	border: 1px solid #ccc;
+    background: #fff;
+    padding: 1px;
+}
+.usr-info .usr-info-left p{
+	display: block;
+	float: left;
+	width: 100%;
+}
+.usr-info .usr-info-left p .up-btn{
+	float: right;
+	margin: 0 19px 0 0;
+}
+.usr-info .usr-info-left img{
+	max-width: 100%;
+}
+.usr-info .usr-info-right{
+	padding: 0;
+}
+.usr-info .usr-info-right li{
+	font-size: 12px;
+	line-height: 24px;
+	display: block;
+	margin-bottom: 5px;
+}
+.usr-info .usr-info-right a{
+	line-height: 18px;
+	color: #1569EC;
+}
+.usr-info .usr-info-right a.usr-id{
+	font-size: 20px;
+	color: #ff5741;
+}
+.usr-info .usr-info-right b{
+	float: left;
+	line-height: 18px;
+}
+.usr-info .usr-info-right .safety{
+	height: 18px;
+	width: 30%;
+	margin-bottom: 0;
+}
+.usr-info .usr-info-right span em{
+	font-size: 16px;
+	font-weight: bold;
+}
+.usr-info a.usr-link, .usr-box a.usr-link{
+	color: #1569EC;
+}
+.usr-box {
+	margin-bottom: 60px;
+}
+.usr-box a.usr-ok{
+	color: #20a832;
+}
+.usr-box a.usr-remove{
+	color: #ee3300;
+}
+.usr-box h2{
+	border-bottom: 3px solid #e7e7e7;
+	line-height: 42px;
+}
+.usr-box h2 span{
+	color: #1569ec;
+	border-bottom: 3px solid #1569ec;
+	padding-bottom: 12px;
+}
+.usr-box dl{
+	padding: 20px 0;
+}
+.usr-box dl dd{
+	margin-bottom: 15px;
+}
+.usr-box dl dd span{
+	margin-right: 10px;
+}
+.usr-box .table-safety tr td{
+	padding: 20px 0;
+}
+.usr-box .safe-ok{
+	font-size: 22px;
+	color: #20a832;
+}
+.usr-box .safe-remove{
+	font-size: 22px;
+	color: #ee3300;
+}
+.usr-box .safety{
+	margin-bottom: 0;
+}
+.usr-box .usr-odrtab tr td{
+	color: #666;
+}
+.usr-box span.usr-odr{
+	display: block;
+	line-height: 18px;
+}
+.usr-box span.usr-odr a{
+	color: #1569EC;
+}
+.usr-box a.odr-pay{
+	color: #5cb85c;
+}
+.usr-box .usr-search{
+	margin: 10px 0;
+	overflow: hidden;
+}
+.usr-box .usr-search li{
+	float: left;
+}
+.usr-box .navbar-usr{
+	background-color: #fff;
+	line-height: 30px;
+}
+.usr-box .btn-sch{
+	padding: 9px 12px;
+	border: none;
+	margin-left: 5px;
+}
+
+.table{
+	font-size: 14px;
+}
+
+/* 会员订单 */
+.user-orderlist{
+	overflow: hidden;
+	font-size: 14px;
+}
+.user-orderlist ul{
+	margin: 10px 0;
+	border-bottom: 2px dotted #ccc;
+}
+.user-orderlist ul li{
+	margin-top: 2px;
+	padding: 10px 0;
+	overflow: hidden;
+}
+.user-orderlist ul li.bg{
+	background: #f8f8f8;
+}

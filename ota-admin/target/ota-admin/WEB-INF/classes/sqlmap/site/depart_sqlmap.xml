@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="depart">
+
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID,
+			   a.TEXT,
+			   a.ORDER_BY,
+			   a.IS_USE,
+			   a.COMPANY_ID,
+			   b.COMPANY
+			FROM SD_USER_DEPART a, SD_USER_COMPANY b
+			WHERE a.COMPANY_ID = b.id and a.is_del = 0
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="notEqualsID">
+				and a.ID != #notEqualsID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="IS_USE">
+				and a.IS_USE = #IS_USE#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				and a.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+			
+			ORDER BY a.IS_USE DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(a.ID) s 
+			FROM SD_USER_DEPART a
+			WHERE 1 = 1 
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="notEqualsID">
+				and a.ID != #notEqualsID#
+			</isNotEmpty>
+			<isNotEmpty property="TEXT">
+				and a.TEXT = #TEXT#
+			</isNotEmpty>
+			<isNotEmpty property="IS_USE">
+				and a.IS_USE = #IS_USE#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				and a.COMPANY_ID = #COMPANY_ID#
+			</isNotEmpty>
+	</statement>
+	
+	<insert id="saveDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_USER_DEPART
+		  (
+		   ID,
+		   TEXT,
+		   ORDER_BY,
+		   IS_USE,
+		   COMPANY_ID
+		  )
+		  VALUES
+		  (
+		   #ID#,
+		   #TEXT#,
+		   #ORDER_BY#,
+		   #IS_USE#,
+		   #COMPANY_ID#
+		  )
+	</insert>
+	
+  	<update id="editDao"  parameterClass="java.util.Map">
+  		UPDATE SD_USER_DEPART a SET 
+  		   ID = #ID#
+		   <isNotEmpty property="TEXT">
+		       ,TEXT = #TEXT#
+		   </isNotEmpty>
+		   <isNotEmpty property="ORDER_BY">
+		       ,ORDER_BY = #ORDER_BY#
+		   </isNotEmpty>
+		   <isNotEmpty property="IS_USE">
+		       ,IS_USE = #IS_USE#
+		   </isNotEmpty>
+		   <isNotEmpty property="COMPANY_ID">
+		       ,COMPANY_ID = #COMPANY_ID#
+		   </isNotEmpty>
+		    where a.ID = #ID#
+  	</update>
+  	
+  	<update id="delDao" parameterClass="java.util.Map">
+  		update SD_USER_DEPART a set a.is_del = 1 where a.id = #ID#
+  	</update>
+  	
+</sqlMap>

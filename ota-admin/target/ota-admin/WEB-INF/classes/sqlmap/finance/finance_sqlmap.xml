@@ -1,0 +1,2501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="finance">
+	
+	<statement id="listCalcDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	
+		SELECT a.*
+		FROM
+		  (SELECT (decode(b.type, 0, '其他', 1, '飞机', 2, '火车', 3, '动车', 4, '高铁', 5, '旅游车', 6, '轮船')) as p_type,
+		    d.company as sale_company,
+		    0 day_count,		    
+		    b.TITLE AS PRODUCE_NAME,
+		    z.USER_NAME,
+		    x.TEXT,
+		    x.id as depart_id,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.COMPANY_PAY_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.CHINA_NAME as BUY_CHINA_NAME,
+		    f.MOBILE BUY_PHONE,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			(a.MAN_COUNT + a.CHILD_COUNT) as PERSON_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    DECODE(a.status, 6, 0, 7, 0, 0, 0, 1, 0, (a.INTER_AMOUNT + nvl(l.T_REFUND_AMOUNT, 0) - nvl(m.T_MARKETING_AMOUNT, 0))) AS ACTUAL_AMOUNT,
+		    (
+			    CASE
+			      WHEN a.PAY_TYPE = 0 and a.status = 5 
+			      THEN 0
+			      WHEN a.PLATFORM_PAY = 2 AND a.PAY_TYPE !=0 THEN 
+			        a.SALE_AMOUNT-a.INTER_AMOUNT-NVL(l.T_REFUND_AMOUNT, 0)
+			      ELSE
+			        -NVL(l.T_REFUND_AMOUNT, 0)
+			    end) AS ACTUAL_SALE_AMOUNT,
+				    
+		    a.SOURCES,
+		    a.IS_ALONE,
+		    d.COMPANY as COMPANY_NAME,
+		    a.PLATFORM_PAY,
+		    a.ACCOUNT_WAY,
+		    e.ID as BUY_COMPANY_ID,
+		    DECODE(e.PID, '-1', e.ID, e.PID) as BUY_COMPANY_PID_ID
+		  FROM SD_ORDER_BASE a,
+		    sd_pro_traffic b,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    sd_user f,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		  WHERE 1                 = 1
+		  AND b.create_user_id    = z.id
+		  AND z.depart_id         = x.id(+)
+		  AND a.traffic_id        = b.id
+		  AND a.id                = c.funds_order_id(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.company_id        = d.id
+		  AND a.CREATE_COMPANY_ID = e.id
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+		  AND a.is_del = 0
+		  
+		  <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="ACCOUNT_DETAIL_NO">
+		  	and a.ACCOUNT_DETAIL_NO = #ACCOUNT_DETAIL_NO#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="departIds">
+			  	and z.depart_id IN ($departIds$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="ACCOUNT_STATUS">
+			<!-- 待对账 -->
+			
+			<iterate property="ACCOUNT_STATUS" conjunction=" or " open="and (" close=")">
+				<isEqual property="ACCOUNT_STATUS[]" compareValue="0">
+					(a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+						<isNotEmpty property="calc_role">
+							<isEqual property="calc_role" compareValue="manager">
+								and(a.account_way = 3 and (a.status = 2 or a.status = 5))
+							</isEqual>
+							 
+							<isEqual property="calc_role" compareValue="parent">
+								and ((a.account_way = 2 and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) or
+									(a.account_way = 1 and e.ID = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)))
+							</isEqual>
+							 
+							<isEqual property="calc_role" compareValue="indie">
+								and (a.account_way = 1 and e.ID = #CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) 
+							</isEqual>
+					    </isNotEmpty>
+					  )
+				</isEqual>
+				<!-- 非对账-->
+				<isEqual property="ACCOUNT_STATUS[]" compareValue="-1">
+					(a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+					<isNotEmpty property="calc_role">
+						<isEqual property="calc_role" compareValue="manager">
+							and(a.account_way != 3 or (a.account_way = 3 and a.status not in (2,5)))
+						</isEqual>
+						 
+						<isEqual property="calc_role" compareValue="parent">
+							and (
+								<isEqual property="COMPANY_ACCOUNT_WAY" compareValue="1">
+									(a.account_way = 1 or a.account_way = 3) 
+									and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID# 
+									and e.id != #PARENT_CREATE_COMPANY_ID#
+								</isEqual>
+								<isEqual property="COMPANY_ACCOUNT_WAY" compareValue="2">
+									(a.account_way = 1 or a.account_way = 3)
+									and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+								</isEqual>
+								<isEqual property="COMPANY_ACCOUNT_WAY" compareValue="3">
+									(a.account_way = 1 or a.account_way = 3) 
+									and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+								</isEqual>
+								)
+						</isEqual>
+						 
+						<isEqual property="calc_role" compareValue="indie">
+							and ((a.account_way != 1 or (a.account_way = 1 and a.status not in (2,5))) and e.ID = #CREATE_COMPANY_ID#)
+						</isEqual>
+					  </isNotEmpty>
+					  )
+				</isEqual>
+				
+				<isEqual property="ACCOUNT_STATUS[]" compareValue="1">
+					(a.ACCOUNT_STATUS = 1
+					<isNotEmpty property="calc_role">
+						<isEqual property="calc_role" compareValue="manager">
+							
+						</isEqual>
+						 
+						<isEqual property="calc_role" compareValue="parent">
+							and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+						</isEqual>
+						 
+						<isEqual property="calc_role" compareValue="indie">
+							and e.ID = #CREATE_COMPANY_ID#
+						</isEqual>
+					  </isNotEmpty>
+					  )
+				</isEqual>
+				
+				<isEqual property="ACCOUNT_STATUS[]" compareValue="2">
+					(a.ACCOUNT_STATUS = 2
+					<isNotEmpty property="calc_role">
+						<isEqual property="calc_role" compareValue="manager">
+							
+						</isEqual>
+						 
+						<isEqual property="calc_role" compareValue="parent">
+							and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+						</isEqual>
+						 
+						<isEqual property="calc_role" compareValue="indie">
+							and e.ID = #CREATE_COMPANY_ID#
+						</isEqual>
+					  </isNotEmpty>
+					  )
+				</isEqual>
+			
+			</iterate>
+			
+		  </isNotEmpty>
+
+		  <isNotEmpty property="STATUS">
+		  	and a.STATUS IN ($STATUS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="NOTIDS">
+		  	and a.ID NOT IN ($NOTIDS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="COMPANY_ID">
+		  and a.COMPANY_ID = #COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID">
+		  and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CREATE_BEGIN_TIME"> 
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_END_TIME">
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="START_BEGIN_DATE">
+		  AND a.START_DATE >= #START_BEGIN_DATE#
+		  </isNotEmpty>
+		  <isNotEmpty property="START_END_DATE">
+		  <![CDATA[ AND a.START_DATE <= #START_END_DATE# ]]>
+		  </isNotEmpty>
+		  
+		  
+		  <isNotEmpty property="NO">
+		  and (a.NO = #NO# OR a.ACCOUNT_DETAIL_NO = #NO#)
+		  </isNotEmpty>
+		  <isNotEmpty property="PARENT_CREATE_COMPANY_ID"> 
+		  and (e.PID = #PARENT_CREATE_COMPANY_ID# or a.CREATE_COMPANY_ID = #PARENT_CREATE_COMPANY_ID#)
+		  </isNotEmpty>
+		  
+		  UNION ALL
+		  
+		  SELECT (decode(b.type, 1, '周边', 2, '国内', 3, '出境')) as p_type,
+		    d.company as sale_company,
+		    b.day_count,
+		    b.TITLE AS PRODUCE_NAME,
+		    z.USER_NAME,
+		    x.TEXT,
+		    x.id as depart_id,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.COMPANY_PAY_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.CHINA_NAME as BUY_CHINA_NAME,
+		    f.MOBILE BUY_PHONE,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			(a.MAN_COUNT + a.CHILD_COUNT) as PERSON_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    DECODE(a.status, 6, 0, 7, 0, 0, 0, 1, 0, (a.INTER_AMOUNT + nvl(l.T_REFUND_AMOUNT, 0) - nvl(m.T_MARKETING_AMOUNT, 0))) AS ACTUAL_AMOUNT,
+		    (
+			    CASE
+			      WHEN a.PAY_TYPE = 0 and a.status = 5 
+			      THEN 0
+			      WHEN a.PLATFORM_PAY = 2 AND a.PAY_TYPE!     =0 THEN 
+			        a.SALE_AMOUNT-a.INTER_AMOUNT-NVL(l.T_REFUND_AMOUNT, 0)
+			      ELSE
+			        -NVL(l.T_REFUND_AMOUNT, 0)
+			    end) AS ACTUAL_SALE_AMOUNT,
+		    a.SOURCES,
+		    a.IS_ALONE,
+		    d.COMPANY as COMPANY_NAME,
+		    a.PLATFORM_PAY,
+		    a.ACCOUNT_WAY,
+		    e.ID as BUY_COMPANY_ID,
+		    DECODE(e.PID, '-1', e.ID, e.PID) as BUY_COMPANY_PID_ID
+		  FROM SD_ORDER_BASE a,
+		    sd_pro_route b,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    SD_ORDER_CONTRACT g,
+		    sd_user f,
+		    sd_pro_route_traffic h,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		  WHERE 1                 = 1
+		  AND b.create_user_id    = z.id
+		  AND z.depart_id         = x.id(+)
+		  AND a.PRODUCE_ID        = b.ID
+		  AND a.ID                = c.FUNDS_ORDER_ID(+)
+		  AND a.COMPANY_ID        = d.ID
+		  AND a.CREATE_COMPANY_ID = e.ID
+		  AND a.ID                = g.ORDER_ID(+)
+		  AND a.TRAFFIC_ID        = h.ID(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+		  AND a.is_del = 0
+		  <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="ACCOUNT_DETAIL_NO">
+		  	and a.ACCOUNT_DETAIL_NO = #ACCOUNT_DETAIL_NO#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="departIds">
+			  	and z.depart_id IN ($departIds$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="ACCOUNT_STATUS">
+		  
+			<iterate property="ACCOUNT_STATUS" conjunction=" or " open="and (" close=")">
+			
+		  	<isEqual property="ACCOUNT_STATUS[]" compareValue="0">
+				(a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+				<isNotEmpty property="calc_role">
+					<isEqual property="calc_role" compareValue="manager">
+						and(a.account_way = 3 and (a.status = 2 or a.status = 5))
+					</isEqual>
+					<isEqual property="calc_role" compareValue="parent">
+						and ((a.account_way = 2 and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) or
+							(a.account_way = 1 and e.ID = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)))
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="indie">
+						and (a.account_way = 1 and e.ID = #CREATE_COMPANY_ID# and (a.status != 2 or a.status != 5))
+					</isEqual>
+				  </isNotEmpty>
+				)
+			</isEqual>
+			<!-- 非对账-->
+			<isEqual property="ACCOUNT_STATUS[]" compareValue="-1">
+				(a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+				<isNotEmpty property="calc_role">
+					<isEqual property="calc_role" compareValue="manager">
+						and(a.account_way != 3 or (a.account_way = 3 and a.status not in (2,5)))
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="parent">
+						and (
+							<isEqual property="COMPANY_ACCOUNT_WAY" compareValue="1">
+								(a.account_way = 1 or a.account_way = 3) 
+								and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID# 
+								and e.id != #PARENT_CREATE_COMPANY_ID#
+							</isEqual>
+							<isEqual property="COMPANY_ACCOUNT_WAY" compareValue="2">
+								(a.account_way = 1 or a.account_way = 3)
+								and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+							</isEqual>
+							<isEqual property="COMPANY_ACCOUNT_WAY" compareValue="3">
+								(a.account_way = 1 or a.account_way = 3) 
+								and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+							</isEqual>
+							)
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="indie">
+						and ((a.account_way != 1 or (a.account_way = 1 and a.status not in (2,5))) and e.ID = #CREATE_COMPANY_ID#)
+					</isEqual>
+				  </isNotEmpty>
+				  )
+			</isEqual>
+			
+			<isEqual property="ACCOUNT_STATUS[]" compareValue="1">
+				(a.ACCOUNT_STATUS = 1
+				<isNotEmpty property="calc_role">
+					<isEqual property="calc_role" compareValue="manager">
+						
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="parent">
+						and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="indie">
+						and e.ID = #CREATE_COMPANY_ID#
+					</isEqual>
+				  </isNotEmpty>
+				  )
+			</isEqual>
+			
+			<isEqual property="ACCOUNT_STATUS[]" compareValue="2">
+				(a.ACCOUNT_STATUS = 2
+				<isNotEmpty property="calc_role">
+					<isEqual property="calc_role" compareValue="manager">
+						
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="parent">
+						and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="indie">
+						and e.ID = #CREATE_COMPANY_ID#
+					</isEqual>
+				  </isNotEmpty>
+				  )
+			</isEqual>
+			
+			</iterate>
+			
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="STATUS">
+		  	and a.STATUS IN ($STATUS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="NOTIDS">
+		  	and a.ID NOT IN ($NOTIDS$)
+		  </isNotEmpty>
+	      <isNotEmpty property="COMPANY_ID">
+		  and a.COMPANY_ID = #COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_COMPANY_ID">
+		  and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_BEGIN_TIME">
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  </isNotEmpty>
+		 <isNotEmpty property="CREATE_END_TIME">
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="START_BEGIN_DATE">
+		  AND a.START_DATE >= #START_BEGIN_DATE#
+		  </isNotEmpty>
+		  <isNotEmpty property="START_END_DATE">
+		  <![CDATA[ AND a.START_DATE <= #START_END_DATE# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty property="NO">
+		  and (a.NO = #NO# OR a.ACCOUNT_DETAIL_NO = #NO#)
+		  </isNotEmpty>
+		  <isNotEmpty property="PARENT_CREATE_COMPANY_ID"> 
+		  and (e.PID = #PARENT_CREATE_COMPANY_ID# or a.CREATE_COMPANY_ID = #PARENT_CREATE_COMPANY_ID#)
+		  </isNotEmpty>
+		  ) a
+		ORDER BY a.text,
+		  a.produce_type,
+		  a.CREATE_TIME DESC
+
+	</statement>
+	 
+	<statement id="supplyCalcDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (SELECT a.COMPANY,
+		  a.COMPANY_ID,
+		  SUM(a.ACTUAL_AMOUNT) AS AMOUNT,
+		  b.ID as BANK_ID,
+		  b.BANK_NO,
+		  b.BANK_NAME,
+		  b.OPEN_ADDRESS,
+		  b.OPER_NAME
+		FROM
+		  (SELECT a.PAY_TYPE,
+		    a.COMPANY_ID,
+		    t1.COMPANY,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.CREATE_COMPANY_ID,
+		    a.CREATE_DEPART_ID,
+		    a.SITE_RELA_ID,
+		    l.REFUND_AMOUNT,
+		    m.MARKETING_AMOUNT,
+		    (a.INTER_AMOUNT + nvl(l.REFUND_AMOUNT, 0) - nvl(m.MARKETING_AMOUNT, 0)) AS ACTUAL_AMOUNT
+		  FROM SD_ORDER_BASE a,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    (SELECT SUM(a.AMOUNT) AS REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m,
+		    sd_user_company t1,
+		    sd_user_company t2,
+		    sd_user_depart t3,
+	        (select a.id, a.create_user_id from sd_pro_route a
+	        union all
+	        select b.id, b.create_user_id from sd_pro_traffic b) t4,
+	        sd_user t5
+		  WHERE 1  = 1
+		  AND a.id = c.funds_order_id(+)
+		  AND a.ID = l.ORDER_ID(+)
+		  AND a.ID = m.ORDER_ID(+)
+		  AND a.company_id = t1.id
+		  AND a.create_company_id = t2.id
+		  AND a.produce_id = t4.id
+		  AND t4.create_user_id = t5.id
+		  AND t5.depart_id = t3.id
+		  and a.STATUS in (2,5)
+		  and a.COMPANY_ID = #COMPANY_ID#
+		  AND a.is_del = 0
+		  <isNotEmpty property="ACCOUNT_STATUS">
+		  	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+		    </isNotEmpty>
+		  <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		<isEqual property="calc_role" compareValue="manager">
+			and(a.account_way = 3 and (a.status = 2 or a.status = 5))
+		</isEqual>
+		
+		<isEqual property="calc_role" compareValue="parent">
+			and ((a.account_way = 2 and DECODE(t2.PID, '-1', t2.ID, t2.PID) = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) or
+				(a.account_way = 1 and t2.ID = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)))
+		</isEqual>
+		<isEqual property="calc_role" compareValue="indie">
+			and (a.account_way = 1 and t2.ID = #CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) 
+		</isEqual>
+		  
+		  <isNotEmpty property="departIds">
+			  	and t3.ID IN ($departIds$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="ACCOUNT_DETAIL_NO_NULL">
+		  and a.ACCOUNT_DETAIL_NO is null
+		  </isNotEmpty>
+		  <isNotEmpty property="ACCOUNT_STATUS">
+		  	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="NOTIDS">
+		  	and a.ID NOT IN ($NOTIDS$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="CREATE_BEGIN_TIME"> 
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_END_TIME">
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="START_BEGIN_DATE">
+		  AND a.START_DATE >= #START_BEGIN_DATE#
+		  </isNotEmpty>
+		  <isNotEmpty property="START_END_DATE">
+		  <![CDATA[ AND a.START_DATE <= #START_END_DATE# ]]>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="PARENT_CREATE_COMPANY_ID"> 
+		  and (t2.PID = #PARENT_CREATE_COMPANY_ID# or a.CREATE_COMPANY_ID = #PARENT_CREATE_COMPANY_ID#)
+		  </isNotEmpty>
+		  <isNotEmpty property="BUY_COMPANY_ID"> 
+			  and a.create_company_id = #BUY_COMPANY_ID#
+			  </isNotEmpty>
+		  ) a,
+		  SD_ORDER_BANK b
+		WHERE a.COMPANY_ID = b.COMPANY_ID(+)
+		GROUP BY a.COMPANY_ID,
+		  a.COMPANY,
+		  b.ID,
+		  b.BANK_NO,
+		  b.BANK_NAME,
+		  b.OPEN_ADDRESS,
+		  b.OPER_NAME) a
+		  where a.amount > 0
+	</statement>
+	
+	
+	<statement id="managerCalcDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		
+		SELECT c.COMPANY || '(' || f.sub_area|| ')' as COMPANY,
+		  c.ID as COMPANY_ID,
+		  a.AMOUNT,
+		  b.ID as BANK_ID,
+		  d.BANK_NO,
+		  d.BANK_NAME,
+		  d.OPEN_ADDRESS,
+		  d.OPER_NAME,
+		  a.SITE_RELA_ID
+		  
+		FROM
+		  (SELECT SUM(NVL(a.MARKETING_AMOUNT, 0)) AS AMOUNT,
+		    a.SITE_RELA_ID
+		  FROM
+		    (SELECT a.PAY_TYPE,
+		      a.COMPANY_ID,
+		      a.SALE_AMOUNT,
+		      a.INTER_AMOUNT,
+		      a.CREATE_COMPANY_ID,
+		      a.CREATE_DEPART_ID,
+		      a.SITE_RELA_ID,
+		      m.MARKETING_AMOUNT
+		    FROM SD_ORDER_BASE a,
+		      (SELECT a.order_id funds_order_id,
+		        MAX(a.create_time) pay_time
+		      FROM sd_order_funds a
+		      WHERE a.type = 2
+		      GROUP BY a.order_id
+		      ) c,
+		      (SELECT a.AMOUNT AS MARKETING_AMOUNT,
+		        a.ORDER_ID
+		      FROM SD_ORDER_FUNDS a
+		      WHERE a.TYPE = 7
+		      ) m,
+		      sd_user_company t2,
+		      sd_user_depart t3,
+		      (select a.id, a.create_user_id from sd_pro_route a
+	          union all
+	          select b.id, b.create_user_id from sd_pro_traffic b) t4,
+	          sd_user t5
+			 
+		    WHERE 1  = 1
+		    AND a.id = c.funds_order_id(+)
+		    AND a.create_company_id = t2.id
+		    AND a.produce_id = t4.id
+		    AND t4.create_user_id                     = t5.id
+		    AND t5.depart_id = t3.id
+		    AND a.ID = m.ORDER_ID(+)
+		    and a.STATUS in (2,5)
+		    AND a.is_del = 0
+		    <isNotEmpty property="ACCOUNT_STATUS">
+		  	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+		    </isNotEmpty>
+		    <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		<isEqual property="calc_role" compareValue="manager">
+			and(a.account_way = 3 and (a.status = 2 or a.status = 5))
+		</isEqual>
+		<isEqual property="calc_role" compareValue="parent">
+			and ((a.account_way = 2 and DECODE(t2.PID, '-1', t2.ID, t2.PID) = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) or
+				(a.account_way = 1 and t2.ID = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)))
+		</isEqual>
+		<isEqual property="calc_role" compareValue="indie">
+			and (a.account_way = 1 and t2.ID = #CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) 
+		</isEqual>
+		  
+		  <isNotEmpty property="departIds">
+			  	and t3.ID IN ($departIds$)
+			  </isNotEmpty>
+		  
+		    <isNotEmpty property="ACCOUNT_DETAIL_NO_NULL">
+				and a.ACCOUNT_DETAIL_NO is null
+			</isNotEmpty>
+			<isNotEmpty property="ACCOUNT_STATUS">
+		  		and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+		    </isNotEmpty>
+		    and a.COMPANY_ID = #COMPANY_ID#
+		    
+		    <isNotEmpty property="NOTIDS">
+		  	  and a.ID NOT IN ($NOTIDS$)
+		    </isNotEmpty>
+		    
+		    
+		    <isNotEmpty property="CREATE_BEGIN_TIME"> 
+		    and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		    </isNotEmpty>
+		    <isNotEmpty property="CREATE_END_TIME">
+		    <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		    </isNotEmpty>
+		  
+		    <isNotEmpty property="START_BEGIN_DATE">
+		    AND a.START_DATE >= #START_BEGIN_DATE#
+		    </isNotEmpty>
+		    <isNotEmpty property="START_END_DATE">
+		    <![CDATA[ AND a.START_DATE <= #START_END_DATE# ]]>
+		    </isNotEmpty>
+		  
+		  <isNotEmpty property="PARENT_CREATE_COMPANY_ID"> 
+		  and (t2.PID = #PARENT_CREATE_COMPANY_ID# or a.CREATE_COMPANY_ID = #PARENT_CREATE_COMPANY_ID#)
+		  </isNotEmpty>
+		  <isNotEmpty property="BUY_COMPANY_ID"> 
+			  and a.create_company_id = #BUY_COMPANY_ID#
+			  </isNotEmpty>
+		    ) a
+		  GROUP BY a.SITE_RELA_ID
+		  ) a,
+		  SD_SITE_MANAGER b,
+		  SD_USER_COMPANY c,
+		  SD_ORDER_BANK d,
+		  SD_SITE_MANAGER e, 
+		  SD_SITE f
+		WHERE a.SITE_RELA_ID = b.ID
+		AND b.USER_ID        = c.USER_ID
+		AND c.ID             = d.COMPANY_ID(+)
+		AND a.SITE_RELA_ID = e.id
+		AND e.SITE_ID = f.ID
+		and a.amount > 0
+		
+	</statement>
+	
+	<statement id="saleCalcDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.COMPANY,
+			  a.COMPANY_ID,
+			  SUM(a.AMOUNT)	AS AMOUNT,
+			  a.BANK_ID,
+			  a.BANK_NO,
+			  a.BANK_NAME,
+			  a.OPEN_ADDRESS,
+			  a.OPER_NAME,
+			  a.SITE_RELA_ID
+		from (
+			SELECT a.COMPANY
+			  || '('
+			  || a.city_name
+			  || ')' AS COMPANY,
+			  a.COMPANY_ID,
+			  a.AMOUNT,
+			  a.BANK_ID AS BANK_ID,
+			  a.BANK_NO,
+			  a.BANK_NAME,
+			  a.OPEN_ADDRESS,
+			  a.OPER_NAME,
+			  a.SITE_RELA_ID
+			FROM
+			  (SELECT c.COMPANY,
+			    a.CREATE_COMPANY_ID     AS COMPANY_ID,
+			    sum(a.AMOUNT) as AMOUNT,
+			    a.PAY_TYPE,
+			    b.ID                                               AS BANK_ID,
+			    DECODE(a.PAY_TYPE, '在线支付', b.BANK_NO,'')           AS BANK_NO,
+			    DECODE(a.PAY_TYPE, '在线支付', b.BANK_NAME, '') AS BANK_NAME,
+			    DECODE(a.PAY_TYPE, '在线支付', b.OPEN_ADDRESS,'')      AS OPEN_ADDRESS,
+			    DECODE(a.PAY_TYPE, '在线支付', b.OPER_NAME,'')         AS OPER_NAME,
+			    a.SITE_RELA_ID,
+			    c.city_name
+			  FROM
+			    (SELECT DECODE(a.PAY_TYPE, 0, '余额支付', '在线支付') AS PAY_TYPE,
+			      a.COMPANY_ID,
+			      a.SALE_AMOUNT,
+			      a.INTER_AMOUNT,
+			      a.CREATE_COMPANY_ID,
+			      a.CREATE_DEPART_ID,
+			      a.SITE_RELA_ID,
+			      (
+				    CASE
+				      WHEN a.PAY_TYPE = 0 and a.status = 5 
+				      THEN 0	
+				      WHEN a.PLATFORM_PAY = 2 AND a.PAY_TYPE!   =0
+				      THEN a.SALE_AMOUNT-a.INTER_AMOUNT-NVL(l.REFUND_AMOUNT, 0)
+				      ELSE              -NVL(l.REFUND_AMOUNT, 0)
+				    END) AS AMOUNT,
+			      NVL(l.REFUND_AMOUNT, 0) AS REFUND_AMOUNT
+			    FROM SD_ORDER_BASE a,
+			      (SELECT a.ORDER_ID FUNDS_ORDER_ID,
+			        MAX(a.CREATE_TIME) PAY_TIME
+			      FROM SD_ORDER_FUNDS a
+			      WHERE a.TYPE = 2
+			      GROUP BY a.ORDER_ID
+			      ) c,
+			      (SELECT SUM(a.AMOUNT) AS REFUND_AMOUNT,
+			        a.ORDER_ID
+			      FROM SD_ORDER_FUNDS a 
+			      WHERE a.TYPE = 6
+			      GROUP BY ORDER_ID
+			      ) l,
+			      sd_user_company t2,
+			      sd_user_depart t3,
+			      (select a.id, a.create_user_id from sd_pro_route a
+			      union all
+			      select b.id, b.create_user_id from sd_pro_traffic b) t4,
+			      sd_user t5
+				 
+			    WHERE 1       = 1
+			    AND a.ID      = c.FUNDS_ORDER_ID(+)
+			    AND a.ID      = l.ORDER_ID(+)
+			    AND a.create_COMPANY_ID = t2.id
+			    AND a.produce_id = t4.id
+			    AND t4.create_user_id                     = t5.id
+			    AND t5.depart_id = t3.id
+			    AND a.STATUS IN (2,5)
+			    AND a.COMPANY_ID = #COMPANY_ID#
+			    AND a.is_del = 0
+			    <isNotEmpty property="ACCOUNT_STATUS">
+			  	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+			    </isNotEmpty>
+			    
+			    <isNotEmpty property="SITE_RELA_IDS">
+			  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+			  </isNotEmpty>
+			<isEqual property="calc_role" compareValue="manager">
+				and(a.account_way = 3 and (a.status = 2 or a.status = 5))
+			</isEqual>
+			<isEqual property="calc_role" compareValue="parent">
+				and ((a.account_way = 2 and DECODE(t2.PID, '-1', t2.ID, t2.PID) = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) or
+					(a.account_way = 1 and t2.ID = #PARENT_CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)))
+			</isEqual>
+			<isEqual property="calc_role" compareValue="indie">
+				and (a.account_way = 1 and t2.ID = #CREATE_COMPANY_ID# and (a.status = 2 or a.status = 5)) 
+			</isEqual>
+			  
+			  <isNotEmpty property="departIds">
+				  	and t3.ID IN ($departIds$)
+				  </isNotEmpty>
+			  
+			    <isNotEmpty property="ACCOUNT_DETAIL_NO_NULL">
+				    and a.ACCOUNT_DETAIL_NO is null
+				  </isNotEmpty>
+				  <isNotEmpty property="ACCOUNT_STATUS">
+				  	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+				  </isNotEmpty>
+				 
+				  <isNotEmpty property="NOTIDS">
+				  	and a.ID NOT IN ($NOTIDS$)
+				  </isNotEmpty>
+				  
+				  <isNotEmpty property="CREATE_BEGIN_TIME"> 
+		  		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  		  </isNotEmpty>
+		  		  <isNotEmpty property="CREATE_END_TIME">
+		  		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  		  </isNotEmpty>
+		  
+		  		  <isNotEmpty property="START_BEGIN_DATE">
+		  		  AND a.START_DATE >= #START_BEGIN_DATE#
+		  		  </isNotEmpty>
+		  		  <isNotEmpty property="START_END_DATE">
+		  		  <![CDATA[ AND a.START_DATE <= #START_END_DATE# ]]>
+		  		  </isNotEmpty>
+				  
+				  <isNotEmpty property="PARENT_CREATE_COMPANY_ID"> 
+				  and (t2.PID = #PARENT_CREATE_COMPANY_ID# or a.CREATE_COMPANY_ID = #PARENT_CREATE_COMPANY_ID#)
+				  </isNotEmpty>
+				  <isNotEmpty property="BUY_COMPANY_ID"> 
+				  and a.create_company_id = #BUY_COMPANY_ID#
+				  </isNotEmpty>
+				  
+			    ) a,
+			    SD_ORDER_BANK b,
+			    SD_USER_COMPANY c
+			  WHERE a.CREATE_COMPANY_ID = b.COMPANY_ID(+)
+			  AND a.CREATE_COMPANY_ID   = c.ID
+			  
+			  GROUP BY a.CREATE_COMPANY_ID,
+			    b.ID,
+			    a.PAY_TYPE,
+			    b.BANK_NO,
+			    b.BANK_NAME,
+			    b.OPEN_ADDRESS,
+			    b.OPER_NAME,
+			    c.COMPANY,
+			    a.SITE_RELA_ID,
+			    c.city_name
+			  ) a where a.amount > 0
+		) a group by a.COMPANY,
+			  a.COMPANY_ID,
+			  a.BANK_ID,
+			  a.BANK_NO,
+			  a.BANK_NAME,
+			  a.OPEN_ADDRESS,
+			  a.OPER_NAME,
+			  a.SITE_RELA_ID
+	</statement>
+	
+	<update id="updateOrderAccountStatusDao" parameterClass="java.util.HashMap">
+		update SD_ORDER_BASE set ACCOUNT_STATUS = #ACCOUNT_STATUS# where ID IN ($IDS$)
+	</update>
+	
+	<update id="updateOrderAccountInfoDao" parameterClass="java.util.HashMap">
+		update SD_ORDER_BASE set ACCOUNT_ID = #ACCOUNT_ID#, ACCOUNT_DETAIL_NO = #ACCOUNT_DETAIL_NO# where ID IN ($IDS$)
+	</update>
+	
+	<update id="updateOrderBaseAccountStatusByAccountIdAndNoOao">
+		update SD_ORDER_BASE set ACCOUNT_STATUS = #ACCOUNT_STATUS# where ACCOUNT_ID = #ACCOUNT_ID# AND ACCOUNT_DETAIL_NO in ($ACCOUNT_DETAIL_NO$) 
+	</update>
+	
+	<statement id="listOrderAccountDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.START_DATE,
+		  a.END_DATE,
+		  a.COMPANY_ID,
+		  a.SITE_RELA_ID,
+		  a.ACCOUNT_STATUS
+		FROM SD_ORDER_ACCOUNT a
+		WHERE 1 = 1
+		
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+		AND a.START_DATE = #CREATE_BEGIN_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_END_TIME">
+		AND a.END_DATE       = #CREATE_END_TIME#
+		</isNotEmpty>
+						
+	  	<isNotEmpty property="START_BEGIN_DATE">
+		AND a.START_DATE = #START_BEGIN_DATE#
+		</isNotEmpty>
+		<isNotEmpty property="START_END_DATE">
+		AND a.END_DATE       = #START_END_DATE#
+		</isNotEmpty>
+		
+	  	<isNotEmpty property="COMPANY_ID">
+	  	AND a.COMPANY_ID     = #COMPANY_ID#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_TYPE">
+	  	AND a.ACCOUNT_TYPE     = #ACCOUNT_TYPE#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_COMPANY_ID">
+	  	AND a.ACCOUNT_COMPANY_ID     = #ACCOUNT_COMPANY_ID#
+	  	</isNotEmpty>
+	</statement>
+	
+	<statement id="countOrderAccountDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM SD_ORDER_ACCOUNT a
+		WHERE 1 = 1
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+		AND a.START_DATE = #CREATE_BEGIN_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_END_TIME">
+		AND a.END_DATE       = #CREATE_END_TIME#
+		</isNotEmpty>
+	  	<isNotEmpty property="COMPANY_ID">
+	  	AND a.COMPANY_ID     = #COMPANY_ID#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_TYPE">
+	  	AND a.ACCOUNT_TYPE     = #ACCOUNT_TYPE#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_COMPANY_ID">
+	  	AND a.ACCOUNT_COMPANY_ID     = #ACCOUNT_COMPANY_ID#
+	  	</isNotEmpty>
+	</statement>
+	
+	<insert id="saveOrderAccountDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_ACCOUNT(
+			ID,
+			START_DATE,
+			END_DATE,
+			COMPANY_ID,
+			SITE_RELA_ID,
+			ACCOUNT_STATUS,
+			ACCOUNT_TYPE,
+			ACCOUNT_COMPANY_ID
+		)VALUES(
+			#ID#,
+			#START_DATE#,
+			#END_DATE#,
+			#COMPANY_ID#,
+			#SITE_RELA_ID#,
+			#ACCOUNT_STATUS#,
+			#ACCOUNT_TYPE#,
+			#ACCOUNT_COMPANY_ID#
+		)
+	</insert>
+	
+	<update id="updateOrderAccountDao" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_ACCOUNT SET ACCOUNT_STATUS = #ACCOUNT_STATUS# WHERE ID = #ID#
+	</update>
+	
+	<update id="updateOrderAccountByIDSDao" parameterClass="java.util.HashMap">
+		UPDATE SD_ORDER_ACCOUNT SET ACCOUNT_STATUS = #ACCOUNT_STATUS# WHERE ID = #ACCOUNT_ID#
+	</update>
+
+	<insert id="saveOrderAccountDetailDao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_ACCOUNT_DETAIL(
+			ID,
+			ACCOUNT_ID,
+			BANK_ID,
+			BANK_NO,
+			BANK_NAME,
+			BANK_TITLE,
+			BANK_ADDRESS,
+			COMPANY_ID,
+			SITE_RELA_ID,
+			ACCOUNT_AMOUNT,
+			NO,
+			TYPE,
+			COMPANY_TYPE,
+			ACCOUNT_USER,
+			ACCOUNT_USER_ID,
+			ACCOUNT_TIME,
+			DETAIL_NO
+		)VALUES(
+			#ID#,
+			#ACCOUNT_ID#,
+			#BANK_ID#,
+			#BANK_NO#,
+			#OPER_NAME#,
+			#BANK_NAME#,
+			#OPEN_ADDRESS#,
+			#COMPANY_ID#,
+			#SITE_RELA_ID#,
+			#AMOUNT#,
+			#NO#,
+			0,
+			#COMPANY_TYPE#,
+			#ACCOUNT_USER#,
+			#ACCOUNT_USER_ID#,
+			sysdate,
+			#DETAIL_NO#
+		)
+	</insert>
+	
+	<insert id="saveOrderAccountDetailNODao" parameterClass="java.util.HashMap">
+		insert into SD_ORDER_ACCOUNT_DETAIL_NO(
+			ID,
+			NO,
+			ACCOUNT_ID,
+			ACCOUNT_USER,
+			ACCOUNT_USER_ID,
+			ACCOUNT_TIME
+		)VALUES(
+			#ID#,
+			#NO#,
+			#ACCOUNT_ID#,
+			#ACCOUNT_USER#,
+			#ACCOUNT_USER_ID#,
+			sysdate
+		)
+	</insert>
+	
+	<statement id="countOrderUnCalcDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		    FROM SD_ORDER_BASE a
+		    WHERE 1  = 1
+		    AND a.is_del = 0
+		    and a.ACCOUNT_STATUS in (0,1) 
+		    and a.COMPANY_ID = #COMPANY_ID#
+		    and a.STATUS NOT IN (6,7)
+		    and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		    <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+	</statement>
+	
+	<insert id="saveOrderAccountSynDao" parameterClass="java.util.Map">
+	INSERT INTO SD_ORDER_ACCOUNT_SYN(
+		ID,
+		USER_ID,
+		USER_NAME,
+		DEPART_NAME,
+		SUPPLY_ID,
+		START_TIME,
+		END_TIME,
+		CREATE_TIME,
+		COMPANY_TYPE,
+		ACCOUNT_COMPANY_ID)
+	VALUES(
+		#ID#,
+		#USER_ID#,
+		#USER_NAME#,
+		#DEPART_NAME#,
+		#COMPANY_ID#,
+		#CREATE_BEGIN_TIME#,
+		#CREATE_END_TIME#,
+		SYSDATE,
+		#COMPANY_TYPE#,
+		#ACCOUNT_COMPANY_ID#
+	)
+	</insert>
+	
+	<statement id="listOrderAccountSynDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT * FROM SD_ORDER_ACCOUNT_SYN WHERE 1 = 1
+		<isNotEmpty property="USER_ID">
+			AND USER_ID = #USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_TYPE">
+			AND COMPANY_TYPE = #COMPANY_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			AND SUPPLY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		
+		<isNotEmpty property="CREATE_BEGIN_TIME"> 
+		<![CDATA[ AND START_TIME <= #CREATE_BEGIN_TIME# AND END_TIME >= #CREATE_BEGIN_TIME# ]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="CREATE_END_TIME">
+		<![CDATA[ AND START_TIME <= #CREATE_END_TIME# AND END_TIME >= #CREATE_END_TIME# ]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="ACCOUNT_COMPANY_ID">
+			AND ACCOUNT_COMPANY_ID = #ACCOUNT_COMPANY_ID#
+		</isNotEmpty>
+		
+	</statement>
+	
+	<delete id="delOrderAccountSynByUserIdDao" parameterClass="java.util.Map">
+		DELETE FROM SD_ORDER_ACCOUNT_SYN WHERE USER_ID = #USER_ID# AND COMPANY_TYPE = #COMPANY_TYPE# AND ACCOUNT_COMPANY_ID = #ACCOUNT_COMPANY_ID#
+	</delete>
+	
+	<statement id="listOrderAccountDetailDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+			a.ACCOUNT_ID,
+			a.BANK_ID,
+			a.BANK_NO,
+			a.BANK_NAME,
+			a.BANK_TITLE,
+			a.BANK_ADDRESS,
+			a.COMPANY_ID,
+			a.SITE_RELA_ID,
+			a.ACCOUNT_AMOUNT,
+			a.NO,
+			a.TYPE,
+			a.COMPANY_TYPE,
+			a.ACCOUNT_USER,
+			a.ACCOUNT_USER_ID,
+			a.ACCOUNT_TIME,
+			c.COMPANY,
+			b.START_DATE,
+			b.END_DATE,
+			a.DETAIL_NO,
+			a.PAY_TYPE,
+			a.PAY_USER,
+			a.PAY_USER_ID,
+			to_char(a.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') PAY_TIME,
+			
+			a.ATTR_URL,
+			a.ATTR_USER,
+			a.ATTR_USER_ID,
+			to_char(a.ATTR_TIME, 'yyyy-mm-dd HH24:mi:ss') ATTR_TIME,
+			a.NO || ' ' || d.company || ' ' || f.TEXT || ' ' || e.USER_NAME as SHOW_GROUP,
+			b.ACCOUNT_COMPANY_ID
+		FROM SD_ORDER_ACCOUNT_DETAIL a, SD_ORDER_ACCOUNT b, SD_USER_COMPANY c, SD_USER_COMPANY d, SD_USER e, SD_USER_DEPART f 
+		where 1 = 1
+		AND a.ACCOUNT_ID = b.ID
+		AND a.COMPANY_ID = c.ID
+		AND b.ACCOUNT_COMPANY_ID = d.ID
+		AND a.ACCOUNT_USER_ID = e.ID
+		AND e.DEPART_ID = f.id(+)
+		<isNotEmpty property="UNPAY">
+			AND a.PAY_USER IS NOT NULL
+		</isNotEmpty>
+		<isNotEmpty property="ACCOUNT_IDS">
+			AND a.ACCOUNT_ID in ($ACCOUNT_IDS$)
+		</isNotEmpty>
+		<isNotEmpty property="ACCOUNT_ID">
+			AND a.ACCOUNT_ID = #ACCOUNT_ID#
+		</isNotEmpty>
+		
+		
+		<isNotEmpty property="CREATE_BEGIN_TIME">
+			AND b.start_date >= #CREATE_BEGIN_TIME#
+		</isNotEmpty>
+		<isNotEmpty property="CREATE_END_TIME">
+			<![CDATA[ AND b.end_date <= #CREATE_END_TIME# ]]>
+		</isNotEmpty>
+		
+		
+	  	<isNotEmpty property="COMPANY_ID">
+	  		AND b.COMPANY_ID     = #COMPANY_ID#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_TYPE">
+	  		AND b.ACCOUNT_TYPE     = #ACCOUNT_TYPE#
+	  	</isNotEmpty>
+	  	<isNotEmpty property="ACCOUNT_COMPANY_ID">
+	  		AND b.ACCOUNT_COMPANY_ID     = #ACCOUNT_COMPANY_ID#
+	  	</isNotEmpty>
+	  	
+	  	ORDER BY a.BANK_NO, a.COMPANY_TYPE
+	</statement>
+	
+	<update id="updateAccountDetailPayStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_ACCOUNT_DETAIL set PAY_USER = #PAY_USER#, PAY_USER_ID = #PAY_USER_ID#, PAY_TIME = sysdate WHERE ID in ($IDS$)
+	</update>
+	
+	<statement id="listOrderAccountDetailPayFinishDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT c.no,
+		  c.account_id
+		FROM
+		  (SELECT COUNT(1) AS cnt,
+		    a.no,
+		    a.account_id
+		  FROM sd_order_account_detail a
+		  WHERE a.account_id = #ACCOUNT_ID#
+		  GROUP BY a.no,
+		    a.account_id
+		  ) c,
+		  (SELECT COUNT(1) AS cnt,
+		    a.no,
+		    a.account_id
+		  FROM sd_order_account_detail a
+		  WHERE a.account_id = #ACCOUNT_ID#
+		  AND a.pay_user    IS NOT NULL
+		  GROUP BY a.no,
+		    a.account_id
+		  ) d
+		WHERE c.cnt      = d.cnt
+		AND c.no         = d.no
+		AND c.account_id = d.account_id
+	</statement>
+	
+	<statement id="listOrderAccountPayFinishDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT c.account_id
+		FROM
+		  (SELECT COUNT(1)                     AS cnt,
+		    #ACCOUNT_ID# AS account_id
+		  FROM sd_order_base a
+		  WHERE a.is_del = 0 AND a.COMPANY_ID                          = #COMPANY_ID#
+		  AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME# 
+		  <![CDATA[ AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="ACCOUNT">
+		  	<isEqual property="ACCOUNT" compareValue="0">
+		  		and a.STATUS IN (0,1,2,3,4,5) and a.is_alone = 0 and a.sources = 0
+		  	</isEqual>
+		  	<isEqual property="ACCOUNT" compareValue="-1">
+		  		and a.STATUS IN (0,1,2,3,4,5) and (a.is_alone = 1 or a.sources = 1) and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  	</isEqual>
+		  </isNotEmpty>
+		  
+		  ) c,
+		  (SELECT COUNT(1)                     AS cnt,
+		    #ACCOUNT_ID# AS account_id
+		  FROM sd_order_base a
+		  WHERE a.is_del = 0 AND a.account_status                      = 2
+		  AND a.COMPANY_ID                          = #COMPANY_ID#
+		  AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME# 
+		  <![CDATA[ AND TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="ACCOUNT">
+		  	<isEqual property="ACCOUNT" compareValue="0">
+		  		and a.STATUS IN (0,1,2,3,4,5) and a.is_alone = 0 and a.sources = 0
+		  	</isEqual>
+		  	<isEqual property="ACCOUNT" compareValue="-1">
+		  		and a.STATUS IN (0,1,2,3,4,5) and (a.is_alone = 1 or a.sources = 1) and a.CREATE_COMPANY_ID = #CREATE_COMPANY_ID#
+		  	</isEqual>
+		  </isNotEmpty>
+		  
+		  ) d
+		WHERE c.cnt      = d.cnt
+		AND c.account_id = d.account_id
+	</statement>
+	
+	<update id="updateOrderAccountDetailAttrDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_ACCOUNT_DETAIL SET ATTR_URL = #ATTR_URL#, ATTR_USER = #ATTR_USER#, ATTR_USER_ID = #ATTR_USER_ID#, ATTR_TIME = sysdate where ID = #ID#
+	</update>
+	
+	<statement id="listOrderAccountHistoryDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		select 
+		a.COMPANY_NAME,
+		(
+		  CASE
+		    WHEN a.FINISH_ACCOUNT_CNT = a.CNT
+		    THEN 1
+		    WHEN (a.FINISH_ACCOUNT_CNT != a.CNT
+		    AND a.FINISH_ACCOUNT_CNT                  != 0)
+		    THEN 2
+		    ELSE 0
+		  END) as ACCOUNT_STATUS
+		from 
+		(
+		SELECT a.COMPANY_NAME,
+				sum(decode(a.ACCOUNT_STATUS, 2, 1, 1, 1, 0))	FINISH_ACCOUNT_CNT,
+				count(1)                                 cnt
+		FROM
+		  (SELECT b.TITLE AS PRODUCE_NAME,
+		    z.USER_NAME,
+		    x.TEXT,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.MOBILE BUY_PHONE,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    (a.INTER_AMOUNT + nvl(l.T_REFUND_AMOUNT, 0) - nvl(m.T_MARKETING_AMOUNT, 0)) AS ACTUAL_AMOUNT,
+		    a.SOURCES,
+		    a.IS_ALONE,
+		    d.COMPANY as COMPANY_NAME
+		  FROM SD_ORDER_BASE a,
+		  	(
+		    select a.id, a.title, a.create_user_id from sd_pro_route a 
+		    UNION ALL
+		    select a.id, a.title, a.create_user_id from sd_pro_traffic a
+		    ) b
+		    ,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    SD_ORDER_CONTRACT g,
+		    sd_user f,
+		    sd_pro_route_traffic h,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		    
+		     <isNotEmpty property="calc_role">
+				<isEqual property="calc_role" compareValue="manager">
+				  ,(SELECT e.id AS company_id,
+			        e.company,
+			        b.id AS site_rela_id
+			      FROM SD_SITE_MANAGER b,
+			        sd_user_company e
+			      WHERE b.user_id = e.user_id
+			      AND e.id        = #MANAGER_COMPANY_ID#
+			      ) t 
+			      
+				</isEqual>
+			 </isNotEmpty>
+		  
+		  WHERE 1                 = 1
+		  AND b.create_user_id    = z.id 
+		  AND z.depart_id         = x.id(+)
+		  AND a.PRODUCE_ID        = b.ID
+		  AND a.ID                = c.FUNDS_ORDER_ID(+)
+		  AND a.COMPANY_ID        = d.ID
+		  AND a.CREATE_COMPANY_ID = e.ID
+		  AND a.ID                = g.ORDER_ID(+)
+		  AND a.TRAFFIC_ID        = h.ID(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+		  AND a.STATUS != 6 AND a.STATUS != 7
+		  and a.is_del = 0
+		 <isNotEmpty property="calc_role">
+			<isEqual property="calc_role" compareValue="manager">
+				and a.account_way = 3
+			</isEqual>
+			 
+			<isEqual property="calc_role" compareValue="parent">
+				and ((a.account_way = 2 and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#) or
+					(a.account_way = 1 and e.ID = #PARENT_CREATE_COMPANY_ID#))
+			</isEqual>
+			 
+			<isEqual property="calc_role" compareValue="indie">
+				and (a.account_way = 1 and e.ID = #CREATE_COMPANY_ID#) 
+			</isEqual>
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="ACCOUNT_DETAIL_NO">
+		  	and a.ACCOUNT_DETAIL_NO = #ACCOUNT_DETAIL_NO#
+		  </isNotEmpty>
+
+
+		  <isNotEmpty property="ACCOUNT_STATUS">
+		  	and a.ACCOUNT_STATUS = #ACCOUNT_STATUS#
+		  </isNotEmpty>
+		  <isNotEmpty property="ACCOUNT_STATUSES">
+		  	and a.ACCOUNT_STATUS in ($ACCOUNT_STATUSES$)
+		  </isNotEmpty>
+		  <isNotEmpty property="STATUS">
+		  	and a.STATUS IN ($STATUS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="NOTIDS">
+		  	and a.ID NOT IN ($NOTIDS$)
+		  </isNotEmpty>
+	      <isNotEmpty property="COMPANY_ID">
+		  and a.COMPANY_ID = #COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_BEGIN_TIME">
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  </isNotEmpty>
+		 <isNotEmpty property="CREATE_END_TIME">
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  </isNotEmpty>
+		  ) a group by a.COMPANY_NAME
+		  ) a
+	</statement>
+	
+	<statement id="listSaleOrderAccountHistoryDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.*, NVL(b.ACCOUNT_STATUS, 0) AS ACCOUNT_STATUS FROM (
+			SELECT a.COMPANY as COMPANY_NAME, a.ID as COMPANY_ID, a.CREATE_TIME
+			FROM sd_user_company a ,
+			  sd_order_base b
+			WHERE b.company_id                 = a.id
+			AND a.IS_DEL = 0
+			AND b.create_company_id                   = #COMPANY_ID#
+			AND TO_CHAR(b.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+			<![CDATA[ AND TO_CHAR(b.CREATE_TIME, 'yyyy-mm-dd')   <= #CREATE_END_TIME# ]]>
+			and b.status != 6 and b.status != 7 and (b.sources = 0 or b.is_alone = 0)
+			group by a.COMPANY, a.id, a.CREATE_TIME
+		)a,
+		(SELECT a.COMPANY_ID,
+		      a.SITE_RELA_ID, 
+		      a.ACCOUNT_STATUS
+		    FROM SD_ORDER_ACCOUNT a
+		   WHERE a.START_DATE = #CREATE_BEGIN_TIME#
+			  AND a.END_DATE     = #CREATE_END_TIME#
+			  and a.ACCOUNT_TYPE = 1
+			  AND a.ACCOUNT_COMPANY_ID = #COMPANY_ID#
+		    )b
+		WHERE a.COMPANY_ID = b.COMPANY_ID(+)
+		ORDER BY a.CREATE_TIME DESC
+	</statement>
+	
+	<statement id="listAccountInfoDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.*
+		FROM
+		  (SELECT b.TITLE AS PRODUCE_NAME,
+		    (decode(b.type, 0, '其他', 1, '飞机', 2, '火车', 3, '动车', 4, '高铁', 5, '旅游车', 6, '轮船')) as p_type,
+		    z.USER_NAME,
+		    x.TEXT,
+		    e.COMPANY || ' ' ||x.TEXT as SHOW_GROUP,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    0 DAY_COUNT,
+		    d.company as sale_company,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+			TO_CHAR(e.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as BUY_CREATE_TIME,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.MOBILE BUY_PHONE,
+		    f.CHINA_NAME as BUY_CHINA_NAME,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			(a.MAN_COUNT + a.CHILD_COUNT) as PERSON_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    (a.INTER_AMOUNT + nvl(l.T_REFUND_AMOUNT, 0) - nvl(m.T_MARKETING_AMOUNT, 0)) AS ACTUAL_AMOUNT,
+		    a.SOURCES,
+		    a.IS_ALONE,
+			nvl(y.ATTR_URL, '无**无') as ATTR_URL,
+			(nvl(y.ATTR_URL, '无') ||'**' || b.END_CITY) as GROUP_END_CITY,
+			(nvl(y.ATTR_URL, '无') ||'**' || b.TITLE) as GROUP_PRODUCE_TITLE,
+			a.COMPANY_NAME,
+			b.END_CITY,
+			a.ACCOUNT_WAY,
+			(
+			    CASE
+			      WHEN a.PAY_TYPE = 0 and a.status = 5 
+			      THEN 0
+			      WHEN a.PLATFORM_PAY = 2 AND a.PAY_TYPE !=0 THEN 
+			        a.SALE_AMOUNT-a.INTER_AMOUNT-NVL(l.T_REFUND_AMOUNT, 0)
+			      ELSE
+			        -NVL(l.T_REFUND_AMOUNT, 0)
+			    end) AS ACTUAL_SALE_AMOUNT
+			    
+		  FROM SD_ORDER_BASE a,
+		    sd_pro_traffic b,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    sd_user f,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT  SUBSTR(a.DETAIL_NO, 0, 14) as DETAIL_NO, a.ATTR_URL ||'**' || c.COMPANY ||' '|| d.TEXT ||' '|| b.USER_NAME as ATTR_URL  FROM SD_ORDER_ACCOUNT_DETAIL a, sd_user b, sd_user_company c , sd_user_depart d where a.pay_user_id = b.id and b.company_id = c.id and b.depart_id = d.id(+) and a.COMPANY_ID = #COMPANY_ID# ) y,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		  WHERE 1                 = 1
+		  AND a.ACCOUNT_DETAIL_NO = y.DETAIL_NO(+)
+		  AND a.create_user_id    = z.id
+		  AND z.depart_id         = x.id(+)
+		  AND a.traffic_id        = b.id
+		  AND a.id                = c.funds_order_id(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.company_id        = d.id
+		  AND a.CREATE_COMPANY_ID = e.id
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+		  AND a.IS_DEL = 0
+		  <isNotEmpty property="payWho">
+			<isEqual property="payWho" compareValue="1">
+		  		and (a.account_way = 1 or a.account_way = 2)
+		  	</isEqual>
+		  	<isEqual property="payWho" compareValue="0">
+		  		and a.account_way = 3
+		  	</isEqual>
+		  </isNotEmpty>
+		  <isNotEmpty property="orderNo">
+		  	and a.NO = #orderNo#
+		  </isNotEmpty>
+		  <isNotEmpty property="ACCOUNT_DETAIL_NO">
+		  	and a.ACCOUNT_DETAIL_NO = #ACCOUNT_DETAIL_NO#
+		  </isNotEmpty>
+		  
+		  
+			<isNotEmpty property="ACCOUNT_STATUS">
+				<isEqual property="ACCOUNT_STATUS" compareValue="0">
+					and a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+					and a.status != 6 and a.status != 7
+				</isEqual>
+				<isEqual property="ACCOUNT_STATUS" compareValue="-1">
+					and a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+					and (a.status = 6 or a.status = 7) 
+				</isEqual>
+				<isEqual property="ACCOUNT_STATUS" compareValue="1">
+					and a.ACCOUNT_STATUS = 1
+				</isEqual>
+				<isEqual property="ACCOUNT_STATUS" compareValue="2">
+					and a.ACCOUNT_STATUS = 2
+				</isEqual>
+			</isNotEmpty>
+		  
+		  <isNotEmpty property="STATUS">
+		  	and a.STATUS IN ($STATUS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="NOTIDS">
+		  	and a.ID NOT IN ($NOTIDS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="COMPANY_ID">
+		  and a.COMPANY_ID = #COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_BEGIN_TIME">
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  </isNotEmpty>
+		 <isNotEmpty property="CREATE_END_TIME">
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  </isNotEmpty>
+		  UNION ALL
+		  
+		  SELECT b.TITLE AS PRODUCE_NAME,
+		    (decode(b.type, 1, '周边', 2, '国内', 3, '出境')) as p_type,
+		    z.USER_NAME,
+		    x.TEXT,
+		    e.COMPANY || ' ' ||x.TEXT as SHOW_GROUP,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    b.DAY_COUNT,
+		    d.COMPANY as SALE_COMPANY,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+		    TO_CHAR(e.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as BUY_CREATE_TIME,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.MOBILE BUY_PHONE,
+		    f.CHINA_NAME as BUY_CHINA_NAME,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			(a.MAN_COUNT + a.CHILD_COUNT) as PERSON_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    (a.INTER_AMOUNT + nvl(l.T_REFUND_AMOUNT, 0) - nvl(m.T_MARKETING_AMOUNT, 0)) AS ACTUAL_AMOUNT,
+		    a.SOURCES,
+		    a.IS_ALONE,
+			nvl(y.ATTR_URL, '无**无') ATTR_URL,
+			(nvl(y.ATTR_URL, '无') ||'**' || h4.CITY_NAME) as GROUP_END_CITY,
+			(nvl(y.ATTR_URL, '无') ||'**' || b.TITLE) as GROUP_PRODUCE_TITLE,
+			a.COMPANY_NAME,
+			h4.CITY_NAME as END_CITY,
+			a.ACCOUNT_WAY,
+			(
+			    CASE
+			      WHEN a.PAY_TYPE = 0 and a.status = 5 
+			      THEN 0
+			      WHEN a.PLATFORM_PAY = 2 AND a.PAY_TYPE !=0 THEN 
+			        a.SALE_AMOUNT-a.INTER_AMOUNT-NVL(l.T_REFUND_AMOUNT, 0)
+			      ELSE
+			        -NVL(l.T_REFUND_AMOUNT, 0)
+			    end) AS ACTUAL_SALE_AMOUNT
+		  FROM SD_ORDER_BASE a,
+		    sd_pro_route b,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    SD_ORDER_CONTRACT g,
+		    sd_user f,
+		    sd_pro_route_traffic h,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT  SUBSTR(a.DETAIL_NO, 0, 14) as DETAIL_NO, a.ATTR_URL ||'**' || c.COMPANY ||' '|| d.TEXT ||' '|| b.USER_NAME as ATTR_URL  FROM SD_ORDER_ACCOUNT_DETAIL a, sd_user b, sd_user_company c , sd_user_depart d where a.pay_user_id = b.id and b.company_id = c.id and b.depart_id = d.id(+) and a.COMPANY_ID = #COMPANY_ID# ) y,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT a.AMOUNT AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    ) m
+		    
+		    <isEmpty property="groupCity">
+		    ,(SELECT route_id,
+			    LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') CITY_NAME
+			  FROM
+			    (SELECT CITY_NAME,
+			      route_id,
+			      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			    FROM SD_PRO_ROUTE_CITY
+			    WHERE type = 2
+			    )
+			    START WITH RN     = 1
+			    CONNECT BY RN - 1 = PRIOR RN
+			  AND route_id        = PRIOR route_id
+			  GROUP BY route_id
+			  )h4
+			</isEmpty>
+			
+			<isNotEmpty property="groupCity">
+		    ,SD_PRO_ROUTE_CITY h4
+			</isNotEmpty>
+		  WHERE 1                 = 1
+		  AND a.ACCOUNT_DETAIL_NO = y.DETAIL_NO(+)
+		  AND a.create_user_id    = z.id
+		  AND z.depart_id         = x.id(+)
+		  AND a.PRODUCE_ID        = b.ID
+		  AND a.ID                = c.FUNDS_ORDER_ID(+)
+		  AND a.COMPANY_ID        = d.ID
+		  AND a.CREATE_COMPANY_ID = e.ID
+		  AND a.ID                = g.ORDER_ID(+)
+		  AND a.TRAFFIC_ID        = h.ID(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+		  and b.id 				  = h4.route_id
+		  AND a.IS_DEL = 0
+		  <isNotEmpty property="payWho">
+			<isEqual property="payWho" compareValue="1">
+		  		and (a.account_way = 1 or a.account_way = 2)
+		  	</isEqual>
+		  	<isEqual property="payWho" compareValue="0">
+		  		and a.account_way = 3
+		  	</isEqual>
+		  </isNotEmpty>
+		  <isNotEmpty property="orderNo">
+		  	and a.NO like '%$orderNo$%'
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="ACCOUNT_DETAIL_NO">
+		  	and a.ACCOUNT_DETAIL_NO = #ACCOUNT_DETAIL_NO#
+		  </isNotEmpty>
+		  
+		  
+		  <isNotEmpty property="ACCOUNT_STATUS">
+			<isEqual property="ACCOUNT_STATUS" compareValue="0">
+				and a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+				and a.status != 6 and a.status != 7
+			</isEqual>
+			<isEqual property="ACCOUNT_STATUS" compareValue="-1">
+				and a.ACCOUNT_STATUS != 1 and a.ACCOUNT_STATUS != 2
+				and (a.status = 6 or a.status = 7) 
+			</isEqual>
+			<isEqual property="ACCOUNT_STATUS" compareValue="1">
+				and a.ACCOUNT_STATUS = 1
+			</isEqual>
+			<isEqual property="ACCOUNT_STATUS" compareValue="2">
+				and a.ACCOUNT_STATUS = 2
+			</isEqual>
+		</isNotEmpty>
+		  
+		  
+		  
+		  <isNotEmpty property="STATUS">
+		  	and a.STATUS IN ($STATUS$)
+		  </isNotEmpty>
+		  <isNotEmpty property="NOTIDS">
+		  	and a.ID NOT IN ($NOTIDS$)
+		  </isNotEmpty>
+	      <isNotEmpty property="COMPANY_ID">
+		  and a.COMPANY_ID = #COMPANY_ID#
+		  </isNotEmpty>
+		  <isNotEmpty property="CREATE_BEGIN_TIME">
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  </isNotEmpty>
+		 <isNotEmpty property="CREATE_END_TIME">
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  </isNotEmpty>
+		  
+		  ) a
+		ORDER BY a.BUY_CREATE_TIME, a.BUY_COMPANY, a.text,
+		  a.produce_type,
+		  a.CREATE_TIME DESC
+	</statement>
+	
+	
+	<statement id="listAloneOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.*, (a.MAN_COUNT+a.CHILD_COUNT) as PERSON_COUNT
+		FROM
+		  (SELECT b.TITLE AS PRODUCE_NAME,
+		   (decode(b.type, 0, '其他', 1, '飞机', 2, '火车', 3, '动车', 4, '高铁', 5, '旅游车', 6, '轮船')) as p_type,
+		  	b.TYPE,
+		    z.USER_NAME,
+		    x.TEXT,
+		    0 day_count,
+    		d.company as sale_company,
+		    e.COMPANY || ' ' ||x.TEXT as SHOW_GROUP,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+			TO_CHAR(e.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as BUY_CREATE_TIME,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.china_name as BUY_CHINA_NAME,
+		    f.MOBILE BUY_PHONE,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    (a.INTER_AMOUNT - nvl(m.T_MARKETING_AMOUNT, 0)) AS ACTUAL_AMOUNT,
+		    a.SOURCES,
+		    a.IS_ALONE,
+		    nvl(y.ATTR_URL, '无**无')||'**'||nvl(a.company_pay_no, '无') as ATTR_URL,
+			a.COMPANY_NAME,
+			y.ALONE_STATUS,
+			a.COMPANY_PAY_NO
+		  FROM SD_ORDER_BASE a,
+		    sd_pro_traffic b,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    sd_user f,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT t.ID, t.PAY_STAUTS as ALONE_STATUS, t.ATTR_URL ||'**' || t2.COMPANY ||' '|| t3.TEXT ||' '|| t1.USER_NAME as ATTR_URL  FROM sd_company_pay t, sd_user t1, sd_user_company t2 , sd_user_depart t3 where t.user_id = t1.id and t.company_id = t2.id and t.depart_id = t3.id(+)) y,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT sum(a.AMOUNT) AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    group by a.order_id 
+		    ) m
+		  WHERE 1                 = 1
+		  AND a.create_user_id    = z.id
+		  AND z.depart_id         = x.id(+)
+		  AND a.traffic_id        = b.id
+		  AND a.id                = c.funds_order_id(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.company_id        = d.id
+		  AND a.CREATE_COMPANY_ID = e.id
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+		  
+		  and a.COMPANY_PAY_ID = y.ID(+)
+		  
+		  AND a.STATUS in (2,5)
+		  AND a.IS_DEL = 0
+		  
+		  and a.PAY_TYPE != 0 and a.PLATFORM_PAY = 1
+		  
+		  <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="calc_role">
+		  	<isEqual property="calc_role" compareValue="manager">
+				and ((a.account_way = 2 or a.account_way = 1) and (a.SOURCES = 0 or a.SOURCES = 1))
+			</isEqual>
+			<isEqual property="calc_role" compareValue="parent">
+				and (DECODE(e.PID, '-1', e.ID, e.PID) = #COMPANY_ID#)
+			</isEqual>
+			<isEqual property="calc_role" compareValue="indie">
+				and e.id = #COMPANY_ID#
+			</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PARENT_COMPANY_ID">
+			and (DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_COMPANY_ID#)
+		</isNotEmpty>
+		
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="COMPANY_PAY_STATUS">
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+				AND a.COMPANY_PAY_ID IS NULL
+			</isEqual>
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+				AND a.COMPANY_PAY_ID IS NOT NULL
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_PAY_NO">
+			AND a.company_pay_no like '%$COMPANY_PAY_NO$%'
+		</isNotEmpty>
+		  
+		  UNION ALL
+		  
+		  SELECT b.TITLE AS PRODUCE_NAME,
+		    (decode(b.type, 1, '周边', 2, '国内', 3, '出境')) as p_type,
+		    b.TYPE,
+		    z.USER_NAME,
+		    x.TEXT,
+		    b.day_count,
+    		d.company as sale_company,
+		    e.COMPANY || ' ' ||x.TEXT as SHOW_GROUP,
+		    a.PRODUCE_TYPE,
+		    b.id PRODUCE_ID,
+		    a.NO,
+		    a.ACCOUNT_DETAIL_NO,
+		    a.ID,
+		    a.STATUS,
+		    a.ACCOUNT_STATUS,
+		    e.COMPANY BUY_COMPANY,
+		    TO_CHAR(e.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as BUY_CREATE_TIME,
+		    f.USER_NAME BUY_USER_NAME,
+		    f.china_name as buy_china_name,
+		    f.MOBILE BUY_PHONE,
+		    a.PAY_TYPE,
+		    a.SALE_AMOUNT,
+		    a.INTER_AMOUNT,
+		    a.SITE_RELA_ID,
+		    a.START_DATE,
+		    a.MAN_COUNT,
+			a.CHILD_COUNT,
+			a.MUSTER_TIME,
+			a.MUSTER_PLACE,
+			a.VISITOR_CONCAT,
+			a.VISITOR_MOBILE,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+		    TO_CHAR(c.PAY_TIME, 'yyyy-mm-dd HH24:mi:ss') as PAY_TIME,
+		    TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd HH24:mi:ss')  as CREATE_TIME,
+		    -(NVL(l.T_REFUND_AMOUNT, 0))                                           AS REFUND_AMOUNT,
+		    NVL(m.T_MARKETING_AMOUNT, 0)                                        AS MARKETING_AMOUNT,
+		    (a.INTER_AMOUNT - nvl(m.T_MARKETING_AMOUNT, 0)) AS ACTUAL_AMOUNT,
+		    a.SOURCES,
+		    a.IS_ALONE,
+		    nvl(y.ATTR_URL, '无**无')||'**'||nvl(a.company_pay_no, '无') as ATTR_URL,
+			a.COMPANY_NAME,
+			y.ALONE_STATUS,
+			a.COMPANY_PAY_NO
+		  FROM SD_ORDER_BASE a,
+		    sd_pro_route b,
+		    (SELECT a.order_id funds_order_id,
+		      MAX(a.create_time) pay_time
+		    FROM sd_order_funds a
+		    WHERE a.type = 2
+		    GROUP BY a.order_id
+		    ) c,
+		    sd_user_company d,
+		    sd_user_company e,
+		    SD_ORDER_CONTRACT g,
+		    sd_user f,
+		    sd_pro_route_traffic h,
+		    sd_user_depart x,
+		    sd_user z,
+		    (SELECT t.ID, t.PAY_STAUTS as ALONE_STATUS, t.ATTR_URL ||'**' || t2.COMPANY ||' '|| t3.TEXT ||' '|| t1.USER_NAME as ATTR_URL  FROM sd_company_pay t, sd_user t1, sd_user_company t2 , sd_user_depart t3 where t.user_id = t1.id and t.company_id = t2.id and t.depart_id = t3.id(+)) y,
+		    (SELECT SUM(a.AMOUNT) AS T_REFUND_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 6
+		    GROUP BY order_id
+		    ) l,
+		    (SELECT sum(a.AMOUNT) AS T_MARKETING_AMOUNT,
+		      a.ORDER_ID
+		    FROM SD_ORDER_FUNDS a
+		    WHERE a.TYPE = 7
+		    group by a.order_id 
+		    ) m
+		  WHERE 1                 = 1
+		  AND a.create_user_id    = z.id
+		  AND z.depart_id         = x.id(+)
+		  AND a.PRODUCE_ID        = b.ID
+		  AND a.ID                = c.FUNDS_ORDER_ID(+)
+		  AND a.COMPANY_ID        = d.ID
+		  AND a.CREATE_COMPANY_ID = e.ID
+		  AND a.ID                = g.ORDER_ID(+)
+		  AND a.TRAFFIC_ID        = h.ID(+)
+		  AND a.CREATE_USER_ID    = f.ID
+		  AND a.ID                = l.ORDER_ID(+)
+		  AND a.ID                = m.ORDER_ID(+)
+
+		  and a.COMPANY_PAY_ID = y.ID(+)
+
+		  AND a.STATUS in (2,5)
+		  AND a.IS_DEL = 0
+		  
+		  and a.PAY_TYPE != 0 and a.PLATFORM_PAY = 1
+		  
+		  <isNotEmpty property="SITE_RELA_IDS">
+		  	and a.SITE_RELA_ID in ($SITE_RELA_IDS$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="calc_role">
+		  	<isEqual property="calc_role" compareValue="manager">
+				and ((a.account_way = 2 or a.account_way = 1) and (a.SOURCES = 0 or a.SOURCES = 1))
+			</isEqual>
+			<isEqual property="calc_role" compareValue="parent">
+				and (DECODE(e.PID, '-1', e.ID, e.PID) = #COMPANY_ID#)
+			</isEqual>
+			<isEqual property="calc_role" compareValue="indie">
+				and e.id = #COMPANY_ID#
+			</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PARENT_COMPANY_ID">
+			and (DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_COMPANY_ID#)
+		</isNotEmpty>
+		  
+		  AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  <![CDATA[ AND to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		  
+		  <isNotEmpty property="COMPANY_PAY_STATUS">
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+				AND a.COMPANY_PAY_ID IS NULL
+			</isEqual>
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+				AND a.COMPANY_PAY_ID IS NOT NULL
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_PAY_NO">
+			AND a.company_pay_no like '%$COMPANY_PAY_NO$%'
+		</isNotEmpty>
+		  ) a
+		ORDER BY a.BUY_CREATE_TIME, a.BUY_COMPANY, a.text,
+		  a.produce_type,
+		  a.CREATE_TIME DESC
+		 
+	</statement>
+	
+	
+	<statement id="countParentUnaccountCompanyDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) as cnt from (
+			select COMPANY, ID from (
+				SELECT decode(a.pid, '-1', a.COMPANY, b.COMPANY) COMPANY, decode(a.pid, '-1', a.ID, b.ID) ID
+				FROM
+				  (SELECT e.id,
+				    e.COMPANY,
+				    e.PID
+				  FROM SD_ORDER_BASE a,
+				    sd_user_company e
+				  WHERE 1                 = 1
+				  AND a.CREATE_COMPANY_ID = e.id
+				  
+				  and a.PAY_TYPE != 0 AND a.IS_DEL = 0 and a.PLATFORM_PAY = 1
+				  
+				  <isNotEmpty property="SITE_RELA_ID">
+				  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+				  </isNotEmpty>
+				  
+				  <isNotEmpty property="query">
+					AND ( e.COMPANY like '%$query$%')
+				  </isNotEmpty>
+				  
+				  <isNotEmpty property="calc_role">
+					<isEqual property="calc_role" compareValue="manager">
+						and ((a.account_way = 2 or a.account_way = 1) and (a.SOURCES = 0 or a.SOURCES = 1))
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="parent">
+						and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="indie">
+						and e.ID = #CREATE_COMPANY_ID# 
+					</isEqual>
+				  </isNotEmpty>
+		
+				  AND a.STATUS in (2,5)
+				  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+				  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+		
+				  <isNotEmpty property="COMPANY_PAY_STATUS">
+				  	<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+						AND a.COMPANY_PAY_ID IS NULL
+					</isEqual>
+					<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+						AND a.COMPANY_PAY_ID IS NOT NULL
+					</isEqual>
+				  </isNotEmpty>
+				 
+				  union all
+				  
+				  SELECT  d.ID,d.COMPANY, d.PID
+					FROM SD_USER_ACCOUNT_DETAIL a,
+					  SD_USER_ACOUNT b,
+					  SD_USER c,
+					  SD_USER_COMPANY d
+					WHERE a.ACCOUNT_ID = b.id
+					AND a.USER_ID = c.ID
+					AND c.COMPANY_ID = d.ID(+)
+			 		AND a.TYPE           = 1
+			 		AND (a.account_way = 1 or a.account_way = 2)
+					AND to_char(a.OPET_TIME, 'yyyy-mm-dd')  >= #CREATE_BEGIN_TIME#
+					<![CDATA[ and to_char(a.OPET_TIME, 'yyyy-mm-dd')  <= #CREATE_END_TIME# ]]>
+					<isNotEmpty property="SITE_RELA_ID">
+					  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+					</isNotEmpty>
+					<isNotEmpty property="query">
+					AND (d.COMPANY like '%$query$%')
+				  </isNotEmpty>
+					  
+					<isNotEmpty property="calc_role">
+					<isEqual property="calc_role" compareValue="manager">
+						
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="parent">
+						and DECODE(d.PID, '-1', d.ID, d.PID) = #PARENT_CREATE_COMPANY_ID#
+					</isEqual>
+					 
+					<isEqual property="calc_role" compareValue="indie">
+						and d.ID = #CREATE_COMPANY_ID# 
+					</isEqual>
+				  </isNotEmpty>
+					<isNotEmpty property="COMPANY_PAY_STATUS">
+						<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+							AND a.COMPANY_PAY_ID IS NULL
+						</isEqual>
+						<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+							AND a.COMPANY_PAY_ID IS NOT NULL
+						</isEqual>
+					</isNotEmpty>
+				) a, SD_USER_COMPANY b
+				where a.PID = b.ID(+)
+			) a
+			GROUP BY a.COMPANY, a.ID
+		) a
+	</statement>
+	
+	<statement id="listParentUnaccountCompanyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select COMPANY, ID from (
+			SELECT decode(a.pid, '-1', a.COMPANY, b.COMPANY) COMPANY, decode(a.pid, '-1', a.ID, b.ID) ID
+			FROM
+			  (SELECT e.id,
+			    e.COMPANY,
+			    e.PID
+			  FROM SD_ORDER_BASE a,
+			    sd_user_company e
+			  WHERE 1                 = 1
+			  AND a.CREATE_COMPANY_ID = e.id
+			  
+			  and a.PAY_TYPE != 0 AND a.IS_DEL = 0 and a.PLATFORM_PAY = 1
+			  
+			  <isNotEmpty property="SITE_RELA_ID">
+			  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="query">
+				AND ( e.COMPANY like '%$query$%')
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="calc_role">
+				<isEqual property="calc_role" compareValue="manager">
+					and ((a.account_way = 2 or a.account_way = 1) and (a.SOURCES = 0 or a.SOURCES = 1))
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="parent">
+					and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="indie">
+					and e.ID = #CREATE_COMPANY_ID# 
+				</isEqual>
+			  </isNotEmpty>
+	
+			  AND a.STATUS in (2,5)
+			  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+			  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+	
+			  <isNotEmpty property="COMPANY_PAY_STATUS">
+			  	<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+					AND a.COMPANY_PAY_ID IS NULL
+				</isEqual>
+				<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+					AND a.COMPANY_PAY_ID IS NOT NULL
+				</isEqual>
+			  </isNotEmpty>
+			 
+			  union all
+			  
+			  SELECT  d.ID,d.COMPANY, d.PID
+				FROM SD_USER_ACCOUNT_DETAIL a,
+				  SD_USER_ACOUNT b,
+				  SD_USER c,
+				  SD_USER_COMPANY d
+				WHERE a.ACCOUNT_ID = b.id
+				AND a.USER_ID = c.ID
+				AND c.COMPANY_ID = d.ID(+)
+		 		AND a.TYPE           = 1
+		 		AND (a.account_way = 1 or a.account_way = 2)
+				AND to_char(a.OPET_TIME, 'yyyy-mm-dd')  >= #CREATE_BEGIN_TIME#
+				<![CDATA[ and to_char(a.OPET_TIME, 'yyyy-mm-dd')  <= #CREATE_END_TIME# ]]>
+				<isNotEmpty property="SITE_RELA_ID">
+				  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+				</isNotEmpty>
+				<isNotEmpty property="query">
+				AND (d.COMPANY like '%$query$%')
+			  </isNotEmpty>
+				  
+				<isNotEmpty property="calc_role">
+				<isEqual property="calc_role" compareValue="manager">
+					
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="parent">
+					and DECODE(d.PID, '-1', d.ID, d.PID) = #PARENT_CREATE_COMPANY_ID#
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="indie">
+					and d.ID = #CREATE_COMPANY_ID# 
+				</isEqual>
+			  </isNotEmpty>
+				<isNotEmpty property="COMPANY_PAY_STATUS">
+					<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+						AND a.COMPANY_PAY_ID IS NULL
+					</isEqual>
+					<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+						AND a.COMPANY_PAY_ID IS NOT NULL
+					</isEqual>
+				</isNotEmpty>
+			) a, SD_USER_COMPANY b
+			where a.PID = b.ID(+)
+		) a
+		GROUP BY a.COMPANY, a.ID
+	</statement>
+	
+	<statement id="listUnaccountCompanyDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.COMPANY, a.ID
+		FROM
+		  (SELECT e.id,
+		    e.COMPANY
+		  FROM SD_ORDER_BASE a,
+		    sd_user_company e
+		  WHERE 1                 = 1
+		  AND a.CREATE_COMPANY_ID = e.id
+		  
+		  and a.PAY_TYPE != 0 AND a.IS_DEL = 0 and a.PLATFORM_PAY = 1
+		  
+		  <isNotEmpty property="SITE_RELA_ID">
+		  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="query">
+			AND ( e.COMPANY like '%$query$%')
+		  </isNotEmpty>
+		  
+		  <isNotEmpty property="calc_role">
+			<isEqual property="calc_role" compareValue="manager">
+				and ((a.account_way = 2 or a.account_way = 1) and (a.SOURCES = 0 or a.SOURCES = 1))
+			</isEqual>
+			 
+			<isEqual property="calc_role" compareValue="parent">
+				and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+			</isEqual>
+			 
+			<isEqual property="calc_role" compareValue="indie">
+				and e.ID = #CREATE_COMPANY_ID# 
+			</isEqual>
+		  </isNotEmpty>
+
+		  AND a.STATUS in (2,5)
+		  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+		  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+
+		  <isNotEmpty property="COMPANY_PAY_STATUS">
+		  	<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+				AND a.COMPANY_PAY_ID IS NULL
+			</isEqual>
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+				AND a.COMPANY_PAY_ID IS NOT NULL
+			</isEqual>
+		  </isNotEmpty>
+		 
+		  union all
+		  
+		  SELECT  d.ID,d.COMPANY
+			FROM SD_USER_ACCOUNT_DETAIL a,
+			  SD_USER_ACOUNT b,
+			  SD_USER c,
+			  SD_USER_COMPANY d
+			WHERE a.ACCOUNT_ID = b.id
+			AND a.USER_ID = c.ID
+			AND c.COMPANY_ID = d.ID(+)
+	 		AND a.TYPE           = 1
+	 		AND (a.account_way = 1 or a.account_way = 2)
+			AND to_char(a.OPET_TIME, 'yyyy-mm-dd')  >= #CREATE_BEGIN_TIME#
+			<![CDATA[ and to_char(a.OPET_TIME, 'yyyy-mm-dd')  <= #CREATE_END_TIME# ]]>
+			<isNotEmpty property="SITE_RELA_ID">
+			  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+			</isNotEmpty>
+			<isNotEmpty property="query">
+			AND (d.COMPANY like '%$query$%')
+		  </isNotEmpty>
+			  
+			<isNotEmpty property="calc_role">
+			<isEqual property="calc_role" compareValue="manager">
+				
+			</isEqual>
+			 
+			<isEqual property="calc_role" compareValue="parent">
+				and DECODE(d.PID, '-1', d.ID, d.PID) = #PARENT_CREATE_COMPANY_ID#
+			</isEqual>
+			 
+			<isEqual property="calc_role" compareValue="indie">
+				and d.ID = #CREATE_COMPANY_ID# 
+			</isEqual>
+		  </isNotEmpty>
+			<isNotEmpty property="COMPANY_PAY_STATUS">
+				<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+					AND a.COMPANY_PAY_ID IS NULL
+				</isEqual>
+				<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+					AND a.COMPANY_PAY_ID IS NOT NULL
+				</isEqual>
+			</isNotEmpty>
+			
+		) a
+		GROUP BY a.COMPANY, a.ID
+	</statement>
+	
+	<statement id="countUnaccountCompanyDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) as cnt from (
+			SELECT a.COMPANY, a.ID
+			FROM
+			  (SELECT e.id,
+			    e.COMPANY
+			  FROM SD_ORDER_BASE a,
+			    sd_user_company e
+			  WHERE 1                 = 1
+			  AND a.CREATE_COMPANY_ID = e.id
+			  
+			  and a.PAY_TYPE != 0 and a.PLATFORM_PAY = 1
+			  AND a.IS_DEL = 0 
+			  
+			  <isNotEmpty property="SITE_RELA_ID">
+			  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="query">
+				AND ( e.COMPANY like '%$query$%')
+			  </isNotEmpty>
+			  
+			  <isNotEmpty property="calc_role">
+				<isEqual property="calc_role" compareValue="manager">
+					and ((a.account_way = 2 or a.account_way = 1) and (a.SOURCES = 0 or a.SOURCES = 1))
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="parent">
+					and DECODE(e.PID, '-1', e.ID, e.PID) = #PARENT_CREATE_COMPANY_ID#
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="indie">
+					and e.ID = #CREATE_COMPANY_ID# 
+				</isEqual>
+			  </isNotEmpty>
+	
+			  AND a.STATUS in (2,5)
+			  and to_char(a.CREATE_TIME, 'yyyy-mm-dd') >= #CREATE_BEGIN_TIME#
+			  <![CDATA[ and to_char(a.CREATE_TIME, 'yyyy-mm-dd') <= #CREATE_END_TIME# ]]>
+	
+			  <isNotEmpty property="COMPANY_PAY_STATUS">
+			  	<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+					AND a.COMPANY_PAY_ID IS NULL
+				</isEqual>
+				<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+					AND a.COMPANY_PAY_ID IS NOT NULL
+				</isEqual>
+			  </isNotEmpty>
+			 
+			  union all
+			  
+			  SELECT  d.ID,d.COMPANY
+				FROM SD_USER_ACCOUNT_DETAIL a,
+				  SD_USER_ACOUNT b,
+				  SD_USER c,
+				  SD_USER_COMPANY d
+				WHERE a.ACCOUNT_ID = b.id
+				AND a.USER_ID = c.ID
+				AND c.COMPANY_ID = d.ID(+)
+		 		AND a.TYPE           = 1
+		 		AND (a.account_way = 1 or a.account_way = 2)
+				AND to_char(a.OPET_TIME, 'yyyy-mm-dd')  >= #CREATE_BEGIN_TIME#
+				<![CDATA[ and to_char(a.OPET_TIME, 'yyyy-mm-dd')  <= #CREATE_END_TIME# ]]>
+				<isNotEmpty property="SITE_RELA_ID">
+				  and a.SITE_RELA_ID in ($SITE_RELA_ID$)
+				</isNotEmpty>
+				<isNotEmpty property="query">
+				AND (d.COMPANY like '%$query$%')
+			  </isNotEmpty>
+				  
+				<isNotEmpty property="calc_role">
+				<isEqual property="calc_role" compareValue="manager">
+					
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="parent">
+					and DECODE(d.PID, '-1', d.ID, d.PID) = #PARENT_CREATE_COMPANY_ID#
+				</isEqual>
+				 
+				<isEqual property="calc_role" compareValue="indie">
+					and d.ID = #CREATE_COMPANY_ID# 
+				</isEqual>
+			  </isNotEmpty>
+				<isNotEmpty property="COMPANY_PAY_STATUS">
+					<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+						AND a.COMPANY_PAY_ID IS NULL
+					</isEqual>
+					<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+						AND a.COMPANY_PAY_ID IS NOT NULL
+					</isEqual>
+				</isNotEmpty>
+				
+			) a
+			GROUP BY a.COMPANY, a.ID
+		) a
+	</statement>
+	
+	<statement id="listRechargeDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.MONEY ,
+		  nvl(y.ATTR_URL, '无**无')||'**'||nvl(a.company_pay_no, '无') ALONE_ATTR,
+		  y.ALONE_STATUS,
+		  c.USER_NAME,
+		  d.COMPANY,
+		  e.TEXT,
+		  to_char(a.OPET_TIME, 'yyyy-mm-yy HH24:mi:ss') as OPET_TIME,
+		  a.COMPANY_PAY_NO
+		FROM SD_USER_ACCOUNT_DETAIL a,
+		  SD_USER_ACOUNT b,
+		  SD_USER c,
+		  SD_USER_COMPANY d,
+		  SD_USER_DEPART e,
+		  (SELECT t.ID, t.PAY_STAUTS as ALONE_STATUS, t.ATTR_URL ||'**' || t2.COMPANY ||' '|| t3.TEXT ||' '|| t1.USER_NAME as ATTR_URL  FROM sd_company_pay t, sd_user t1, sd_user_company t2 , sd_user_depart t3 where t.user_id = t1.id and t.company_id = t2.id and t.depart_id = t3.id(+)) y
+		WHERE a.ACCOUNT_ID = b.id
+		AND A.COMPANY_PAY_ID = y.ID(+)
+		AND a.USER_ID = c.ID
+		AND B.COMPANY_ID = d.ID(+)
+		AND B.DEPART_ID = e.ID(+)
+ 		AND a.TYPE           = 1
+		AND to_char(a.OPET_TIME, 'yyyy-mm-dd')  >= #CREATE_BEGIN_TIME#
+		AND (a.account_way = 1 or a.account_way = 2)
+		<![CDATA[ and to_char(a.OPET_TIME, 'yyyy-mm-dd')  <= #CREATE_END_TIME# ]]>
+		
+		<isNotEmpty property="calc_role">
+			<isEqual property="calc_role" compareValue="parent">
+				and (DECODE(d.PID, '-1', d.ID, d.PID) = #COMPANY_ID#)
+			</isEqual>
+			<isEqual property="calc_role" compareValue="indie">
+				and d.id = #COMPANY_ID#
+			</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PARENT_COMPANY_ID">
+			and (DECODE(d.PID, '-1', d.ID, d.PID) = #PARENT_COMPANY_ID#)
+		</isNotEmpty>
+		
+		<isNotEmpty property="COMPANY_PAY_STATUS">
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="0">
+				AND a.COMPANY_PAY_ID IS NULL
+			</isEqual>
+			<isEqual property="COMPANY_PAY_STATUS" compareValue="1">
+				AND a.COMPANY_PAY_ID IS NOT NULL
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_PAY_NO">
+			AND a.company_pay_no like '%$COMPANY_PAY_NO$%'
+		</isNotEmpty>
+		ORDER BY a.OPET_TIME DESC
+	</statement>
+	
+	<insert id="saveCompanyPayDao" parameterClass="java.util.Map">
+		INSERT INTO SD_COMPANY_PAY (
+			ID,
+			USER_ID,
+			USER_NAME,
+			ATTR_URL,
+			COMPANY_ID,
+			PAY_STAUTS,
+			DEPART_ID,
+			CARETE_TIME)
+		VALUES (
+			#ID#,
+			#USER_ID#,
+			#USER_NAME#,
+			#ATTR_URL#,
+			#CREATE_COMPANY_ID#,
+			1,
+			#DEPART_ID#,
+			sysdate
+		)
+	</insert>
+	
+	<update id="updateOrderCompanyPayStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_ORDER_BASE SET COMPANY_PAY_ID = #COMPANY_PAY_ID#, ACCOUNT_STATUS = 2, COMPANY_PAY_NO = to_char(sysdate, 'yyyymmyyHH24miss') WHERE ID in ($IDS$) 
+	</update>
+	
+	<update id="updateRechargeCompanyPayStatusDao" parameterClass="java.util.Map">
+		UPDATE SD_USER_ACCOUNT_DETAIL SET COMPANY_PAY_ID = #COMPANY_PAY_ID#, COMPANY_PAY_NO = to_char(sysdate, 'yyyymmyyHH24miss') WHERE ID in ($IDS$) 
+	</update>
+</sqlMap>

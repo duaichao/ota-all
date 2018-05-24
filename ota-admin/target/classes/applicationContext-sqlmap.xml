@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD Sql Map Config 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+    <settings cacheModelsEnabled="true" enhancementEnabled="true"
+              lazyLoadingEnabled="true" maxRequests="32" maxSessions="10"
+              maxTransactions="5" useStatementNamespaces="true" />
+
+    <sqlMap resource="sqlmap/demo_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/user_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/module_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/power_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/role_sqlmap.xml" />
+    <sqlMap resource="sqlmap/site/area_sqlmap.xml" />
+    <sqlMap resource="sqlmap/site/company_sqlmap.xml" />
+    <sqlMap resource="sqlmap/site/setting_sqlmap.xml" />
+    <sqlMap resource="sqlmap/site/depart_sqlmap.xml" />
+    <sqlMap resource="sqlmap/account/account_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/ad_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/sms_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/news_notice_sqlmap.xml" />
+    <sqlMap resource="sqlmap/resource/traffic_sqlmap.xml" />
+    <sqlMap resource="sqlmap/produce/traffic_sqlmap.xml" />
+    <sqlMap resource="sqlmap/order/order_sqlmap.xml" />
+    <sqlMap resource="sqlmap/order/visitor_sqlmap.xml" />
+    <sqlMap resource="sqlmap/produce/route_sqlmap.xml" />
+    <sqlMap resource="sqlmap/resource/route_sqlmap.xml" />
+    <sqlMap resource="sqlmap/finance/finance_sqlmap.xml" />
+    <sqlMap resource="sqlmap/statistics/latest_statistics_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2b/discount_sqlmap.xml" />
+    <sqlMap resource="sqlmap/b2c/member_sqlmap.xml" />
+
+</sqlMapConfig>

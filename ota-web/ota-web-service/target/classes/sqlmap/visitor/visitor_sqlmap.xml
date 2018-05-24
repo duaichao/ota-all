@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="visitor">
+	
+	<insert id="saveVisitor" parameterClass="java.util.HashMap">
+		insert into SD_VISITOR(
+			ID,
+			NAME, 
+			MOBILE, 
+			SEX, 
+			CARD_TYPE, 
+			CARD_NO, 
+			CREATE_TIME,
+			EMAIL,
+			NATION,
+			ATTR_ID,
+			ATTR_NAME)
+		values(
+			#ID#,
+			#NAME#, 
+			#MOBILE#, 
+			#SEX#, 
+			#CARD_TYPE#, 
+			#CARD_NO#, 
+			sysdate,
+			#EMAIL#,
+			#NATION#,
+			#ATTR_ID#,
+			#ATTR_NAME#
+		)
+	</insert>
+	
+	<insert id="saveOrderVisitor" parameterClass="java.util.HashMap">
+		insert into sd_order_visitor(
+			ID,
+			ORDER_ID, 
+			VISITOR_ID)
+		values(
+			#ID#,
+			#ORDER_ID#, 
+			#VISITOR_ID#
+		)
+	</insert>
+	
+	<statement id="searchVisitorGroupByType" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT count(b.id) as num,
+	  b.ATTR_ID,
+	  b.ATTR_name
+	FROM sd_order_visitor a,
+	  sd_visitor b
+	WHERE a.visitor_id = b.id
+	and a.order_id = #ORDER_ID#
+	group by b.ATTR_ID, b.attr_name
+	</statement>
+	
+	<statement id="searchVisitor" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT b.ID,
+			b.NAME,
+			b.MOBILE,
+			b.SEX,
+			b.CARD_TYPE,
+			b.CARD_NO,
+			b.NATION,
+			b.ATTR_ID,
+			b.ATTR_NAME
+	FROM sd_order_visitor a,
+	  sd_visitor b
+	WHERE a.visitor_id = b.id
+	and a.order_id = #ORDER_ID#
+	</statement>
+	
+	<statement id="searchWebUserVisitor" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from ( 
+			SELECT t1.NAME,
+			  t1.MOBILE,
+			  t1.CARD_TYPE,
+			  t1.CARD_NO,
+			  t1.ATTR_ID,
+			  t1.ATTR_NAME
+			FROM SD_ORDER_VISITOR t,
+			  SD_VISITOR t1,
+			  SD_ORDER_BASE t2
+			WHERE t.VISITOR_ID = t1.ID
+			AND t.ORDER_ID     = t2.ID
+			<isNotEmpty property="WAP_USER_ID">
+				AND t2.WAP_USER_ID = #WAP_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				AND (t1.NAME like '%$query$%' or t1.MOBILE like '%$query$%' or t1.CARD_NO like '%$query$%')
+			</isNotEmpty>
+			GROUP BY t1.NAME,
+			  t1.MOBILE,
+			  t1.CARD_TYPE,
+			  t1.CARD_NO,
+			  t1.ATTR_ID,
+			  t1.ATTR_NAME 
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+
+
+	<statement id="countWebUserVisitor" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt from(
+			SELECT t1.NAME,
+			  t1.MOBILE,
+			  t1.CARD_TYPE,
+			  t1.CARD_NO,
+			  t1.ATTR_ID,
+			  t1.ATTR_NAME 
+			FROM SD_ORDER_VISITOR t,
+			  SD_VISITOR t1,
+			  SD_ORDER_BASE t2
+			WHERE t.VISITOR_ID = t1.ID
+			AND t.ORDER_ID     = t2.ID
+			<isNotEmpty property="WAP_USER_ID">
+				AND t2.WAP_USER_ID = #WAP_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				AND (t1.NAME like '%$query$%' or t1.MOBILE like '%$query$%' or t1.CARD_NO like '%$query$%')
+			</isNotEmpty>
+			GROUP BY t1.NAME,
+			  t1.MOBILE,
+			  t1.CARD_TYPE,
+			  t1.CARD_NO,
+			  t1.ATTR_ID,
+			  t1.ATTR_NAME 
+		) a
+	</statement>
+	
+	<insert id="saveWebVisitor" parameterClass="java.util.HashMap">
+		insert into SD_WEB_VISITOR(
+			ID,
+			NAME, 
+			MOBILE, 
+			SEX, 
+			CARD_TYPE, 
+			CARD_NO, 
+			CREATE_TIME,
+			EMAIL,
+			NATION,
+			ATTR_ID,
+			ATTR_NAME,
+			CREATE_USER_ID)
+		values(
+			#ID#,
+			#NAME#, 
+			#MOBILE#, 
+			#SEX#, 
+			#CARD_TYPE#, 
+			#CARD_NO#, 
+			sysdate,
+			#EMAIL#,
+			#NATION#,
+			#ATTR_ID#,
+			#ATTR_NAME#,
+			#CREATE_USER_ID#
+		)
+	</insert>
+	
+	<delete id="delWebVisitor" parameterClass="java.util.HashMap">
+		DELETE FROM SD_WEB_VISITOR WHERE ID = #ID#
+	</delete>
+	
+	<update id="updateWebVisitor" parameterClass="java.util.HashMap">
+		UPDATE SD_WEB_VISITOR
+		SET NAME    = #NAME#,
+		  MOBILE    = #MOBILE#,
+		  SEX       = #SEX#,
+		  CARD_TYPE = #CARD_TYPE#,
+		  CARD_NO   = #CARD_NO#,
+		  EMAIL     = #EMAIL#,
+		  NATION    = #NATION#,
+		  ATTR_ID   = #ATTR_ID#,
+		  ATTR_NAME = #ATTR_NAME#
+		WHERE ID    = #ID#
+	</update>
+	
+	<statement id="searchWebVisitor" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from ( 
+			SELECT t.ID,
+				t.NAME, 
+				t.MOBILE, 
+				t.SEX, 
+				t.CARD_TYPE, 
+				t.CARD_NO, 
+				t.CREATE_TIME,
+				t.EMAIL,
+				t.NATION,
+				t.ATTR_ID,
+				t.ATTR_NAME,
+				t.CREATE_USER_ID
+			FROM SD_WEB_VISITOR t
+			WHERE 1 = 1
+			<isNotEmpty property="CREATE_USER_ID">
+				AND t.CREATE_USER_ID = #CREATE_USER_ID#
+			</isNotEmpty>
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countWebVisitor" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM SD_WEB_VISITOR t
+		WHERE 1 = 1
+		<isNotEmpty property="CREATE_USER_ID">
+			AND t.CREATE_USER_ID = #CREATE_USER_ID#
+		</isNotEmpty>
+	</statement>
+	
+</sqlMap>

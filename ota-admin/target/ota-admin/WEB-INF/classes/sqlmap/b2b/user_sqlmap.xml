@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="user">
+	<statement id="detailUserDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID				  ,
+		   a.CHINA_NAME           ,
+		   a.SEX                  ,
+		   a.BIRTHDAY             ,
+		   a.USER_NAME            ,
+		   a.EMAIL                ,
+		   a.MOBILE               ,
+		   a.USER_PWD             ,
+		   a.FACE                 ,
+		   a.SCORE                ,
+		   a.USER_LEVEL           ,
+		   a.IS_USE			  ,
+		   a.LOGIN_IP             ,
+		   to_char(a.LOGIN_TIME,'yyyy-mm-dd hh24:mi:ss')LOGIN_TIME            ,
+		   to_char(a.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss')CREATE_TIME          ,
+		   a.CREATE_USER,
+		   to_char(a.UPDATE_TIME,'yyyy-mm-dd hh24:mi:ss')UPDATE_TIME          ,
+		   a.UPDATE_USER,
+		   a.CITY_ID,
+		   a.CITY_NAME,
+		   a.USER_TYPE,
+		   a.COMPANY_ID,
+		   a.DEPART_ID,
+		   a.FAX,
+		   b.PARENT_WORD_TPL as WORD_TPL,
+		   b.company, 
+		   b.phone, 
+		   b.SALE_TRAFFIC,
+		   b.SALE_ROUTE,
+		   b.IS_ALONE,
+		   b.TYPE COMPANY_TYPE,
+		   b.USER_ID COMPANY_USER_ID,
+		   c.TEXT DEPART_NAME,
+		   c.ID DEPART_ID,
+		   d.ID as SITE_ID,
+		   e.IS_MANAGER,
+		   e.IS_COUNSELOR,
+		   e.IS_CONTACTS,
+		   e.IS_FINANCE,
+		   b.pid,
+		   f.id as SITE_RELA_ID,
+		   a.SIGNATURE,
+		   a.qq1,
+		   a.qq2,
+		   a.ID_CARD,
+		   a.PAY_PWD,
+		   a.PAY_PWD_TYPE,
+		   a.PAY_ERROR_CNT,
+		   b.PARENT_COMPANY,
+		   b.PARENT_SHORT_NAME,
+		   b.SHORT_NAME,
+		   b.ADDRESS,
+		   b.ACCOUNT_WAY,
+		   b.DELAY_DAY as OLD_DELAY_DAY,
+		   b.AUDIT_DAY as OLD_AUDIT_DAY,
+		   b.SHARE_ROUTE,
+		   b.PARENT_IS_CONTRACT_MUST as PARENT_IS_CONTRACT_MUST,
+		   b.COMPANY_USER_NAME,
+		   b.COMPANY_USER_ID,
+		   b.START_CITY_NAME,
+		   t.DEPART_IDS
+		   from SD_USER a, (SELECT a.*,
+			  DECODE(a.pid, '-1', a.word_tpl, b.WORD_TPL) as PARENT_WORD_TPL,
+			  DECODE(a.pid, '-1', a.IS_CONTRACT_MUST, b.IS_CONTRACT_MUST) as PARENT_IS_CONTRACT_MUST,
+			  b.company                              as PARENT_COMPANY,
+			  b.short_name                              as PARENT_SHORT_NAME,
+			  b.USER_NAME							as COMPANY_USER_NAME,
+			  b.USER_ID							as COMPANY_USER_ID,
+			  DECODE(t.start_city_name, null, t1.start_city_name, t.start_city_name) as start_city_name,
+			  DECODE(a.OLD_DELAY_DAY, null, b.OLD_DELAY_DAY, 0, b.OLD_DELAY_DAY, a.OLD_DELAY_DAY) as DELAY_DAY,
+			  DECODE(a.OLD_AUDIT_DAY, null, b.OLD_AUDIT_DAY, 0, b.OLD_AUDIT_DAY, a.OLD_AUDIT_DAY) as AUDIT_DAY
+			  
+			FROM sd_user_company a,
+			  sd_user_company b,
+			  
+			  (SELECT company_id,
+			  ltrim(MAX(SYS_CONNECT_BY_PATH(city_name, ',')), ',') start_city_name
+			FROM
+			  (SELECT city_name,
+			    company_id,
+			    ROW_NUMBER() OVER(PARTITION BY company_id ORDER BY city_name DESC) RN
+			  FROM SD_COMPANY_START_CITY
+			  )
+			  START WITH RN     = 1
+			  CONNECT BY RN - 1 = PRIOR RN
+			  AND company_id        = PRIOR company_id
+			GROUP BY company_id) t,
+			
+			(SELECT company_id,
+			  ltrim(MAX(SYS_CONNECT_BY_PATH(city_name, ',')), ',') start_city_name
+			FROM
+			  (SELECT city_name,
+			    company_id,
+			    ROW_NUMBER() OVER(PARTITION BY company_id ORDER BY city_name DESC) RN
+			  FROM SD_COMPANY_START_CITY
+			  )
+			  START WITH RN     = 1
+			  CONNECT BY RN - 1 = PRIOR RN
+			  AND company_id        = PRIOR company_id
+			GROUP BY company_id) t1
+			
+			WHERE a.pid = b.id(+)
+			and a.id = t.COMPANY_ID(+)
+			and a.pid = t1.COMPANY_ID(+)
+			
+			) b, 
+			sd_user_depart c, 
+			sd_site d, 
+			sd_user_plus e, 
+			sd_site_manager f,
+			
+			(SELECT USER_ID,
+			  ltrim(MAX(SYS_CONNECT_BY_PATH(DEPART_ID, ',')), ',') DEPART_IDS
+			FROM
+			  (SELECT DEPART_ID,
+			    USER_ID,
+			    ROW_NUMBER() OVER(PARTITION BY USER_ID ORDER BY DEPART_ID DESC) RN
+			  FROM SD_MANAGER_DEPART
+			  )
+			  START WITH RN     = 1
+			  CONNECT BY RN - 1 = PRIOR RN
+			  AND USER_ID        = PRIOR USER_ID
+			GROUP BY USER_ID) t
+			
+		   where a.IS_USE=0
+		   and a.is_del = 0
+		   and a.city_id = d.city_id(+)
+		   and a.company_id = b.id(+)
+		   and a.depart_id = c.id(+)
+		   and a.id = e.USER_ID(+)
+		   and d.id = f.site_id(+)
+		   and a.id = t.user_id(+)
+		   <isNotEmpty prepend=" and " property="USER_NAME">
+		   		a.USER_NAME = #USER_NAME#
+		   </isNotEmpty> 
+		  <!--  <isNotEmpty prepend=" and " property="USER_PWD">
+		   		a.USER_PWD = #USER_PWD#
+		   </isNotEmpty>  -->
+		   <isNotEmpty prepend=" and " property="MOBILE">
+		   		a.MOBILE = #MOBILE#
+		   </isNotEmpty>
+		   <isNotEmpty prepend=" and " property="ID">
+		   		a.ID = #ID#
+		   </isNotEmpty>
+		   <isNotEmpty prepend=" and " property="COMPANY_TYPE">
+		   		b.TYPE = #COMPANY_TYPE#
+		   </isNotEmpty>
+		   <isNotEmpty prepend=" and " property="USER_TYPE">
+		   		a.USER_TYPE = #USER_TYPE#
+		   </isNotEmpty>
+		   
+	</statement>
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select t.* from (select t.*, rownum as myrownum from (
+			SELECT a.ID,
+			  a.CHINA_NAME,
+			  a.SEX,
+			  a.BIRTHDAY,
+			  a.USER_NAME,
+			  a.EMAIL,
+			  a.MOBILE,
+			  a.USER_PWD,
+			  a.FACE,
+			  a.SCORE,
+			  a.USER_LEVEL,
+			  a.IS_USE,
+			  a.LOGIN_IP,
+			  TO_CHAR(a.LOGIN_TIME,'yyyy-mm-dd hh24:mi:ss')LOGIN_TIME,
+			  TO_CHAR(a.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss')CREATE_TIME,
+			  a.CREATE_USER,
+			  TO_CHAR(a.UPDATE_TIME,'yyyy-mm-dd hh24:mi:ss')UPDATE_TIME,
+			  a.UPDATE_USER,
+			  a.CITY_ID,
+			  a.CITY_NAME,
+			  a.USER_TYPE,
+			  a.COMPANY_ID,
+			  a.DEPART_ID,
+			  a.FAX,
+			  a.QQ1,
+			  a.QQ2,
+			  a.ID_CARD,
+			  a.PHONE,
+			  b.IS_MANAGER,
+			  b.IS_COUNSELOR,
+			  b.IS_CONTACTS,
+			  b.IS_FINANCE,
+			  a.SIGNATURE,
+			  t.text,
+			  t1.company,
+			  t1.parent_company,
+			  t1.parent_company_id,
+			  t2.CHILD_ROLE_ID,
+			  t2.CHILD_ROLE_NAME,
+			  t3.id as minishop_id
+			FROM SD_USER a,
+			  sd_user_plus b,
+			  sd_user_depart t,
+			  (SELECT t1.company AS parent_company,
+			  		  t1.id as parent_company_id,
+			    t.*
+			  FROM sd_user_company t,
+			    sd_user_company t1
+			  WHERE t.pid = t1.id(+)
+			  ) t1,
+			  (SELECT t.id  AS child_role_id,
+			    t.role_name AS child_role_name,
+			    t1.user_id
+			  FROM sd_company_role t,
+			    sd_company_user_role t1
+			  WHERE t.id = t1.role_id
+			  )t2,
+			  SD_WAP_SETTING t3
+			WHERE a.USER_NAME!='admin'
+			AND a.id          = b.user_id(+)
+			AND a.depart_id   = t.id(+)
+			AND a.company_id  = t1.id(+)
+			AND a.id = t2.user_id(+)
+			AND a.is_del      = 0
+			AND a.id = t3.entity_id(+) 
+		   <isNotEmpty property="query">
+		       and (a.USER_NAME like '%$query$%' or a.CHINA_NAME like '%$query$%')
+		   </isNotEmpty>
+		   <isNotEmpty property="COMPANY_ID">
+		       and a.COMPANY_ID = #COMPANY_ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="MOBILE">
+		       and a.MOBILE = #MOBILE#
+		   </isNotEmpty>
+		   <isNotEmpty property="DEPART_ID">
+		       and a.DEPART_ID = #DEPART_ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="IS_MANAGER">
+		   	   and b.IS_MANAGER = #IS_MANAGER#
+		   </isNotEmpty>
+		   <isNotEmpty property="IS_FINANCE">
+		   	   and b.IS_FINANCE = #IS_FINANCE#
+		   </isNotEmpty>
+		   <isNotEmpty property="CITY_ID">
+		   	   and a.CITY_ID = #CITY_ID#
+		   </isNotEmpty>
+		   <isNotEmpty property="IS_CONTACTS">
+		   	   and b.IS_CONTACTS = #IS_CONTACTS#
+		   </isNotEmpty>
+		   <isNotEmpty property="TYPE">
+		   	   and a.USER_TYPE = #TYPE#
+		   </isNotEmpty>
+		   )t)t where 1=1 <![CDATA[  and t.myrownum >= #start# and t.myrownum <= #end# ]]>
+	</statement>
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM SD_USER a,
+		  sd_user_plus b,
+		  sd_user_depart t,
+		  (SELECT t1.company AS parent_company,
+		    t.*
+		  FROM sd_user_company t,
+		    sd_user_company t1
+		  WHERE t.pid = t1.id(+)
+		  ) t1,
+		  (SELECT t.id  AS child_role_id,
+		    t.role_name AS child_role_name,
+		    t1.user_id
+		  FROM sd_company_role t,
+		    sd_company_user_role t1
+		  WHERE t.id = t1.role_id
+		  )t2,
+		  SD_WAP_SETTING t3
+		WHERE a.USER_NAME!='admin'
+		AND a.id          = b.user_id(+)
+		AND a.depart_id   = t.id(+)
+		AND a.company_id  = t1.id(+)
+		AND a.id = t2.user_id(+)
+		AND a.is_del      = 0
+		AND a.id = t3.entity_id(+) 
+		<isNotEmpty property="query">
+			and (a.USER_NAME like '%$query$%' or a.CHINA_NAME like '%$query$%')
+	    </isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			and a.COMPANY_ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="MOBILE">
+	    	and a.MOBILE = #MOBILE#
+	    </isNotEmpty>
+		<isNotEmpty property="DEPART_ID">
+			and a.DEPART_ID = #DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="USER_NAME">
+			and a.USER_NAME = #USER_NAME#
+		</isNotEmpty>
+	</statement>
+	<statement id="existDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) from SD_USER a 
+			where a.ID!=#ID# and a.is_del = 0
+			<isNotEmpty prepend=" and " property="USER_NAME">
+		   		 a.USER_NAME = #USER_NAME#
+		    </isNotEmpty> 
+		    <isNotEmpty prepend=" and " property="EMAIL">
+		   		a.EMAIL = #EMAIL#
+		    </isNotEmpty> 
+		    <isNotEmpty prepend=" and " property="MOBILE">
+		   		a.MOBILE = #MOBILE#
+		    </isNotEmpty> 
+	</statement>
+	<insert id="addDao" parameterClass="java.util.Map">
+		insert into SD_USER(
+		   ID				  ,
+		   CHINA_NAME           ,
+		   SEX                  ,
+		   BIRTHDAY             ,
+		   USER_NAME            ,
+		   EMAIL                ,
+		   MOBILE               ,
+		   USER_PWD             ,
+		   FACE                 ,
+		   SCORE                ,
+		   USER_LEVEL           ,
+		   IS_USE			  ,
+		   LOGIN_IP             ,
+		   LOGIN_TIME,
+		   CREATE_TIME,
+		   CREATE_USER,
+		   UPDATE_TIME,
+		   UPDATE_USER,
+		   CITY_ID,
+		   CITY_NAME,
+		   USER_TYPE,
+		   ID_CARD,
+		   PHONE,
+		   QQ1,QQ2,COMPANY_ID,DEPART_ID,DEPART_MANAGER,FAX
+		)values(#ID#,#CHINA_NAME#,#SEX#,#BIRTHDAY#,#USER_NAME#,#EMAIL#,#MOBILE#,#USER_PWD#,#FACE#,10,1,#IS_USE#,'127.0.0.1',sysdate,sysdate,#CREATE_USER#,sysdate,#UPDATE_USER#,#CITY_ID#,#CITY_NAME#,#USER_TYPE#,#ID_CARD#,#PHONE#,#QQ1#,#QQ2#,#COMPANY_ID#,#DEPART_ID#,#DEPART_MANAGER#,#FAX#)
+	</insert>
+	<update id="editDao" parameterClass="java.util.Map">
+		update SD_USER set 
+			UPDATE_TIME = sysdate,
+			UPDATE_USER = #UPDATE_USER#
+			<isNotEmpty prepend=" , " property="CHINA_NAME">
+		   		CHINA_NAME = #CHINA_NAME#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="SEX">
+		   		SEX = #SEX#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="BIRTHDAY">
+		   		BIRTHDAY = #BIRTHDAY#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="USER_NAME">
+		   		USER_NAME = #USER_NAME#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="EMAIL">
+		   		EMAIL = #EMAIL#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="MOBILE">
+		   		MOBILE = #MOBILE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="USER_PWD">
+		   		USER_PWD = #USER_PWD#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="FACE">
+		   		FACE = #FACE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="SCORE">
+		   		SCORE = #SCORE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="USER_LEVEL">
+		   		USER_LEVEL = #USER_LEVEL#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="IS_USE">
+		   		IS_USE = #IS_USE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="ID_CARD">
+		   		ID_CARD = #ID_CARD# 
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="PHONE">
+		   		PHONE = #PHONE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="QQ1">
+		   		QQ1 = #QQ1#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="QQ2">
+		   		QQ2 = #QQ2# 
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="COMPANY_ID">
+		   		COMPANY_ID = #COMPANY_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="DEPART_ID">
+		   		DEPART_ID = #DEPART_ID#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="DEPART_MANAGER">
+		   		DEPART_MANAGER = #DEPART_MANAGER#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="FAX">
+		   		FAX = #FAX#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="USER_TYPE">
+		   		USER_TYPE = #USER_TYPE#
+		    </isNotEmpty>
+		    <isNotEmpty prepend=" , " property="SIGNATURE">
+		   		SIGNATURE = #SIGNATURE#
+		    </isNotEmpty>
+		    where ID=#ID#
+	</update>
+	<insert id="createAccountDao" parameterClass="java.util.Map">
+		insert into SD_USER_ACOUNT values(sys_guid(),#ID#,0,0,0,0)
+	</insert>
+	<delete id="deleteAccountDao" parameterClass="java.util.Map">
+		update SD_USER_ACOUNT set IS_USE=1 where USER_ID=#ID#
+	</delete>
+	<update id="delDao" parameterClass="java.lang.String">
+		update SD_USER set is_del = 1 where ID=#VALUE#   
+	</update>
+	<delete id="delBatchDao" parameterClass="java.util.List">
+		delete from SD_USER 
+  		<iterate prepend="WHERE" open="(" close=")" conjunction=",">
+			ID = #list[]#
+		</iterate>
+	</delete>
+	
+	<delete id="clearRoleDao" parameterClass="java.lang.String">
+		delete from SD_USER_ROLE where USER_ID= #VALUE#
+	</delete>
+	<insert id="setRoleDao" parameterClass="java.util.Map">
+		insert into SD_USER_ROLE values(sys_guid(),#USER_ID#,#ROLE_ID#)
+	</insert>
+	
+	<insert id="saveLoginDao" parameterClass="java.util.Map">
+		insert into SD_LOGIN (id, ip, login_time, login_user, login_user_id, url, text)values(sys_guid(),#IP#,systimestamp,#USER_NAME#, #LOGIN_USER_ID#, #URL#, #TEXT#)
+	</insert>
+	
+	<update id="updateLoginDao" parameterClass="java.util.Map">
+		update SD_USER 
+			set LOGIN_IP = #IP#,
+				LOGIN_TIME = sysdate
+		where ID=#ID#
+	</update>
+	
+	<insert id="saveUserModuleDao"  parameterClass="java.util.Map">
+		insert into SD_USER_MODULE values(sys_guid(), #USER_ID#, #MODULE_ID#)
+	</insert>
+	
+	<insert id="saveUserPowerDao"  parameterClass="java.util.Map">
+		insert into SD_USER_POWER values(sys_guid(), #USER_ID#, #POWER_ID#)
+	</insert>
+	
+	<delete id="delUserModuleDao" parameterClass="java.util.Map">
+		DELETE FROM SD_USER_MODULE WHERE USER_ID= #USER_ID#
+	</delete>
+	
+	<delete id="delUserPowerDao" parameterClass="java.util.Map">
+		DELETE FROM SD_USER_POWER WHERE USER_ID = #USER_ID# AND POWER_ID IN(SELECT ID FROM SD_POWER WHERE MODULE_ID = #MODULE_ID#)
+	</delete>
+	
+	<statement id="listCompanyManagerDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.IS_USE from sd_user a, sd_user_company b  where a.id = b.USER_ID
+		<isNotEmpty property="COMPANY_ID">
+			and b.ID = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="IS_USE">
+			and a.is_use = #IS_USE#
+		</isNotEmpty> 
+		<isNotEmpty property="AUDIT_STATUS">
+			and b.AUDIT_STATUS = #AUDIT_STATUS#
+		</isNotEmpty> 
+	</statement>
+	
+	<statement id="listUserPlusDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT b.USER_ID, b.IS_MANAGER, b.IS_COUNSELOR, b.IS_CONTACTS FROM SD_USER_PLUS b WHERE b.USER_ID = #USER_ID#
+	</statement>
+	
+	<update id="updateUserPlusDao" parameterClass="java.util.Map">
+		UPDATE SD_USER_PLUS
+		SET IS_MANAGER = #IS_MANAGER# ,
+		  IS_COUNSELOR = #IS_COUNSELOR#,
+		  IS_CONTACTS  = #IS_CONTACTS#
+		<isNotEmpty property="IS_FINANCE">
+		,IS_FINANCE = #IS_FINANCE#
+		</isNotEmpty>
+		WHERE USER_ID  = #USER_ID#
+	</update>
+	
+	<insert id="saveUserPlusDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_USER_PLUS
+		  (
+		    USER_ID,
+		    IS_MANAGER,
+		    IS_COUNSELOR,
+		    IS_CONTACTS
+		    <isNotEmpty property="IS_FINANCE">
+			,IS_FINANCE
+			</isNotEmpty>
+		  )
+		  VALUES
+		  (
+		    #USER_ID#,
+		    #IS_MANAGER#,
+		    #IS_COUNSELOR#,
+		    #IS_CONTACTS#
+		    <isNotEmpty property="IS_FINANCE">
+			,#IS_FINANCE#
+			</isNotEmpty>
+		  )
+	</insert>
+	
+	<statement id="siteServiceDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	SELECT t3.ID,
+	  t3.CHINA_NAME,
+	  t3.SEX,
+	  t3.BIRTHDAY,
+	  t3.USER_NAME,
+	  t3.EMAIL,
+	  t3.MOBILE,
+	  t3.USER_PWD,
+	  t3.FACE,
+	  t3.SCORE,
+	  t3.USER_LEVEL,
+	  t3.IS_USE,
+	  t3.LOGIN_IP,
+	  TO_CHAR(t3.LOGIN_TIME,'yyyy-mm-dd hh24:mi:ss')LOGIN_TIME,
+	  TO_CHAR(t3.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss')CREATE_TIME,
+	  t3.CREATE_USER,
+	  TO_CHAR(t3.UPDATE_TIME,'yyyy-mm-dd hh24:mi:ss')UPDATE_TIME,
+	  t3.UPDATE_USER,
+	  t3.CITY_ID,
+	  t3.CITY_NAME,
+	  t3.USER_TYPE,
+	  t3.COMPANY_ID,
+	  t3.DEPART_ID,
+	  t3.FAX,
+	  t3.QQ1,
+	  t3.QQ2,
+	  t3.ID_CARD,
+	  t3.PHONE,
+	  t4.IS_MANAGER,
+	  t4.IS_COUNSELOR,
+	  t4.IS_CONTACTS
+	FROM sd_user t,
+	  sd_site_manager t1,
+	  sd_site t2,
+	  sd_user t3,
+	  sd_user_plus t4
+	WHERE t.id         = t1.user_id
+	AND t1.site_id     = t2.id
+	AND t.company_id   = t3.company_id
+	AND t3.id          = t4.user_id
+	AND t3.is_del      = 0
+	AND t4.IS_CONTACTS = 1
+	AND t3.USER_TYPE   = '0101'
+	AND t2.city_id     = #CITY_ID#
+	</statement>
+	
+</sqlMap>

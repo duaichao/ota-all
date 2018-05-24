@@ -1,0 +1,1793 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="route">
+
+	<update id="updateRouteEarnestDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE SET IS_EARNEST = #IS_EARNEST#, EARNEST_INTER = #EARNEST_INTER#, 
+		EARNEST_RETAIL = #EARNEST_RETAIL#, EARNEST_DAY_COUNT = #EARNEST_DAY_COUNT#, 
+		EARNEST_TYPE = #EARNEST_TYPE#, UPDATE_USER_ID = #UPDATE_USER_ID#, UPDATE_USER = #UPDATE_USER_ID#,
+		UPDATE_TIME = SYSDATE WHERE ID = #ID#
+	</update>
+	
+	<insert id="saveProContactDao" parameterClass="java.util.Map">
+		insert into SD_PRO_CONTACT(ID,
+			PRODUCE_ID,
+			TYPE,
+			CHINA_NAME,
+			MOBILE,
+			PHONE,
+			CREATE_TIME,
+			CREATE_USER_ID,
+			IS_MESSAGE)
+		VALUES(#ID#,
+			#PRODUCE_ID#,
+			#TYPE#,
+			#CHINA_NAME#,
+			#MOBILE#,
+			#PHONE#,
+			sysdate,
+			#CREATE_USER_ID#,
+			#IS_MESSAGE#)
+	</insert>
+	
+	<delete id="delProContactDao" parameterClass="java.util.Map">
+		DELETE FROM SD_PRO_CONTACT WHERE PRODUCE_ID = #PRODUCE_ID#
+	</delete>
+	
+	<statement id="listProContactDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.PRODUCE_ID,
+		  a.TYPE,
+		  a.CHINA_NAME,
+		  a.MOBILE,
+		  a.PHONE,
+		  a.IS_MESSAGE
+		FROM SD_PRO_CONTACT a
+		WHERE 1 = 1
+		<isNotEmpty property="PRODUCE_ID">
+			AND a.PRODUCE_ID = #PRODUCE_ID#
+		</isNotEmpty> 
+		<isNotEmpty property="TYPE">
+			AND a.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="IS_MESSAGE">
+			AND a.IS_MESSAGE = #IS_MESSAGE#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="copyRouteDayDao" parameterClass="java.util.Map">
+		insert into SD_PRO_ROUTE_DAY(
+			ID,
+			ROUTE_ID,
+			NO,
+			TODAY_TIPS,
+			HOTEL_TIPS,
+			PAY_TIPS,
+			BREAKFAST,
+			LUNCH,
+			DINNER,
+			TITLE_TYPE,
+			TITLE,
+			BEGIN_CITY,
+			TOOL,
+			END_CITY,
+			TOOL1,
+			END_CITY1,
+			IS_DEL,
+			ROUTE_CITY_ID)
+		SELECT #DAY_ID#, 
+			#ROUTE_ID#,
+			#NO#,
+			TODAY_TIPS,
+			HOTEL_TIPS,
+			PAY_TIPS,
+			BREAKFAST,
+			LUNCH,
+			DINNER,
+			TITLE_TYPE,
+			TITLE,
+			BEGIN_CITY,
+			TOOL,
+			END_CITY,
+			TOOL1,
+			END_CITY1,
+			IS_DEL,
+			#ROUTE_CITY_ID#
+		from SD_PRO_ROUTE_DAY 
+		where ID = #OLD_DAY_ID#
+	</insert>
+	
+	<insert id="copyRouteScenicDao" parameterClass="java.util.Map">
+		INSERT INTO SD_PRO_ROUTE_SCENIC
+		  (ID,
+			ROUTE_ID,
+			DAY_DETAIL_ID,
+			SCENIC_ID,
+			SCENIC_NAME)
+		  SELECT sys_guid(),
+		  #ROUTE_ID#,
+		  #DAY_DETAIL_ID#,
+		  SCENIC_ID,
+		  SCENIC_NAME
+		FROM SD_PRO_ROUTE_SCENIC
+		WHERE DAY_DETAIL_ID = #OLD_DAY_DETAIL_ID# 
+	</insert>
+		  
+	<statement id="listEndCityOfRouteByCompanyIdAndCityNameDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.city_id,
+		  t.CITY_NAME,
+		  t.route_id,
+		  t1.title as route_title,
+		  t2.NO,
+		  t2.ID,
+    	  t2.TITLE,
+    	  t2.BEGIN_CITY,
+		  t2.TOOL,
+		  t2.END_CITY,
+		  t2.TOOL1,
+		  t2.END_CITY1
+		FROM SD_PRO_ROUTE_CITY t,
+		  sd_pro_route t1,
+		  sd_pro_route_day t2,
+		  sd_city t3 
+		WHERE t.route_id  = t1.id
+		AND t.id          = t2.route_city_id
+		and t.city_id = t3.id
+		AND t.type        = 2
+		AND t1.IS_DEL     = 0
+		and t2.IS_DEL     = 0
+		AND t1.COMPANY_ID = #COMPANY_ID#
+		and t.city_id = #CITY_ID#
+		order by t2.NO
+	</statement>
+	
+	<resultMap id="routeEntity" class="cn.sd.entity.RouteEntity">
+	   	<result column="ID" property="ID"  />
+	   	<result column="NO" property="NO"  />
+	   	<result column="FACE" property="FACE"  />
+	   	<result column="TITLE" property="TITLE"  />
+	   	<result column="FEATURE" property="FEATURE"  />
+	   	<result column="NOTICE" property="NOTICE"  />
+	   	<result column="TYPE" property="TYPE"  />
+	   	<result column="COMPANY_ID" property="COMPANY_ID"  />
+	   	<result column="COMPANY_NAME" property="COMPANY_NAME"  />
+	   	<result column="PORDUCE_CONCAT" property="PORDUCE_CONCAT"  />
+	   	<result column="PRODUCE_MOBILE" property="PRODUCE_MOBILE"  />
+	   	<result column="CREATE_USER" property="CREATE_USER"  />
+	   	<result column="CREATE_TIME" property="CREATE_TIME"  />
+	   	<result column="CREATE_USER_ID" property="CREATE_USER_ID"  />
+	   	<result column="UPDATE_USER" property="UPDATE_USER"  />
+	   	<result column="UPDATE_TIME" property="UPDATE_TIME"  />
+	   	<result column="UPDATE_USER_ID" property="UPDATE_USER_ID"  />
+	   	<result column="CITY_ID" property="CITY_ID"  />
+	   	<result column="CITY_NAME" property="CITY_NAME"  />
+	   	<result column="IS_DEL" property="IS_DEL"  />
+	   	<result column="IS_PUB" property="IS_PUB"  />
+	   	<result column="SOURCE_URL" property="SOURCE_URL"  />
+	   	<result column="IS_SINGLE_PUB" property="IS_SINGLE_PUB"  />
+	   	<result column="IS_GRANT" property="IS_GRANT"  />
+	   	<result column="IS_SHARE" property="IS_SHARE"  />
+	   	<result column="DAY_COUNT" property="DAY_COUNT"  />
+	   	<result column="ATTR" property="ATTR"  />
+	   	<result column="RETAIL_SINGLE_ROOM" property="RETAIL_SINGLE_ROOM"  />
+	   	<result column="INTER_SINGLE_ROOM" property="INTER_SINGLE_ROOM"  />
+	   	<result column="FEATURE1" property="FEATURE1"  />
+	   	<result column="IS_FULL_PRICE" property="IS_FULL_PRICE"  />
+	   	<result column="IS_EARNEST" property="IS_EARNEST"  />
+	   	<result column="EARNEST_INTER" property="EARNEST_INTER"  />
+	   	<result column="EARNEST_RETAIL" property="EARNEST_RETAIL"  />
+	   	<result column="EARNEST_DAY_COUNT" property="EARNEST_DAY_COUNT"  />
+	   	<result column="EARNEST_TYPE" property="EARNEST_TYPE"  />
+	   	
+	</resultMap>
+	
+	<statement id="routeDetailDao" parameterClass="java.util.Map" resultMap="routeEntity">
+	 	SELECT a.ID,
+			a.NO,
+			a.FACE,
+			a.TITLE,
+			a.FEATURE,
+			a.NOTICE,
+			a.TYPE,
+			a.COMPANY_ID,
+			a.COMPANY_NAME,
+			a.PORDUCE_CONCAT,
+			a.PRODUCE_MOBILE,
+			a.CREATE_USER,
+			a.CREATE_TIME,
+			a.CREATE_USER_ID,
+			a.UPDATE_USER,
+			a.UPDATE_TIME,
+			a.CITY_ID,
+			a.CITY_NAME,
+			a.IS_DEL,
+			a.IS_PUB,
+			a.SOURCE_URL,
+			a.IS_SINGLE_PUB,
+			a.IS_GRANT,
+			a.IS_SHARE,
+			a.UPDATE_USER_ID,
+			a.DAY_COUNT,
+			a.ATTR,
+			a.CITY_NUM,
+			a.SINGLE_REMARK,
+			a.RETAIL_SINGLE_ROOM,
+			a.INTER_SINGLE_ROOM,
+			<![CDATA[  REPLACE(a.FEATURE1, chr(10), '</br>') as FEATURE1,  ]]>
+			a.IS_FULL_PRICE,
+			a.IS_EARNEST,
+		    a.EARNEST_INTER,
+		    a.EARNEST_RETAIL,
+		    a.EARNEST_DAY_COUNT,
+		    a.EARNEST_TYPE
+		FROM SD_PRO_ROUTE a WHERE a.ID = #ID#
+	 </statement>
+	 
+	<statement id="">
+		
+	</statement>
+	<statement id="routeSingleRoomDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	 	SELECT RETAIL_SINGLE_ROOM, INTER_SINGLE_ROOM FROM SD_PRO_ROUTE WHERE ID = #ID#
+	 </statement>
+	 
+	 <update id="updateSingleRoomDao" parameterClass="java.util.Map">
+	 	UPDATE SD_PRO_ROUTE SET RETAIL_SINGLE_ROOM = #RETAIL_SINGLE_ROOM#, INTER_SINGLE_ROOM = #INTER_SINGLE_ROOM# WHERE ID = #ID#
+	 </update>
+			  
+	<statement id="listDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+			SELECT a.ID,
+			  a.NO,
+			  a.IS_EARNEST,
+			  a.EARNEST_INTER,
+			  a.EARNEST_RETAIL,
+			  a.EARNEST_DAY_COUNT,
+			  a.EARNEST_TYPE,
+			  a.FACE,
+			  a.TITLE,
+			  a.FEATURE,
+			  a.NOTICE,
+			  a.TYPE,
+			  a.COMPANY_ID,
+			  a.COMPANY_NAME,
+			  a.PORDUCE_CONCAT,
+			  a.PRODUCE_MOBILE,
+			  a.CREATE_USER,
+			  TO_CHAR(a.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') CREATE_TIME,
+			  a.CREATE_USER_ID,
+			  a.UPDATE_USER,
+			  TO_CHAR(a.UPDATE_TIME, 'yyyy-mm-dd hh24:mm:ss') UPDATE_TIME,
+			  a.UPDATE_USER_ID,
+			  a.CITY_ID,
+			  a.CITY_NAME,
+			  a.IS_DEL,
+			  a.IS_PUB,
+			  a.SOURCE_URL,
+			  a.IS_SINGLE_PUB,
+			  a.IS_GRANT,
+			  a.IS_SHARE,
+			  a.DAY_COUNT,
+			  a.ATTR,
+			  a.SINGLE_REMARK,
+			  a.RETAIL_SINGLE_ROOM,
+			  a.INTER_SINGLE_ROOM,
+			  b.SUM_PRICE,
+			  b.SUM_INTER_PRICE,
+			  d.route_price,
+			  d.route_inter_price,
+			  TO_CHAR(to_date(b.rq, 'YYYY/MM/DD'),'YYYY/MM/DD') rq,
+			  c.QQ1,
+			  c.QQ2,
+			  c.CHINA_NAME,
+			  c.MOBILE,
+			  DECODE(h.ROUTE_TRAFFIC_CNT, null, 0, h.ROUTE_TRAFFIC_CNT) ROUTE_TRAFFIC_CNT,
+     		  DECODE(h1.BASE_PRICE_CNT, null, 0, h1.BASE_PRICE_CNT) BASE_PRICE_CNT,
+			  h2.themes,
+			  h3.begin_city,
+			  h4.end_city,
+			  h5.discount_info,
+			  h5.DISCOUNT_ID,
+			  a.IS_FULL_PRICE,
+			  DECODE(h6.WEB_RECOMMEND_CNT, NULL, 0, h6.WEB_RECOMMEND_CNT) WEB_RECOMMEND_CNT
+			FROM SD_PRO_ROUTE a,
+			  sd_user c,
+			  (SELECT a.route_id,
+			    a.rq,
+			    a.actual_price,
+			    a.actual_inter_price,
+			    a.planid,
+			    a.rn,
+			    b.route_price,
+			    b.route_inter_price,
+			    (a.actual_price       + b.route_price) sum_price,
+			    (a.actual_inter_price + b.route_inter_price) sum_inter_price
+			  FROM
+			    (SELECT a.route_id,
+			      a.rq,
+			      a.actual_price,
+			      a.actual_inter_price,
+			      a.planid,
+			      a.rn
+			    FROM
+			      (SELECT a.route_id,
+			        a.rq,
+			        a.actual_price,
+			        a.actual_inter_price,
+			        a.planid,
+			        ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+			      FROM SD_PRO_ROUTE_CALENDAR a
+			      <![CDATA[	WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq ]]>
+			        ||' '
+			        || a.END_TIME
+			      ) a
+			    WHERE rn = 1
+			    ) a,
+			    (SELECT a.entity_id,
+			      SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+			      SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+			    FROM sd_pro_base_price a
+			    WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+			    GROUP BY a.entity_id
+			    ) b
+			  WHERE a.route_id = b.entity_id
+			  ) b,
+			  (SELECT a.entity_id,
+			    SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+			    SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+			  FROM sd_pro_base_price a
+			  WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+			  GROUP BY a.entity_id
+			  ) d,
+			  (SELECT COUNT(b.id) AS ROUTE_TRAFFIC_CNT ,
+			    b.route_id
+			  FROM sd_pro_route_traffic b,
+			    sd_pro_route_traffic_detail c
+			  WHERE b.id   = c.plan_id
+			  AND b.is_del = 0
+			  AND c.is_del = 0
+			  GROUP BY b.route_id
+			  ) h,
+			  (SELECT COUNT(b.id) AS BASE_PRICE_CNT,
+			    b.entity_id
+			  FROM SD_PRO_BASE_PRICE b
+			  GROUP BY b.entity_id
+			  ) h1,
+			  (SELECT route_id,
+			    LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+			  FROM
+			    (SELECT tag_name,
+			      route_id,
+			      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+			    FROM sd_pro_route_tag
+			    )
+			    START WITH RN     = 1
+			    CONNECT BY RN - 1 = PRIOR RN
+			  AND route_id        = PRIOR route_id
+			  GROUP BY route_id
+			  )h2,
+			  (SELECT route_id,
+			    LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') begin_city
+			  FROM
+			    (SELECT CITY_NAME,
+			      route_id,
+			      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			    FROM SD_PRO_ROUTE_CITY
+			    WHERE type = 1
+			    )
+			    START WITH RN     = 1
+			    CONNECT BY RN - 1 = PRIOR RN
+			  AND route_id        = PRIOR route_id
+			  GROUP BY route_id
+			  )h3,
+			  (SELECT route_id,
+			    LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') end_city
+			  FROM
+			    (SELECT CITY_NAME,
+			      route_id,
+			      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+			    FROM SD_PRO_ROUTE_CITY
+			    WHERE type = 2
+			    )
+			    START WITH RN     = 1
+			    CONNECT BY RN - 1 = PRIOR RN
+			  AND route_id        = PRIOR route_id
+			  GROUP BY route_id
+			  )h4,
+			  (SELECT t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title||'('||MAX(SYS_CONNECT_BY_PATH(t.discount_info, ' 套餐*：'))||')' as discount_info
+			FROM
+			  (SELECT t.PRO_ID,
+			    t.DISCOUNT_ID,
+			    t1.title,
+			    DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: ' || t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') || <![CDATA[ decode((CASE WHEN (t1.END_TIME - SYSDATE) < 0 THEN '已过期' ELSE '' END), null, '', ' 此优惠活动已过期 ') ]]> as discount_info,
+			    ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+			  FROM SD_DISCOUNT_PRODUCT t,
+			    SD_DISCOUNT t1,
+			    sd_discount_rule t2
+			  WHERE t.discount_id    = t1.id
+			  AND t.discount_rule_id = t2.id
+			  AND t1.is_use          = 0
+			  AND t2.is_use          = 0
+			  ) t
+			  START WITH t.RN     = 1
+			  CONNECT BY t.RN - 1 = PRIOR t.RN
+			AND t.PRO_ID          = PRIOR t.PRO_ID
+			GROUP BY t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title) h5,
+			  (SELECT COUNT(1) AS web_recommend_cnt,
+			  route_id
+			FROM sd_web_recommend
+			WHERE is_top = 1
+			GROUP BY route_id)h6
+			WHERE a.create_user_id = c.id
+			AND a.id           = b.route_id(+)
+			AND a.id             = d.entity_id(+)
+			AND a.id             = h.route_id(+)
+			AND a.id             = h1.entity_id(+)
+			AND a.id             = h2.route_id(+)
+			AND a.id             = h3.route_id(+)
+			AND a.id             = h4.route_id(+)
+			and a.id             = h5.pro_id(+)
+			and a.id             = h6.route_id(+)
+			AND a.is_del         = 0
+			<isNotEmpty property="SALE_DEPART_IDS">
+  				<iterate property="SALE_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+					c.depart_id = #SALE_DEPART_IDS[]#
+				</iterate>
+  			</isNotEmpty>
+			<isNotEmpty property="SALE_DEPART_ID">
+				AND c.DEPART_ID            = #SALE_DEPART_ID#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				AND a.ID            = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="COMPANY_ID">
+				AND a.COMPANY_ID    = #COMPANY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="TITLE">
+				AND a.TITLE         = #TITLE#
+			</isNotEmpty>
+			<isNotEmpty property="NO">
+				AND a.NO            = #NO#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_ID">
+				AND a.CITY_ID       = #CITY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="CITY_IDS">
+				AND a.CITY_ID in ($CITY_IDS$)
+			</isNotEmpty>
+			<isNotEmpty property="IS_DEL">
+				AND a.IS_DEL        = #IS_DEL#
+			</isNotEmpty>
+			<isNotEmpty property="IS_PUB">
+				AND a.IS_PUB        = #IS_PUB#
+			</isNotEmpty>
+			<isNotEmpty property="IS_SINGLE_PUB">
+				AND a.IS_SINGLE_PUB = #IS_SINGLE_PUB#
+			</isNotEmpty>
+			<isNotEmpty property="IS_GRANT">
+				AND a.IS_GRANT      = #IS_GRANT#
+			</isNotEmpty>
+			<isNotEmpty property="IS_SHARE">
+				AND a.IS_SHARE      = #IS_SHARE#
+			</isNotEmpty>
+			<isNotEmpty property="query">
+				AND ( a.TITLE         like '%$query$%' or a.NO like '%$query$%' or h4.end_city like  '%$query$%')
+			</isNotEmpty>
+			<isNotEmpty property="existDate">
+				AND b.rq is null and a.IS_PUB = 1 and h.ROUTE_TRAFFIC_CNT is not null
+			</isNotEmpty>
+			<isNotEmpty property="passed">
+				<isEqual compareValue="0" property="passed">
+					and b.rq is not null
+				</isEqual>
+				<isEqual compareValue="1" property="passed">
+					and b.rq is null
+				</isEqual>
+			</isNotEmpty>
+			
+			ORDER BY a.CREATE_TIME DESC
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="countDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM SD_PRO_ROUTE a,
+		  sd_user c,
+		  (SELECT a.route_id,
+		    a.rq,
+		    a.actual_price,
+		    a.actual_inter_price,
+		    a.planid,
+		    a.rn,
+		    b.route_price,
+		    b.route_inter_price,
+		    (a.actual_price       + b.route_price) sum_price,
+		    (a.actual_inter_price + b.route_inter_price) sum_inter_price
+		  FROM
+		    (SELECT a.route_id,
+		      a.rq,
+		      a.actual_price,
+		      a.actual_inter_price,
+		      a.planid,
+		      a.rn
+		    FROM
+		      (SELECT a.route_id,
+		        a.rq,
+		        a.actual_price,
+		        a.actual_inter_price,
+		        a.planid,
+		        ROW_NUMBER() OVER(PARTITION BY a.route_id order by a.rq) AS rn
+		      FROM SD_PRO_ROUTE_CALENDAR a
+		      <![CDATA[	WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq ]]>
+		        ||' '
+		        || a.END_TIME
+		      ) a
+		      
+		      
+		    WHERE rn = 1
+		    ) a,
+		    (SELECT a.entity_id,
+		      SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+		      SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+		    FROM sd_pro_base_price a
+		    WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+		    GROUP BY a.entity_id
+		    ) b
+		  WHERE a.route_id = b.entity_id
+		  ) b,
+		  (SELECT a.entity_id,
+		    SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+		    SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+		  FROM sd_pro_base_price a
+		  WHERE a.attr_id = '0FA5123749CF8C87E050007F0100BCAD'
+		  GROUP BY a.entity_id
+		  ) d,
+		  (SELECT COUNT(b.id) AS ROUTE_TRAFFIC_CNT ,
+		    b.route_id
+		  FROM sd_pro_route_traffic b,
+		    sd_pro_route_traffic_detail c
+		  WHERE b.id   = c.plan_id
+		  AND b.is_del = 0
+		  AND c.is_del = 0
+		  GROUP BY b.route_id
+		  ) h,
+		  (SELECT COUNT(b.id) AS BASE_PRICE_CNT,
+		    b.entity_id
+		  FROM SD_PRO_BASE_PRICE b
+		  GROUP BY b.entity_id
+		  ) h1,
+		  (SELECT route_id,
+		    LTRIM(MAX(SYS_CONNECT_BY_PATH(tag_name, ',')), ',') themes
+		  FROM
+		    (SELECT tag_name,
+		      route_id,
+		      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY tag_name DESC) RN
+		    FROM sd_pro_route_tag
+		    )
+		    START WITH RN     = 1
+		    CONNECT BY RN - 1 = PRIOR RN
+		  AND route_id        = PRIOR route_id
+		  GROUP BY route_id
+		  )h2,
+		  (SELECT route_id,
+		    LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') begin_city
+		  FROM
+		    (SELECT CITY_NAME,
+		      route_id,
+		      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+		    FROM SD_PRO_ROUTE_CITY
+		    WHERE type = 1
+		    )
+		    START WITH RN     = 1
+		    CONNECT BY RN - 1 = PRIOR RN
+		  AND route_id        = PRIOR route_id
+		  GROUP BY route_id
+		  )h3,
+		  (SELECT route_id,
+		    LTRIM(MAX(SYS_CONNECT_BY_PATH(CITY_NAME, ',')), ',') end_city
+		  FROM
+		    (SELECT CITY_NAME,
+		      route_id,
+		      ROW_NUMBER() OVER(PARTITION BY route_id ORDER BY CITY_NAME DESC) RN
+		    FROM SD_PRO_ROUTE_CITY
+		    WHERE type = 2
+		    )
+		    START WITH RN     = 1
+		    CONNECT BY RN - 1 = PRIOR RN
+		  AND route_id        = PRIOR route_id
+		  GROUP BY route_id
+		  )h4,
+		  (SELECT t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title||'*'||MAX(SYS_CONNECT_BY_PATH(t.discount_info, '*')) as discount_info
+			FROM
+			  (SELECT t.PRO_ID,
+			    t.DISCOUNT_ID,
+			    t1.title,
+			    DECODE(t2.PLATFROM, '1','B2B','APP') || DECODE(t2.PAY_WAY, '1','在线支付','余额支付') || ' 优惠: ' || t2.MONEY|| DECODE(t2.rule_type, '1', '元', '%') as discount_info,
+			    ROW_NUMBER() OVER(PARTITION BY t.PRO_ID order by t1.title) RN
+			  FROM SD_DISCOUNT_PRODUCT t,
+			    SD_DISCOUNT t1,
+			    sd_discount_rule t2
+			  WHERE t.discount_id    = t1.id
+			  AND t.discount_rule_id = t2.id
+			  AND t1.is_use          = 0
+			  AND t2.is_use          = 0
+			  ) t
+			  START WITH t.RN     = 1
+			  CONNECT BY t.RN - 1 = PRIOR t.RN
+			AND t.PRO_ID          = PRIOR t.PRO_ID
+			GROUP BY t.PRO_ID,
+			  t.DISCOUNT_ID,
+			  t.title) h5
+		WHERE a.create_user_id = c.id
+		AND a.id           = b.route_id(+)
+		AND a.id             = d.entity_id(+)
+		AND a.id             = h.route_id(+)
+		AND a.id             = h1.entity_id(+)
+		AND a.id             = h2.route_id(+)
+		AND a.id             = h3.route_id(+)
+		AND a.id             = h4.route_id(+)
+		and a.id             = h5.pro_id(+)
+		AND a.is_del         = 0
+		<isNotEmpty property="SALE_DEPART_IDS">
+  			<iterate property="SALE_DEPART_IDS" conjunction=" or " open=" and ( " close=" ) ">
+				c.depart_id = #SALE_DEPART_IDS[]#
+			</iterate>
+  		</isNotEmpty>
+		<isNotEmpty property="SALE_DEPART_ID">
+			AND c.DEPART_ID            = #SALE_DEPART_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			AND a.ID            = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="COMPANY_ID">
+			AND a.COMPANY_ID    = #COMPANY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TITLE">
+			AND a.TITLE         = #TITLE#
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			AND a.NO            = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			AND a.CITY_ID       = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_IDS">
+			AND a.CITY_ID in ($CITY_IDS$)
+		</isNotEmpty>
+		<isNotEmpty property="IS_DEL">
+			AND a.IS_DEL        = #IS_DEL#
+		</isNotEmpty>
+		<isNotEmpty property="IS_PUB">
+			AND a.IS_PUB        = #IS_PUB#
+		</isNotEmpty>
+		<isNotEmpty property="IS_SINGLE_PUB">
+			AND a.IS_SINGLE_PUB = #IS_SINGLE_PUB#
+		</isNotEmpty>
+		<isNotEmpty property="IS_GRANT">
+			AND a.IS_GRANT      = #IS_GRANT#
+		</isNotEmpty>
+		<isNotEmpty property="IS_SHARE">
+			AND a.IS_SHARE      = #IS_SHARE#
+		</isNotEmpty>
+		<isNotEmpty property="query">
+			AND ( a.TITLE         like '%$query$%' or a.NO like '%$query$%' or h4.end_city like  '%$query$%')
+		</isNotEmpty>
+		<isNotEmpty property="existDate">
+			AND b.rq is null and a.IS_PUB = 1 and h.ROUTE_TRAFFIC_CNT is not null
+		</isNotEmpty>
+		<isNotEmpty property="passed">
+			<isEqual compareValue="0" property="passed">
+				and b.rq is not null
+			</isEqual>
+			<isEqual compareValue="1" property="passed">
+				and b.rq is null
+			</isEqual>
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE
+		  (
+		    ID,
+		    NO,
+		    FACE,
+		    TITLE,
+		    FEATURE,
+		    NOTICE,
+		    TYPE,
+		    COMPANY_ID,
+		    COMPANY_NAME,
+		    PORDUCE_CONCAT,
+		    PRODUCE_MOBILE,
+		    CREATE_USER,
+		    CREATE_TIME,
+		    CREATE_USER_ID,
+		    UPDATE_USER, 
+		    UPDATE_TIME,
+		    UPDATE_USER_ID,
+		    CITY_ID,
+		    CITY_NAME,
+		    IS_DEL,
+		    IS_PUB,
+		    SOURCE_URL,
+		    IS_SINGLE_PUB,
+		    IS_GRANT,
+		    IS_SHARE,
+		    DAY_COUNT,
+		    ATTR,
+		    FEATURE1,
+		    IS_FULL_PRICE
+		  )
+		  VALUES
+		  (
+		    #ID#,
+		    #NO#,
+		    #FACE#,
+		    #TITLE#,
+		    #FEATURE#,
+		    #NOTICE#,
+		    #TYPE#,
+		    #COMPANY_ID#,
+		    #COMPANY_NAME#,
+		    #PORDUCE_CONCAT#,
+		    #PRODUCE_MOBILE#,
+		    #CREATE_USER#,
+		    sysdate,
+		    #CREATE_USER_ID#,
+		    #UPDATE_USER#,
+		    sysdate,
+		    #UPDATE_USER_ID#,
+		    #CITY_ID#,
+		    #CITY_NAME#,
+		    0,
+		    0,
+		    #SOURCE_URL#,
+		    0,
+		    0,
+		    2,
+		    #DAY_COUNT#,
+		    #ATTR#,
+		    #FEATURE1#,
+		    #IS_FULL_PRICE#
+		  )
+	</insert>
+	
+	<update id="updateDao" parameterClass="java.util.Map">
+		update SD_PRO_ROUTE a set a.UPDATE_TIME = sysdate, a.UPDATE_USER = #UPDATE_USER#, 
+		a.UPDATE_USER_ID = #UPDATE_USER_ID#
+		<isNotEmpty property="FACE">
+			,a.FACE = #FACE#
+		</isNotEmpty>
+		<isNotEmpty property="TITLE">
+			,a.TITLE = #TITLE#
+		</isNotEmpty>
+		<isNotEmpty property="FEATURE">
+			,a.FEATURE = #FEATURE#
+		</isNotEmpty>
+		<isNotEmpty property="FEATURE1">
+			,a.FEATURE1 = #FEATURE1#
+		</isNotEmpty>
+		<isNotEmpty property="NOTICE">
+			,a.NOTICE = #NOTICE#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			,a.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="PORDUCE_CONCAT">
+			,a.PORDUCE_CONCAT = #PORDUCE_CONCAT#
+		</isNotEmpty>
+		<isNotEmpty property="PRODUCE_MOBILE">
+			,a.PRODUCE_MOBILE = #PRODUCE_MOBILE#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+			,a.CITY_ID = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_NAME">
+			,a.CITY_NAME = #CITY_NAME#
+		</isNotEmpty>
+		<isNotEmpty property="IS_DEL">
+			,a.IS_DEL = #IS_DEL#
+		</isNotEmpty>
+		<isNotEmpty property="IS_PUB">
+			,a.IS_PUB = #IS_PUB#
+		</isNotEmpty>
+		<isNotEmpty property="SOURCE_URL">
+			,a.SOURCE_URL = #SOURCE_URL#
+		</isNotEmpty>
+		<isNotEmpty property="IS_SINGLE_PUB">
+			,a.IS_SINGLE_PUB = #IS_SINGLE_PUB#
+		</isNotEmpty>
+		<isNotEmpty property="IS_GRANT">
+			,a.IS_GRANT = #IS_GRANT#
+		</isNotEmpty>
+		<isNotEmpty property="IS_SHARE">
+			,a.IS_SHARE = #IS_SHARE#
+		</isNotEmpty>
+		<isNotEmpty property="DAY_COUNT">
+			,a.DAY_COUNT = #DAY_COUNT#
+		</isNotEmpty>
+		<isNotEmpty property="ATTR">
+			,a.ATTR = #ATTR#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_NUM">
+			,a.CITY_NUM = #CITY_NUM#
+		</isNotEmpty>
+		<isNotEmpty property="SINGLE_REMARK">
+			,a.SINGLE_REMARK = #SINGLE_REMARK#
+		</isNotEmpty>
+		<isNotEmpty property="IS_OTHER_FEE">
+			,a.IS_OTHER_FEE = #IS_OTHER_FEE#
+		</isNotEmpty>
+		where a.ID = #ID#
+	</update>
+	
+	<statement id="routeTitleISExistDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT count(a.id) s, a.TITLE
+			FROM SD_PRO_ROUTE a
+			WHERE 1             = 1
+			and a.COMPANY_ID = #COMPANY_ID#
+			and a.TITLE = #TITLE#
+			<isNotEmpty property="notEqualID">
+				and a.ID != #notEqualID#
+			</isNotEmpty>
+			group by a.COMPANY_ID, a.TITLE
+	</statement>
+	
+	<statement id="listRouteCityDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT  a.ID,
+			a.CITY_ID,
+			a.CITY_NAME,
+			a.TYPE,
+			a.ORDER_BY,
+			a.ROUTE_ID,
+			a.STAY_COUNT
+		FROM SD_PRO_ROUTE_CITY a
+		WHERE 1             = 1
+		<isNotEmpty property="TYPE">
+			AND a.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_ID">
+			AND a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		ORDER BY a.TYPE, a.ORDER_BY 
+	</statement>
+	
+	<insert id="saveRouteCityDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_CITY
+		  (
+		   ID, 
+		   CITY_ID,
+		   CITY_NAME,
+		   TYPE,
+		   ORDER_BY,
+		   ROUTE_ID
+		  )
+		  VALUES
+		  (
+		   #ID#,
+		   #CITY_ID#,
+		   #CITY_NAME#,
+		   #TYPE#,
+		   #ORDER_BY#,
+		   #ROUTE_ID#
+		  )
+	</insert>
+	
+	<update id="updateRouteCityDao" parameterClass="java.util.Map">
+		update SD_PRO_ROUTE_CITY set STAY_COUNT = #STAY_COUNT# where ID = #ID#
+	</update>
+	
+	<delete id="delRouteCityDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_CITY where ID = #ID#
+	</delete>
+	
+	<delete id="delRouteStartCityByRouteIdDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_CITY where route_id = #ROUTE_ID# and type = 1
+	</delete>
+	
+	<statement id="listRouteGrantDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ROUTE_ID,
+			a.COMPANY_ID
+		from SD_PRO_ROUTE_GRANT a
+		where 1 = 1
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveRouteGrantDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_GRANT
+		  (
+			ID,
+			ROUTE_ID,
+			COMPANY_ID
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#COMPANY_ID#
+		  )
+	</insert>
+	
+	<delete id="delRouteGrantDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_GRANT WHERE ROUTE_ID = #ROUTE_ID#
+	</delete>
+	
+	<statement id="listRouteDayDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ROUTE_ID,
+			a.NO,
+			a.TODAY_TIPS,
+			a.HOTEL_TIPS,
+			a.PAY_TIPS,
+			a.BREAKFAST,
+			a.LUNCH,
+			a.DINNER,
+			a.TITLE_TYPE,
+			a.TITLE,
+			a.BEGIN_CITY,
+			a.TOOL,
+			a.END_CITY,
+			a.TOOL1,
+			a.END_CITY1,
+			a.IS_DEL,
+			a.ROUTE_CITY_ID,
+			b.CITY_ID,
+			b.CITY_NAME
+		from SD_PRO_ROUTE_DAY a, SD_PRO_ROUTE_CITY b
+		where 1 = 1 and a.IS_DEL = 0
+		and a.ROUTE_CITY_ID = b.ID  
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="NO">
+			and a.NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_CITY_ID">
+			and a.ROUTE_CITY_ID = #ROUTE_CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		ORDER BY a.NO 
+	</statement>
+	
+	<insert id="saveRouteDayDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_DAY
+		  (
+			ID,
+			ROUTE_ID,
+			NO,
+			TODAY_TIPS,
+			HOTEL_TIPS,
+			PAY_TIPS,
+			BREAKFAST,
+			LUNCH,
+			DINNER,
+			TITLE_TYPE,
+			TITLE,
+			BEGIN_CITY,
+			TOOL,
+			END_CITY,
+			TOOL1,
+			END_CITY1,
+			IS_DEL,
+			ROUTE_CITY_ID
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#NO#,
+			#TODAY_TIPS#,
+			#HOTEL_TIPS#,
+			#PAY_TIPS#,
+			#BREAKFAST#,
+			#LUNCH#,
+			#DINNER#,
+			#TITLE_TYPE#,
+			#TITLE#,
+			#BEGIN_CITY#,
+			#TOOL#,
+			#END_CITY#,
+			#TOOL1#,
+			#END_CITY1#,
+			0,
+			#ROUTE_CITY_ID#
+		  )
+	</insert>
+	
+	<update id="updateRouteAllDayNOAddDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_DAY set NO = (NO + 1) where ROUTE_ID = #ROUTE_ID# and NO >= #NO#
+	</update>
+	
+	<update id="updateRouteAllDayNOMinusDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_DAY set NO = (NO - 1) where ROUTE_ID = #ROUTE_ID# and NO >= #NO#
+	</update>
+	
+	<update id="updateRouteAllDayNOUpDao" parameterClass="java.util.Map">
+		<![CDATA[ UPDATE SD_PRO_ROUTE_DAY set NO = (NO + 1) where ROUTE_ID = #ROUTE_ID# and NO < #NO# and NO >= #NEWNO# ]]>
+	</update>
+	
+	<update id="updateRouteAllDayNODownDao" parameterClass="java.util.Map">
+		<![CDATA[ UPDATE SD_PRO_ROUTE_DAY set NO = (NO - 1) where ROUTE_ID = #ROUTE_ID# and NO > #NO# and NO <= #NEWNO# ]]>
+	</update>
+	
+	<update id="delRouteDayByRouteCityIdDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_DAY SET IS_DEL = 1 where ROUTE_CITY_ID = #ID#
+	</update>
+	
+	<update id="updateRouteDayDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_DAY
+		SET ID = #ID#
+		<isNotEmpty property="NO">
+			,NO = #NO#
+		</isNotEmpty>
+		<isNotEmpty property="TODAY_TIPS">
+			,TODAY_TIPS = #TODAY_TIPS#
+		</isNotEmpty>
+		<isNotEmpty property="HOTEL_TIPS">
+			,HOTEL_TIPS = #HOTEL_TIPS#
+		</isNotEmpty>
+		<isNotEmpty property="PAY_TIPS">
+			,PAY_TIPS = #PAY_TIPS#
+		</isNotEmpty>
+		<isNotEmpty property="BREAKFAST">
+			,BREAKFAST = #BREAKFAST#
+		</isNotEmpty>
+		<isNotEmpty property="LUNCH">
+			,LUNCH = #LUNCH#
+		</isNotEmpty>
+		<isNotEmpty property="DINNER">
+			,DINNER = #DINNER#
+		</isNotEmpty>
+		<isNotEmpty property="TITLE_TYPE">
+			,TITLE_TYPE = #TITLE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="TITLE">
+			,TITLE = #TITLE#
+		</isNotEmpty>
+		<isNotEmpty property="BEGIN_CITY">
+			,BEGIN_CITY = #BEGIN_CITY#
+		</isNotEmpty>
+		<isNotEmpty property="TOOL">
+			,TOOL = #TOOL#
+		</isNotEmpty>
+		<isNotEmpty property="END_CITY">
+			,END_CITY = #END_CITY#
+		</isNotEmpty>
+		<isNotEmpty property="TOOL1">
+			,TOOL1 = #TOOL1#
+		</isNotEmpty>
+		<isNotEmpty property="END_CITY1">
+			,END_CITY1 = #END_CITY1#
+		</isNotEmpty>
+		<isNotEmpty property="IS_DEL">
+			,IS_DEL = 1
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_CITY_ID">
+			,ROUTE_CITY_ID = #ROUTE_CITY_ID#
+		</isNotEmpty>
+		where ID = #ID#
+	</update>
+	
+	<resultMap id="routeDayDetailResult" class="cn.sd.entity.produce.RouteDayDetail">
+	   	<result column="ID" property="ID" jdbcType="VARCHAR" />
+	   	<result column="DAY_ID" property="DAY_ID" jdbcType="VARCHAR" />
+	   	<result column="TITLE" property="TITLE" jdbcType="VARCHAR" />
+	   	<result column="CONTENT" property="CONTENT" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<statement id="listRouteDayDetailDao" parameterClass="java.util.Map" resultMap="routeDayDetailResult">
+		select * from (
+			select a.ID,
+				a.DAY_ID,
+				a.TITLE,
+				a.CONTENT,
+				to_number(replace(decode(a.title,'上午','07:59','下午','12:59','全天','00:00',a.title),':','')) order_des
+			from SD_PRO_ROUTE_DAY_DETAIL a, SD_PRO_ROUTE_DAY b
+			where 1 = 1
+			and a.day_id = b.id
+			<isNotEmpty property="DAY_ID">
+				and a.DAY_ID = #DAY_ID#
+			</isNotEmpty>
+			<isNotEmpty property="ID">
+				and a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="ROUTE_ID">
+				and b.ROUTE_ID = #ROUTE_ID#
+			</isNotEmpty>
+		) a order by a.order_des
+	</statement>
+	
+	<insert id="saveRouteDayDetailDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_DAY_DETAIL
+		  (
+			ID,
+			DAY_ID,
+			TITLE,
+			CONTENT
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#DAY_ID#,
+			#TITLE#,
+			#CONTENT#
+		  )
+	</insert>
+	
+	<delete id="delRouteDayDetailDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_DAY_DETAIL where DAY_ID = #DAY_ID#
+	</delete>
+	
+	<statement id="listRouteScenicDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ROUTE_ID,
+			a.DAY_DETAIL_ID,
+			a.SCENIC_ID,
+			a.SCENIC_NAME
+		from SD_PRO_ROUTE_SCENIC a
+		where 1 = 1
+		<isNotEmpty property="DAY_DETAIL_ID">
+			and a.DAY_DETAIL_ID = #DAY_DETAIL_ID#
+		</isNotEmpty>
+		<isNotEmpty property="SCENIC_ID">
+			and a.SCENIC_ID = #SCENIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveRouteScenicDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_SCENIC
+		  (
+			ID,
+			ROUTE_ID,
+			DAY_DETAIL_ID,
+			SCENIC_ID,
+			SCENIC_NAME
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#DAY_DETAIL_ID#,
+			#SCENIC_ID#,
+			#SCENIC_NAME#
+		  )
+	</insert>
+	
+	<delete id="delRouteScenicDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_SCENIC where DAY_DETAIL_ID in(SELECT ID FROM SD_PRO_ROUTE_DAY_DETAIL WHERE DAY_ID = #DAY_ID#)
+	</delete>
+	
+	<statement id="listRouteOtherDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ROUTE_ID,
+			a.TITLE,
+			a.CONTENT,
+			a.TYPE
+		from SD_PRO_ROUTE_OTHER a
+		where 1 = 1 
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE">
+			and a.TYPE = #TYPE#
+		</isNotEmpty>
+		order by order_by
+	</statement>
+	
+	<insert id="saveRouteOtherDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_OTHER
+		  (
+			ID,
+			ROUTE_ID,
+			TITLE,
+			CONTENT,
+			TYPE
+			<isNotEmpty property="ORDER_BY">
+			,ORDER_BY
+			</isNotEmpty>
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#TITLE#,
+			#CONTENT#,
+			#TYPE#
+			<isNotEmpty property="ORDER_BY">
+			,#ORDER_BY#
+			</isNotEmpty>
+		  )
+	</insert>
+	
+	<delete id="delRouteOtherDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_OTHER where ROUTE_ID = #ROUTE_ID#
+	</delete>
+	
+	<statement id="listRouteAlbumDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.ID,
+			a.ROUTE_ID,
+			a.IMG_PATH,
+			a.REMARK,
+			a.IS_FACE
+		from SD_PRO_ROUTE_ALBUM a
+		where 1 = 1
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			and a.ID = #ID#
+		</isNotEmpty>
+		ORDER BY A.CREATE_TIME DESC
+	</statement>
+	
+	<insert id="saveRouteAlbumDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_ALBUM
+		  (
+			ID,
+			ROUTE_ID,
+			IMG_PATH,
+			REMARK,
+			IS_FACE,
+			CREATE_TIME
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#IMG_PATH#,
+			#REMARK#,
+			0,
+			SYSDATE
+		  )
+	</insert>
+	
+	<update id="setDefaultFaceDao" parameterClass="java.util.Map">
+		update SD_PRO_ROUTE_ALBUM set IS_FACE = 1 where ID = #ID#
+	</update>
+	
+	<update id="resetFaceDao" parameterClass="java.util.Map">
+		update SD_PRO_ROUTE_ALBUM set IS_FACE = 0 where ROUTE_ID = #ROUTE_ID#
+	</update>
+	
+	<delete id="delRouteAlbumDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_ALBUM where ID = #ID#
+	</delete>
+
+	<statement id="listRouteTagDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select a.TAG_NAME
+		from SD_PRO_ROUTE_TAG a
+		where 1 = 1
+		<isNotEmpty property="ROUTE_ID">
+			and a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TAG_TYPE">
+			and a.TAG_TYPE = #TAG_TYPE#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveRouteTagDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_TAG
+		  (
+			ID,
+			ROUTE_ID,
+			TAG_NAME,
+			TAG_TYPE
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#TAG_NAME#,
+			#TAG_TYPE#
+		  )
+	</insert>
+	
+	<delete id="delRouteTagDao" parameterClass="java.util.Map">
+		delete from SD_PRO_ROUTE_TAG where ROUTE_ID = #ROUTE_ID#
+	</delete>
+	
+	<statement id="listScenicDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select a.* from (select a.*, rownum as myrownum from (
+		select * from (
+		  select b.id as scenic_id,b.TEXT as scenic_text,b.order_by as scenic_order_by,a.JIANPINs,a.PINYINs,a.texts,a.orders,
+		  substr(a.JIANPINs,INSTR(a.JIANPINs,'/', 1, 2)+1) as JIANPINS_SHOW,
+		  substr(a.PINYINs,INSTR(a.PINYINs,'/', 1, 2)+1) as PINYINS_SHOW ,
+		  substr(a.texts,INSTR(a.texts,'/', 1, 2)+1) as TEXTS_SHOW 
+		  from (
+		  SELECT id,
+		      substr(SYS_CONNECT_BY_PATH(JIANPIN, '/'),2) AS JIANPINs,
+		      substr(SYS_CONNECT_BY_PATH(PINYIN, '/'),2)  AS PINYINs,
+		      substr(SYS_CONNECT_BY_PATH(text, '/'),2) AS texts,
+		      substr(SYS_CONNECT_BY_PATH(order_by, '/'),2) AS orders,
+          	  SUBSTR(SYS_CONNECT_BY_PATH(id, '/'),2) AS ids
+		    FROM (
+		    select id,pid,text,order_by,pinyin,jianpin from sd_country
+		    union all
+		    select id,pid,text,order_by,pinyin,jianpin from sd_city
+		    ) 　　start
+		  WITH 
+		  	pid= '-1'
+		  connect BY prior id = pid
+		  ) a, sd_scenic b where a.id = b.pid and ids like '%$PID$%'
+		) a 
+		where 1 = 1
+		<isNotEmpty property="QUERY">
+			and (texts like '%$QUERY$%' 
+			or scenic_text like '%$QUERY$%' 
+			or JIANPINs like '$QUERY$%' 
+			or PINYINs like '$QUERY$%') 
+		</isNotEmpty>
+		order by orders, scenic_order_by
+		)a)a where 1 = 1 <![CDATA[  and a.myrownum >= #start# and a.myrownum <= #end# ]]>
+	</statement>
+	
+	<statement id="routeMinDateDao" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		 select c.min_date,
+          		to_char(last_day(add_months(to_date(c.min_date,'yyyymmdd'),6)),'yyyymmdd') AS min_last_date,
+	    		to_char(last_day(add_months(to_date(c.min_date,'yyyymmdd'),7)),'yyyymmdd')  AS next_last_date 
+		 from (
+			  SELECT MIN(c.min_date) AS min_date
+			  FROM SD_PRO_ROUTE_TRAFFIC a,
+			    SD_PRO_ROUTE_TRAFFIC_DETAIL b,
+			    SD_PRO_TRAFFIC c
+			  WHERE a.id     = b.plan_id
+			  AND c.id       = b.traffic_id
+			  AND b.order_by = 1
+			  and a.is_del = 0 and b.is_del=0 and c.is_del=0
+			  AND a.route_id = #VALUE# 
+		 ) c
+		 
+	</statement>
+	
+	<statement id="routeRulebyPlanDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		 SELECT *
+			FROM
+			  (SELECT 
+			  	a.rule_sql,
+			    a.traffic_id,
+			    b.STAY_CNT,
+			    b.ORDER_BY
+			  FROM SD_PRO_TRAFFIC_RULE_COMPILE a,
+			    (SELECT a.PLAN_ID,
+			      a.TRAFFIC_ID,
+			      a.STAY_CNT,
+			      a.ORDER_BY,
+			      #MIN_DATE#                                            AS begin_date,
+			      DECODE(a.ORDER_BY,1,#MIN_LAST_DATE#,#NEXT_LAST_DATE#) AS end_date
+			    FROM SD_PRO_ROUTE_TRAFFIC_DETAIL a
+			    WHERE plan_id = #PLAN_ID# and a.is_del = 0
+			    ) b
+			    WHERE a.traffic_id = b.TRAFFIC_ID
+			    <![CDATA[  
+					 and (a.begin_date between b.begin_date and b.end_date 
+					 or a.end_date between b.begin_date and b.end_date 
+					or (a.begin_date <= b.begin_date and b.end_date <= a.end_date))
+			  	]]>
+			  ) a
+			  
+			ORDER BY a.ORDER_BY
+
+		 
+	</statement>
+	
+	<statement id="routePlanAllDao" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select a.id as PLAN_ID,count(1) as cnt from SD_PRO_ROUTE_TRAFFIC a,SD_PRO_ROUTE_TRAFFIC_DETAIL b where a.id=b.plan_id and b.is_del=0 and a.route_id = #VALUE# and a.is_del = 0
+		group by a.id 
+	</statement>
+	
+	<delete id="delRouteCalendarDao" parameterClass="java.lang.String"  >
+		delete from  SD_PRO_ROUTE_CALENDAR where route_id=#VALUE#
+	</delete>
+	 
+	<insert id="routeCalendarDao" parameterClass="java.lang.String"  >
+		insert into SD_PRO_ROUTE_CALENDAR(
+					ID,
+					ROUTE_ID,
+					RQ,
+					ACTUAL_PRICE,
+					ACTUAL_INTER_PRICE,
+					PLANID,
+					RULEIDS,
+					PLANIDGROUP,
+					RULEIDGROUP,
+					DAY_NUM,
+					END_TIME,
+					TRAFFIC_ID
+					)
+					
+					$VALUE$
+	</insert>
+	
+	<statement id="listRouteCalendarDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.RQ,
+		  a.ACTUAL_PRICE,
+		  a.ACTUAL_INTER_PRICE,
+		  a.PLANID,
+		  a.RULEIDS,
+		  a.PLANIDGROUP,
+		  a.RULEIDGROUP,
+		  a.ROUTE_ID,
+		  a.DAY_NUM,
+		  a.END_TIME,
+		  a.TRAFFIC_ID
+		FROM sd_pro_route_calendar a
+		WHERE 1 = 1 
+		<isNotEmpty property="ROUTE_ID">
+			and a.route_id = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="RQ">
+			and a.rq = #RQ#
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="getRouteIdByruleIdDao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT a.route_id
+		FROM sd_pro_route_traffic a,
+		  sd_pro_route_traffic_detail b,
+		  sd_pro_traffic_rule c,
+		  sd_pro_route d
+		where b.plan_id    = a.id
+		and b.traffic_id = c.traffic_id
+		and a.route_id = d.id
+		and d.is_del = 0
+		and a.is_del = 0
+		and b.is_del = 0
+		and c.id = #VALUE#
+		GROUP BY a.route_id
+	</statement>
+	<statement id="getOutTimeByruleIdDao" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select TRUNC(to_number(to_date(END_DATE,'yyyymmdd')-sysdate),0) from SD_PRO_TRAFFIC_RULE where id = #VALUE#
+	</statement>
+	
+	<statement id="getOutTimeByruleIdBeginDao" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select TRUNC(to_number(to_date(BEGIN_DATE,'yyyymmdd')-sysdate),0) from SD_PRO_TRAFFIC_RULE where id = #VALUE#
+	</statement>
+	
+	<statement id="countScenicDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) s from (
+		  select b.id as scenic_id,b.TEXT as scenic_text,b.order_by as scenic_order_by,a.JIANPINs,a.PINYINs,a.texts,a.orders,
+		  substr(a.JIANPINs,INSTR(a.JIANPINs,'/', 1, 2)+1) as JIANPINS_SHOW,
+		  substr(a.PINYINs,INSTR(a.PINYINs,'/', 1, 2)+1) as PINYINS_SHOW ,
+		  substr(a.texts,INSTR(a.texts,'/', 1, 2)+1) as TEXTS_SHOW 
+		  from (
+		  SELECT id,
+		      substr(SYS_CONNECT_BY_PATH(JIANPIN, '/'),2) AS JIANPINs,
+		      substr(SYS_CONNECT_BY_PATH(PINYIN, '/'),2)  AS PINYINs,
+		      substr(SYS_CONNECT_BY_PATH(text, '/'),2) AS texts,
+		      substr(SYS_CONNECT_BY_PATH(order_by, '/'),2) AS orders,
+          	  SUBSTR(SYS_CONNECT_BY_PATH(id, '/'),2) AS ids
+		    FROM (
+		    select id,pid,text,order_by,pinyin,jianpin from sd_country
+		    union all
+		    select id,pid,text,order_by,pinyin,jianpin from sd_city
+		    ) 　　start
+		  WITH 
+		  	pid= '-1'
+		  connect BY prior id = pid
+		  ) a, sd_scenic b where a.id = b.pid and ids like '%$PID$%'
+		) a 
+		where 1 = 1
+		<isNotEmpty property="QUERY">
+			and (texts like '%$QUERY$%' 
+			or scenic_text like '%$QUERY$%' 
+			or JIANPINs like '$QUERY$%' 
+			or PINYINs like '$QUERY$%') 
+		</isNotEmpty>
+	</statement>
+	
+	<statement id="countRouteDayNum" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(a.id) CNT_DAY,
+			  a.route_id,
+			  a.route_city_id
+			FROM sd_pro_route_day a, sd_pro_route_city b
+			WHERE a.route_city_id=  b.id 
+	    and a.route_id = #ROUTE_ID#
+			and a.is_del = 0
+			GROUP BY a.route_id,
+			  a.route_city_id
+	</statement>
+	
+	<statement id="calendarDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.route_id,
+		  a.rq,
+		  a.actual_price as traffic_actual_price,
+		  a.actual_inter_price as traffic_actual_inter_price,
+		  a.planid,
+		  b.route_price,
+		  b.route_inter_price,
+		  (a.actual_price + b.route_price) as ACTUAL_PRICE,
+		  (a.actual_inter_price + b.route_inter_price) as ACTUAL_INTER_PRICE
+		FROM
+		  (SELECT a.route_id,
+		      a.rq,
+		      a.actual_price,
+		      a.actual_inter_price,
+		      a.planid
+		    FROM SD_PRO_ROUTE_CALENDAR a
+		     <![CDATA[ WHERE TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + a.DAY_NUM),'yyyymmdd hh24:mi') <= a.rq ]]>
+		      ||' '
+		      || a.END_TIME
+		      <isNotEmpty property="START_DATE">
+		      	<![CDATA[ AND a.rq >= #START_DATE#  AND a.rq <= #END_DATE# ]]> 
+		      </isNotEmpty>
+		      AND a.route_id = #ROUTE_ID#
+		  ) a,
+		  (SELECT a.entity_id,
+		    SUM(DECODE(a.type_id, '0FA5123749D28C87E050007F0100BCAD', a.price,0)) AS route_price,
+		    SUM(DECODE(a.type_id, '0FA5123749D38C87E050007F0100BCAD', a.price,0)) AS route_inter_price
+		  FROM sd_pro_base_price a
+		  where a.entity_id = #ROUTE_ID#
+		  AND a.attr_id     = '0FA5123749CF8C87E050007F0100BCAD'
+		  GROUP BY a.entity_id
+		  ) b
+		WHERE a.route_id = b.entity_id
+		order by a.rq
+	</statement>
+	
+	
+	<statement id="listRouteTrafficDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.ROUTE_ID,
+		  a.NO,
+		  a.TITLE,
+		  a.TITLE as PLAN_TITLE,
+		  a.ID as PLANID
+		FROM SD_PRO_ROUTE_TRAFFIC a
+		WHERE a.IS_DEL = 0
+		<isNotEmpty property="ROUTE_ID">
+			AND a.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ID">
+			AND a.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="IDS">
+			AND a.ID in ($IDS$)
+		</isNotEmpty>
+		ORDER BY a.NO
+	</statement>
+	
+	<insert id="saveRouteTrafficDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_TRAFFIC
+		  (
+			ID,
+			ROUTE_ID,
+			NO,
+			IS_DEL,
+			TITLE
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#ROUTE_ID#,
+			#NO#,
+			0,
+			#TITLE#
+		  )
+	</insert>
+	
+	<update id="delRouteTrafficDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_TRAFFIC
+		SET IS_DEL = 1
+		where ID = #ID#
+	</update>
+	
+	<update id="updateRouteTrafficDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_TRAFFIC
+		SET TITLE = #TITLE#
+		where ID = #ID#
+	</update>
+	
+	<update id="updateRouteTrafficNOMinusDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_TRAFFIC
+		SET NO         = (NO - 1)
+		WHERE ROUTE_ID = (SELECT a.ROUTE_ID FROM SD_PRO_ROUTE_TRAFFIC a WHERE a.ID = #ID#)
+		AND NO >= (SELECT a.NO FROM SD_PRO_ROUTE_TRAFFIC a WHERE a.ID = #ID#)
+	</update>
+	
+	<statement id="listRouteTrafficDetailDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT a.ID,
+		  a.PLAN_ID,
+		  a.ORDER_BY,
+		  a.BEGIN_CITY_ID,
+		  a.BEGIN_CITY_NAME,
+		  a.END_CITY_ID,
+		  a.END_CITY_NAME,
+		  a.TRAFFIC_ID,
+		  a.TRAFFIC_NAME,
+		  a.STAY_CNT,
+		  b.TITLE,
+		  c.TITLE as ROUTE_TITLE,
+		  c.NO as ROUTE_NO,
+		  ('方案'|| b.no || ' ' || b.title) as PLAN_NAME ,
+		  t.BEGIN_STATION,
+		  t.END_STATION,
+		  t.TYPE,
+		  t.IS_SINGLE,
+		  t.END_DATE,
+		  t.END_TIME
+		FROM SD_PRO_ROUTE_TRAFFIC_DETAIL a,
+		  SD_PRO_ROUTE_TRAFFIC b,
+		  SD_PRO_ROUTE c,
+		  sd_pro_traffic t
+		WHERE a.PLAN_ID = b.ID
+		AND b.ROUTE_ID  = c.ID
+		AND a.traffic_id = t.id
+		AND a.IS_DEL    = 0
+		AND b.IS_DEL    = 0
+		AND c.IS_DEL    = 0
+		<isNotEmpty property="ROUTE_ID">
+			AND b.ROUTE_ID = #ROUTE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PLAN_ID">
+			AND a.PLAN_ID  = #PLAN_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TRAFFIC_ID">
+			AND a.TRAFFIC_ID  = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_PUB">
+			AND c.IS_PUB  = #ROUTE_PUB#
+		</isNotEmpty>
+		ORDER BY c.id, b.NO 
+	</statement>
+	
+	<statement id="countRouteTrafficDetailDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM SD_PRO_ROUTE_TRAFFIC_DETAIL a,
+		  SD_PRO_ROUTE_TRAFFIC b,
+		  SD_PRO_ROUTE c
+		WHERE a.PLAN_ID = b.ID
+		AND b.ROUTE_ID  = c.ID
+		AND a.IS_DEL    = 0
+		AND b.IS_DEL    = 0
+		AND c.IS_DEL    = 0
+		<isNotEmpty property="PLAN_ID">
+			AND a.PLAN_ID  = #PLAN_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TRAFFIC_ID">
+			AND a.TRAFFIC_ID  = #TRAFFIC_ID#
+		</isNotEmpty>
+		<isNotEmpty property="ROUTE_PUB">
+			AND c.IS_PUB  = #ROUTE_PUB#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveRouteTrafficDetailDao" parameterClass="java.util.Map">
+		INSERT
+		INTO SD_PRO_ROUTE_TRAFFIC_DETAIL
+		  (
+			ID,
+			PLAN_ID,
+			ORDER_BY,
+			BEGIN_CITY_ID,
+			BEGIN_CITY_NAME,
+			END_CITY_ID,
+			END_CITY_NAME,
+			TRAFFIC_ID,
+			TRAFFIC_NAME,
+			STAY_CNT,
+			IS_DEL
+		  )
+		  VALUES
+		  (
+			#ID#,
+			#PLAN_ID#,
+			#ORDER_BY#,
+			#BEGIN_CITY_ID#,
+			#BEGIN_CITY_NAME#,
+			#END_CITY_ID#,
+			#END_CITY_NAME#,
+			#TRAFFIC_ID#,
+			#TRAFFIC_NAME#,
+			#STAY_CNT#,
+			0
+		  )
+	</insert>
+	
+	<update id="delRouteTrafficDetailDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_TRAFFIC_DETAIL
+		SET IS_DEL = 1
+		where id not in ($IDS$) and IS_DEL = 0 and plan_id = #PLAN_ID#
+	</update>
+	
+	<update id="delRouteTrafficDetailByPlanIdDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_TRAFFIC_DETAIL
+		SET IS_DEL = 1
+		where PLAN_ID = #PLAN_ID#
+	</update>
+	
+	<update id="updateRouteTrafficDetailDao" parameterClass="java.util.Map">
+		UPDATE SD_PRO_ROUTE_TRAFFIC_DETAIL SET
+		PLAN_ID = #PLAN_ID#,
+		ORDER_BY = #ORDER_BY#,
+		BEGIN_CITY_ID = #BEGIN_CITY_ID#,
+		BEGIN_CITY_NAME = #BEGIN_CITY_NAME#,
+		END_CITY_ID = #END_CITY_ID#,
+		END_CITY_NAME = #END_CITY_NAME#,
+		TRAFFIC_ID = #TRAFFIC_ID#,
+		TRAFFIC_NAME = #TRAFFIC_NAME#,
+		STAY_CNT = #STAY_CNT# 
+		where id = #ID# 
+	</update>
+	
+	<statement id="maxTrafficNODao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT (NVL(MAX(a.no), 0) + 1) max_no
+		FROM sd_pro_route_traffic a
+		WHERE a.route_id = #ROUTE_ID#
+		and a.is_del = 0
+	</statement>
+	
+	<statement id="sumPricesDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		$sql$
+	</statement>
+	
+	<statement id="countEndCityDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT  count(distinct nvl(c.text,d.text)) s
+		FROM sd_pro_route_city a,
+		sd_city b,
+		sd_city c,
+		sd_country d
+		WHERE a.city_id = b.id(+)
+		and b.pid = c.id(+)
+		and a.city_id = d.id(+)
+		and a.route_id = #ROUTE_ID#
+	</statement>
+	
+	<update id="delRouteDao" parameterClass="java.util.Map">
+		update sd_pro_route set is_del = 1 where id = #ID#
+	</update>
+	
+	<statement id="trafficPastDao" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) as cnt
+		FROM sd_order_base a,
+		  sd_order_route_traffic_detail b,
+		  sd_pro_traffic c
+		WHERE a.id     = b.order_id
+		AND c.id       = b.TRAFFIC_ID
+		and a.IS_DEL = 0
+		AND b.ORDER_BY = 1
+		AND a.id       = #ORDER_ID#
+		<![CDATA[ and to_char(sysdate,'yyyy-mm-dd hh24:mi') < (to_char(to_date(a.START_DATE,'yyyy-mm-dd')-c.END_DATE,'yyyy-mm-dd')||' '||c.END_TIME) ]]> 
+	</statement>
+	
+	<statement id="routeTrafficByRouteIdDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t1.traffic_id
+		FROM sd_pro_route_traffic t,
+		  sd_pro_route_traffic_detail t1
+		WHERE t.id     = t1.plan_id
+		AND t.route_id = #ROUTE_ID#
+	</statement>
+	
+	<statement id="checkPastDateDao" parameterClass="java.util.Map" resultClass="java.lang.String">
+		<![CDATA[select case when TO_CHAR((to_date(TO_CHAR(sysdate, 'yyyymmdd hh24:mi'),'yyyymmdd hh24:mi') + #PAST_DATE#),'yyyymmdd hh24:mi') <= #END_DATE#||''||#PAST_TIME# then '1' else '0' end from dual]]> 
+	</statement>
+</sqlMap>

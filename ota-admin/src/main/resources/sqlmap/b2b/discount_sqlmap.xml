@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="discount">
+
+	<insert id="saveDiscountDao" parameterClass="java.util.Map">
+		insert into SD_DISCOUNT(
+			ID,
+			TITLE,
+			IS_REFUND,
+			BEGIN_TIME,
+			END_TIME,
+			SITE_RELE_ID,
+			PRO_TYPE,
+			REMARK,
+			CREATE_USER,
+			CREATE_TIME,
+			CREATE_USER_ID) 
+		values(
+			#ID#,
+			#TITLE#,
+			#IS_REFUND#,
+			to_date(#BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss'),
+			to_date(#END_TIME#, 'yyyy-mm-dd HH24:mi:ss'),
+			#SITE_RELE_ID#,
+			#PRO_TYPE#,
+			#REMARK#,
+			#CREATE_USER#,
+			sysdate,
+			#CREATE_USER_ID#)
+	</insert>
+	
+	<update id="updateDiscountDao" parameterClass="java.util.Map">
+		UPDATE SD_DISCOUNT SET 
+		TITLE = #TITLE#,
+		IS_REFUND  = #IS_REFUND#,
+		BEGIN_TIME  = to_date(#BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss'),
+		END_TIME  = to_date(#END_TIME#, 'yyyy-mm-dd HH24:mi:ss'),
+		SITE_RELE_ID  = #SITE_RELE_ID#,
+		PRO_TYPE  = #PRO_TYPE#,
+		REMARK  = #REMARK#,
+		CREATE_USER  = #CREATE_USER#,
+		CREATE_TIME = sysdate,
+		CREATE_USER_ID  = #CREATE_USER_ID#
+		where ID = #ID#
+	</update>
+	
+	<update id="updateDiscountUseDao" parameterClass="java.util.Map">
+		UPDATE SD_DISCOUNT SET 
+		IS_USE = #IS_USE#,
+		CREATE_USER  = #CREATE_USER#,
+		CREATE_TIME = sysdate,
+		CREATE_USER_ID  = #CREATE_USER_ID#
+		where ID = #ID#
+	</update>
+	
+	<statement id="listDiscountDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.TITLE,
+		  t.IS_REFUND,
+		  t.IS_USE,
+		  to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		  to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME,
+		  t.SITE_RELE_ID,
+		  t.PRO_TYPE,
+		  t.REMARK,
+		  t.CREATE_USER,
+		  t.CREATE_TIME,
+		  t.CREATE_USER_ID,
+		  t4.SUB_AREA as CITY_NAME
+		FROM SD_DISCOUNT t,
+		  SD_SITE_MANAGER t1,
+		  SD_USER_COMPANY t2,
+		  SD_USER t3,
+		  SD_SITE t4
+		WHERE 1            = 1
+		AND t.SITE_RELE_ID = t1.ID
+		AND t1.USER_ID     = t2.USER_ID
+		AND t2.ID          = t3.COMPANY_ID
+		AND t1.SITE_ID = t4.ID
+		<isNotEmpty property="ID">
+		AND t.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="PRO_ID">
+		AND t5.PRO_ID = #PRO_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PRO_TYPE">
+		AND t.PRO_TYPE          = #PRO_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="IS_USE">
+		AND t.IS_USE          = #IS_USE#
+		</isNotEmpty>
+		<isNotEmpty property="NOTID">
+		AND t.ID          != #NOTID#
+		</isNotEmpty>
+		<isNotEmpty property="QUERY">
+		AND t.TITLE like '%$QUERY$%' 
+		</isNotEmpty>
+		<isNotEmpty property="SITE_RELE_ID">
+		AND t.SITE_RELE_ID          = #SITE_RELE_ID#
+		</isNotEmpty>
+		<isNotEmpty property="USER_ID">
+		AND t3.ID          = #USER_ID#
+		</isNotEmpty>
+		<isNotEmpty property="CITY_ID">
+		AND t4.CITY_ID          = #CITY_ID#
+		</isNotEmpty>
+		<isNotEmpty property="LIMIT_DATE">
+		<![CDATA[ AND t.BEGIN_TIME <= sysdate and t.END_TIME >= sysdate ]]>
+		</isNotEmpty>
+		ORDER BY t.CREATE_TIME DESC
+	</statement>
+	
+	<statement id="listProduceDiscountDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		  t.TITLE,
+		  t.IS_REFUND,
+		  t.IS_USE,
+		  to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		  to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME,
+		  t.SITE_RELE_ID,
+		  t.PRO_TYPE,
+		  t.REMARK,
+		  t.CREATE_USER,
+		  t.CREATE_TIME,
+		  t.CREATE_USER_ID
+		FROM SD_DISCOUNT t,
+		  (SELECT DISTINCT t.PRO_ID, t.DISCOUNT_ID FROM SD_DISCOUNT_PRODUCT t) t1
+		WHERE 1            = 1
+		AND t.ID = t1.DISCOUNT_ID(+)
+		<isNotEmpty property="ID">
+		AND t.ID = #ID#
+		</isNotEmpty>
+		<isNotEmpty property="PRO_ID">
+		AND t1.PRO_ID = #PRO_ID#
+		</isNotEmpty>
+		<isNotEmpty property="IS_USE">
+		AND t.IS_USE          = #IS_USE#
+		</isNotEmpty>
+		<isNotEmpty property="LIMIT_DATE">
+		<![CDATA[ AND t.BEGIN_TIME <= sysdate and t.END_TIME >= sysdate ]]>
+		</isNotEmpty>
+		ORDER BY t.CREATE_TIME DESC
+	</statement>
+	
+	<insert id="saveDiscountRuleDao" parameterClass="java.util.Map">
+		insert into SD_DISCOUNT_RULE(
+			ID,
+			RULE_TYPE,
+			DISCOUNT_ID,
+			MONEY,
+			PAY_WAY,
+			PLATFROM) 
+		values(
+			#ID#,
+			#RULE_TYPE#,
+			#DISCOUNT_ID#,
+			#MONEY#,
+			#PAY_WAY#,
+			#PLATFROM#)
+	</insert>
+	
+	<update id="updateDiscountRuleDao" parameterClass="java.util.Map">
+		UPDATE SD_DISCOUNT_RULE SET 
+		RULE_TYPE = #RULE_TYPE#,
+		DISCOUNT_ID = #DISCOUNT_ID#,
+		MONEY = #MONEY#,
+		PAY_WAY = #PAY_WAY#,
+		PLATFROM = #PLATFROM#
+		where ID = #ID#
+	</update>
+	
+	<update id="updateDiscountRuleUseDao" parameterClass="java.util.Map">
+		UPDATE SD_DISCOUNT_RULE SET 
+		IS_USE = #IS_USE#
+		where ID = #ID#
+	</update>
+	
+	<statement id="listDiscountRuleDao" parameterClass="java.util.Map" resultClass="java.util.HashMap" remapResults="true">
+		SELECT t.ID,
+			t.RULE_TYPE,
+			t.DISCOUNT_ID,
+			t.MONEY,
+			t.PAY_WAY,
+			t.PLATFROM,
+			t.IS_USE
+			<isNotEmpty property="PRO_ID">
+			,t2.DISCOUNT_RULE_ID as CHECKED
+			</isNotEmpty>
+		FROM SD_DISCOUNT_RULE t, SD_DISCOUNT t1
+		<isNotEmpty property="PRO_ID">
+		,(SELECT t.DISCOUNT_RULE_ID FROM SD_DISCOUNT_PRODUCT t WHERE t.PRO_ID = #PRO_ID#) t2
+		</isNotEmpty>
+		where t.DISCOUNT_ID = t1.ID
+		<isNotEmpty property="PRO_ID">
+			<isNotEmpty property="valid">
+				AND t.ID = t2.DISCOUNT_RULE_ID
+			</isNotEmpty>
+			<isEmpty property="valid">
+				AND t.ID = t2.DISCOUNT_RULE_ID(+)
+			</isEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="IS_USE">
+		AND t.IS_USE          = #IS_USE#
+		</isNotEmpty>
+		<isNotEmpty property="NOTID">
+		AND t.ID          != #NOTID#
+		</isNotEmpty>
+		<isNotEmpty property="RULE_TYPE">
+		AND t.RULE_TYPE          = #RULE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="PAY_WAY">
+		AND t.PAY_WAY          = #PAY_WAY#
+		</isNotEmpty>
+		<isNotEmpty property="PLATFROM">
+		AND t.PLATFROM          = #PLATFROM#
+		</isNotEmpty>
+		<isNotEmpty property="DISCOUNT_ID">
+		and t.DISCOUNT_ID = #DISCOUNT_ID#
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveDiscountProductDao" parameterClass="java.util.Map">
+		insert into SD_DISCOUNT_PRODUCT(
+			ID,
+		    PRO_ID,
+		    PRO_TYPE,
+		    DISCOUNT_ID,
+		    DISCOUNT_RULE_ID) 
+		values(
+			#ID#,
+			#PRO_ID#,
+		    #PRO_TYPE#,
+		    #DISCOUNT_ID#,
+		    #DISCOUNT_RULE_ID#)
+	</insert>
+	
+	<delete id="delDiscountProductDao" parameterClass="java.util.Map">
+		DELETE SD_DISCOUNT_PRODUCT WHERE PRO_ID = #PRO_ID#
+	</delete>
+	
+	<statement id="listDiscountProductDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		    t.PRO_ID,
+		    t.PRO_TYPE,
+		    t.DISCOUNT_ID,
+		    t.DISCOUNT_RULE_ID,
+		    
+		    t1.RULE_TYPE,
+			t1.MONEY,
+			t1.PAY_WAY,
+			t1.PLATFROM,
+			
+			t2.TITLE
+			
+		FROM SD_DISCOUNT_PRODUCT t, SD_DISCOUNT_RULE t1, SD_DISCOUNT t2
+		where t.DISCOUNT_RULE_ID = t1.ID 
+		AND t.DISCOUNT_ID = t2.ID
+		<isNotEmpty property="PRO_ID">
+		AND t.PRO_ID          = #PRO_ID#
+		</isNotEmpty>
+		<isNotEmpty property="DISCOUNT_ID">
+		AND t.DISCOUNT_ID          = #DISCOUNT_ID#
+		</isNotEmpty>
+		<isNotEmpty property="DISCOUNT_RULE_ID">
+		AND t.DISCOUNT_RULE_ID          = #DISCOUNT_RULE_ID#
+		</isNotEmpty>
+		
+		<isNotEmpty property="RULE_TYPE">
+		AND t1.RULE_TYPE          = #RULE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="PAY_WAY">
+		AND t1.PAY_WAY          = #PAY_WAY#
+		</isNotEmpty>
+		<isNotEmpty property="PLATFROM">
+		AND t1.PLATFROM          = #PLATFROM#
+		</isNotEmpty>
+		<isNotEmpty property="IS_USE">
+		AND t1.IS_USE          = #IS_USE#
+		</isNotEmpty>	
+		<isNotEmpty property="LIMIT_DATE">
+		<![CDATA[ AND t2.BEGIN_TIME <= sysdate and t2.END_TIME >= sysdate ]]>
+		</isNotEmpty>
+	</statement>
+	
+	<insert id="saveDiscountOrderDao" parameterClass="java.util.Map">
+		insert into SD_DISCOUNT_ORDER(
+			ID,
+		    ORDER_ID,
+		    DISCOUNT_ID,
+		    IS_REFUND,
+		    BEGIN_TIME,
+		    END_TIME) 
+		values(
+			#ID#,
+			#ORDER_ID#,
+		    #DISCOUNT_ID#,
+		    #IS_REFUND#,
+		    to_date(#BEGIN_TIME#, 'yyyy-mm-dd HH24:mi:ss'),
+		    to_date(#END_TIME#, 'yyyy-mm-dd HH24:mi:ss'))
+	</insert>
+	
+	<statement id="listDiscountOrderDao" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT t.ID,
+		    t.ORDER_ID,
+		    t.DISCOUNT_ID,
+		    t.IS_REFUND,
+		    to_char(t.BEGIN_TIME, 'yyyy-mm-dd HH24:mi:ss') as BEGIN_TIME,
+		    to_char(t.END_TIME, 'yyyy-mm-dd HH24:mi:ss') as END_TIME, 
+		   
+		    t.RULE_TYPE,
+		    t.MONEY,
+		    t.PAY_WAY,
+		    t.PLATFROM,
+		    t.TOTAL_AMOUNT,
+   
+   			t1.TITLE
+		FROM SD_DISCOUNT_ORDER t, SD_DISCOUNT t1  
+		where 1 = 1
+		and t.DISCOUNT_ID = t1.ID
+		<isNotEmpty property="ORDER_ID">
+		AND t.ORDER_ID = #ORDER_ID#
+		</isNotEmpty> 
+	</statement>
+
+	<update id="updateDiscountOrderDao" parameterClass="java.util.Map">
+		update SD_DISCOUNT_ORDER SET
+		DISCOUNT_RULE_ID = #DISCOUNT_RULE_ID#,
+		RULE_TYPE = #RULE_TYPE#,
+		MONEY = #MONEY#,
+		PAY_WAY = #PAY_WAY#,
+		PLATFROM = #PLATFROM#,
+		TOTAL_AMOUNT = #TOTAL_AMOUNT#
+		WHERE ORDER_ID = #ORDER_ID#
+	</update>
+	
+	<delete id="delDiscountOrderDao" parameterClass="java.util.Map">
+		DELETE FROM SD_DISCOUNT_ORDER WHERE ORDER_ID = #ORDER_ID#
+	</delete>
+	
+</sqlMap>

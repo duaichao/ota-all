@@ -1,0 +1,315 @@
+/*
+KISSY CSS Reset
+*/
+
+/* 清除内外边距 */
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
+dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
+pre, /* text formatting elements 文本格式元素 */
+fieldset, lengend, button, input, textarea, /* form elements 表单元素 */
+th, td { /* table elements 表格元素 */
+    margin: 0;
+    padding: 0;
+}
+
+/* 设置默认字体 */
+body,
+button, input, select, textarea { /* for ie */
+    /*font: 12px/1 Tahoma, Helvetica, Arial, "宋体", sans-serif;*/
+    /*font: 12px/1 Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif;*/ /* 用 ascii 字符表示，使得在任何编码下都无问题 */
+    font: 12px/1 Tahoma, Helvetica, Arial, "Microsoft Yahei", sans-serif;
+}
+
+h1 { font-size: 18px; /* 18px / 12px = 1.5 */ }
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+h4, h5, h6 { font-size: 100%; }
+
+address, cite, dfn, em, var { font-style: normal; } /* 将斜体扶正 */
+code, kbd, pre, samp, tt { font-family: "Courier New", Courier, monospace; } /* 统一等宽字体 */
+small { font-size: 12px; } /* 小于 12px 的中文很难阅读，让 small 正常化 */
+
+/* 重置列表元素 */
+ul, ol { list-style: none; }
+
+/* 重置文本格式元素 */
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+abbr[title], acronym[title] { /* 注：1.ie6 不支持 abbr; 2.这里用了属性选择符，ie6 下无效果 */
+    border-bottom: 1px dotted;
+    cursor: help;
+}
+
+q:before, q:after { content: ''; }
+
+/* 重置表单元素 */
+legend { color: #000; } /* for ie6 */
+fieldset, img { border: none; } /* img 搭车：让链接里的 img 无边框 */
+/* 注：optgroup 无法扶正 */
+button, input, select, textarea {
+    font-size: 100%; /* 使得表单元素在 ie 下能继承字体大小 */
+}
+
+/* 重置表格元素 */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* 重置 hr */
+hr {
+    border: none;
+    height: 1px;
+}
+
+/* 让非ie浏览器默认也显示垂直滚动条，防止因滚动条引起的闪烁 */
+html { overflow-y: scroll; }
+body{
+	padding: 0;
+	margin: 0;
+	font: 12px/1 Tahoma, Helvetica, Arial, "Microsoft Yahei", sans-serif;
+	color: #222;
+	background:#fafdff url(../images/login/register_bg_x.png) repeat-x;
+}
+a:hover{text-decoration: none;}
+.wrapper{width: 1000px;margin: 0 auto;}
+.header{height: 80px;background:#fff;}
+.header .headerWrap{width: 1000px;height: 100%;margin: 0 auto;position: relative;}
+.header .headerWrap .loginLogo{padding: 9px 0;display: block;overflow: hidden;}
+.city{ width:auto;padding:3px;font-size:18px;position: absolute;top:45px;left:130px;}
+.city a{color:#909090;background:#f5f5f5;padding:3px;}
+.city label{cursor:pointer;font-size:12px;color:#909090;padding:0 8px 0 0;}
+.city .more-city{position: absolute;top:26px;left:2px;display:none;padding:5px;width:300px;z-index:1000;border-radius: 3px;background: white;box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+.city .more-city a{background:#fff;padding:0;display: inline-block;font-size:16px;padding:8px;white-space:nowrap;}
+.city a:hover,.city .more-city a:hover{color:#427fed;}
+
+
+.header .headerWrap .nav{width: auto;line-height: 60px;}
+.header .headerWrap .contact{position: absolute;top:15px;right:0px;}
+.header .headerWrap .contact span{color: #909090;font-size: 26px;position:relative;top:-5px;letter-spacing:2px;}
+.header .headerWrap .contact span:last-child {z-index: 1;display: block;font-size: 14px;color: #909090;margin: 4px 0 0 48px;	letter-spacing:0px;}
+.header .headerWrap .contact{
+	position: absolute;
+	top:15px;
+	right:0px;
+}
+.header .headerWrap .contact span{
+	color: #999;
+	font-size: 26px;
+	position:relative;
+	top:-5px;
+	letter-spacing:2px;
+}
+
+.header .headerWrap .contact span.servicetime {
+	z-index: 1;
+	display: block;
+	font-size: 14px;
+	color: #999;
+	margin: 4px 0 0 38px;	
+	letter-spacing:0px;
+}
+.header .headerWrap .contact a.qq{
+	margin: 4px 0 0 38px;	
+}
+
+/* 内容 */
+.wrap{width: 1000px;margin: auto;padding: 30px 0;}
+.wrap .container{position: relative;border-radius: 3px;background: white;box-shadow: 0 0 15px rgba(0,0,0,0.2);}
+.wrap .container .top-step {position: relative;height: 50px;
+text-align: center;
+border-radius: 3px 3px 0 0;
+background: #fafafa;}
+.top-step h3{height:50px;line-height:50px;font-size:18px;font-weight:normal;color: #2b91e3;}
+.top-step ul {position: absolute;top: 0;right: 0;left: 0;text-align: center;counter-reset: step}
+.top-step li {display: inline-block;height: 24px;margin: 0 20px;padding: 13px 12px;line-height: 24px;font-size: 16px;color: #666;counter-increment: step;*display: inline;*zoom:1}
+.top-step li:before {
+    content: counter(step);position: relative;float: left;left: -10px;width: 24px;height: 24px;line-height: 24px;
+    text-align: center;color: white;border-radius: 12px;background: #ccc
+}
+.top-step.for li{cursor:pointer;}
+.top-step.for li:before{content:none;}
+.top-step.for li i:before{font-size:20px;}
+.top-step li.current {color: #2b91e3;border-bottom: 1px solid #2b91e3}
+.top-step li.current:before {background: #2b91e3}
+/* 注册 */
+.register-box {padding:30px 0 30px 50px}
+.register-box.for{padding: 60px 0 100px 238px;}
+.reg-cell {height: 50px;padding-bottom: 15px}
+.reg-cell h4 {float: left;width: 98px;padding-right: 14px;line-height: 50px;text-align: right;font-size: 14px;font-weight: normal;color: #666}
+.reg-min {height: 30px}
+.reg-min h4 {line-height: 30px}
+.input-box {position: relative;float: left;width: 428px;height: 48px;border: 1px solid #e2e5e9}
+.input-box.mini150{margin-left:10px;width:150px;}
+.input-box.mini150 input{width:122px;}
+.input-box.mini310{margin-left:10px;width:312px;}
+.input-box.mini310 input{width:284px;}
+.input-box.w750{width:752px;}
+.input-box.h60{height:65px;}
+.input-box.w750 input{width:724px;}
+
+.input-box.mini328{width:328px;}
+.input-box.mini328 input{width:300px;}
+.input-box.mini128{width:128px;margin-right:10px;}
+.input-box.mini128 input{width:100px;}
+
+
+.input-box label {position: absolute;top: 0;left: 0;z-index: 1;padding: 0 14px;line-height: 48px;font-size: 14px;color: #999;cursor: text}
+.input-box input {position: absolute;top: 0;left: 0;z-index: 2;width: 400px;height: 22px;padding: 13px 14px;line-height: 22px;font-size: 20px;border: 0 none;background: none}
+.input-box input.file{color:#999;font-size:14px;}
+.input-box textarea{position:absolute;top:0,left:0;z-index: 2;width:738px;height:40px;padding: 13px 0px 13px 14px;line-height: 22px;font-size: 20px;border: 0 none;background: none}
+
+.input-box b{position:absolute;right:15px;z-index:3;cursor:pointer;top:15px;font-size:18px;color:#bbb;width:18px;height:18px;}
+
+.button {
+	display: inline-block;
+	min-width: 150px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	font-size: 14px;
+	color: white;
+	border-radius: 3px;
+	background: #2b91e3;
+}
+.btn-disabled, .btn-disabled:hover, .btn-disabled:active {
+	color: #999;
+	background: #f8f9fb;
+	cursor: not-allowed;
+}
+.reg-err{
+	display:none;
+	
+	height:40px;
+	line-height:40px;
+	color: #fff;
+	text-align:center;
+	font-size:16px;
+	background-color: #ffb400;
+}
+
+.reg-bottom{clear:both;height: 50px;margin-left: 100px;margin-top:10px;position:relative;text-align: center;}
+.reg-bottom a.button{width: 300px;font-size: 16px;background: #2fb746;color:#fff;display: inline-block;
+min-width: 150px;
+height: 50px;
+line-height: 50px;
+border-radius: 3px;}
+.reg-bottom a.button:hover{background: #2aa43e;}
+.reg-bottom a.button.loging{
+	border:1px solid #ddd;
+	background: #f1f1f1;
+	color:#aca899;
+}
+.reg-bottom a.button.loging:hover{
+	border:1px solid #ddd;
+	background: #f1f1f1;
+	color:#aca899;
+}
+
+
+
+.reg-bottom .checkbox {display: none}
+.reg-bottom input {width: 14px;height: 14px;margin: 2px 8px 0 0;}
+html:root .reg-bottom .checkbox {
+	position:absolute;
+	left:10px;
+	top:20px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    background-image: url(../images/login/checkbox.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    -webkit-appearance: none
+}
+html:root .reg-bottom input[type="checkbox"] {display: none}
+html:root .reg-bottom input[type="checkbox"]:checked+.checkbox {background-position: -18px 0}
+.reg-bottom label{position:absolute;left:35px;top:22px;font-size:14px;}
+.reg-bottom label a{color: #333;text-decoration: none;outline: none;}
+.reg-bottom label a:hover{text-decoration: underline;}
+
+
+/* 版权 */
+.footer{padding: 20px 0;}
+.footer p{text-align: center;color:#909090;}
+
+.alt-box {text-align:right;border-radius: 3px;z-index:10000;position:absolute;border:1px solid #e2e5e9;background: white;box-shadow: 0 5px 15px rgba(0,0,0,0.2);padding:40px 20px 20px 20px;}
+.alt-box h3{
+	font-size: 18px;font-weight: normal;color:#53a93f;
+	margin-bottom:10px;
+}
+.alt-box .button-finish{
+	
+	padding:0 20px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	background: #2b91e3;
+	display:inline-block;
+	font-size: 18px;
+	color: #fff;
+	border: 0;
+	cursor: pointer;
+	border-radius: 3px;
+	margin-top:10px;
+	border:1px solid transparent;
+}
+.alt-box .button-finish:hover{
+	text-decoration: none;
+    color: white;
+    background: #2d89cd
+}
+
+@font-face {
+  font-family: 'iconfont';
+  src: url('//at.alicdn.com/t/font_1447126109_676558.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/font_1447126109_676558.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/font_1447126109_676558.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/font_1447126109_676558.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/font_1447126109_676558.svg#iconfont') format('svg'); /* iOS 4.1- */
+}
+                                     
+      
+.iconfont {
+  font-family: "iconfont";
+  padding:2px;
+  top:0px;
+  font-size: 20px;
+  font-style: normal!important;
+  font-weight:100!important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; 
+  position:relative;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 9px
+}
+
+::-webkit-scrollbar-button:start:decrement,::-webkit-scrollbar-button:end:increment {
+    display: block;
+    height: 0;
+    background-color: transparent
+}
+
+::-webkit-scrollbar-track-piece{
+    margin: 10px 0;
+    -webkit-border-radius: 0;
+    -webkit-border-bottom-right-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: rgba(0,0,0,0.52);
+    -webkit-border-radius: 4px
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    width: 50px;
+    background-color: rgba(0,0,0,0.52);
+    -webkit-border-radius: 4px
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD Sql Map Config 2.0//EN"
+        "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+    <settings cacheModelsEnabled="true" enhancementEnabled="true"
+              lazyLoadingEnabled="true" maxRequests="32" maxSessions="10"
+              maxTransactions="5" useStatementNamespaces="true" />
+    <sqlMap resource="sqlmap/produce/route_sqlmap.xml" />
+    <sqlMap resource="sqlmap/user/user_sqlmap.xml" />
+    <sqlMap resource="sqlmap/common/common_sqlmap.xml" />
+    <sqlMap resource="sqlmap/produce/traffic_sqlmap.xml" />
+    <sqlMap resource="sqlmap/order/order_sqlmap.xml" />
+    <sqlMap resource="sqlmap/visitor/visitor_sqlmap.xml" />
+</sqlMapConfig>

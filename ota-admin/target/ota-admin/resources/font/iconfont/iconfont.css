@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "iconfont";
+  src: url(/resources/font/iconfont/iconfont.eot);
+  src: url("/resources/font/iconfont/iconfont.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+   url("/resources/font/iconfont/iconfont.woff") format("woff"), /* chrome、firefox */
+   url("/resources/font/iconfont/iconfont.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+   url("/resources/font/iconfont/iconfont.svg#svgFontName") format("svg");/* IE9*/
+  /* iOS 4.1- */
+}
+.iconfont {
+  font-family: "iconfont";
+  padding:2px;
+  top:0px;
+  font-size: 20px;
+  font-style: normal!important;
+  font-weight:100!important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; 
+  -webkit-text-stroke-width: 0.2px;
+  position:relative;
+}
+.iconfont.white{color:#fff;}

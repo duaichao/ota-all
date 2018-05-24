@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="sysjob" class="cn.sd.service.job.SysJob"></bean>
+
+    <bean id="sendSmsMain_methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="sysjob" />
+        </property>
+        <property name="targetMethod">
+            <value>sendSmsMain</value>
+        </property>
+    </bean>
+
+    <bean id="sendSmsMain_cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="sendSmsMain_methodInvokingJobDetail" />
+        </property>
+        <property name="cronExpression">
+            <value>0 0/1 * * * ?</value>
+        </property>
+    </bean>
+
+
+    <bean id="reSeat_methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="sysjob" />
+        </property>
+        <property name="targetMethod">
+            <value>reSeat</value>
+        </property>
+    </bean>
+
+    <bean id="reSeat_cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="reSeat_methodInvokingJobDetail" />
+        </property>
+        <property name="cronExpression">
+            <value>0 0/5 * * * ?</value>
+        </property>
+    </bean>
+
+
+    <bean id="resetEarnestType_methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="sysjob" />
+        </property>
+        <property name="targetMethod">
+            <value>resetEarnestType</value>
+        </property>
+    </bean>
+
+    <bean id="resetEarnestType_cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="resetEarnestType_methodInvokingJobDetail" />
+        </property>
+        <property name="cronExpression">
+            <value>0 0/2 * * * ?</value>
+
+        </property>
+    </bean>
+
+    <bean id="resetPayErrorCnt_methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="sysjob" />
+        </property>
+        <property name="targetMethod">
+            <value>resetPayErrorCnt</value>
+        </property>
+    </bean>
+
+    <bean id="resetPayErrorCnt_cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="resetPayErrorCnt_methodInvokingJobDetail" />
+        </property>
+        <property name="cronExpression">
+            <value>0 0 2 * * ?</value>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+
+                <ref local="sendSmsMain_cronTrigger" />
+
+                <ref local="reSeat_cronTrigger" />
+                <ref local="resetEarnestType_cronTrigger" />
+                <ref local="resetPayErrorCnt_cronTrigger" />
+
+
+            </list>
+        </property>
+    </bean>
+
+
+</beans>

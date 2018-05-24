@@ -1,0 +1,336 @@
+.supplier-tit{
+	width: 100%;
+	color: #fff;
+	padding: 20px;
+	background: #4d9df7;
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+.supplier-tit p{
+	font-size: 14px;
+	line-height: 24px;
+}
+.supplier-tit .suptit-left{
+	border-right: 1px solid #e7e7e7;
+}
+.supplier-tit h1{
+	font-size: 22px;
+	padding-bottom: 10px;
+}
+.supplier-tit .suptit-right{
+	text-align: left;
+	background: #1569ec;
+	border-radius: 5px;
+	padding: 10px 10px 5px;
+}
+.suphot-tit{
+	font-size: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.trv-guider{
+	width: 50%;
+	border-left: 1px dotted #d0d0d0;
+	overflow: hidden;
+	float: left;
+	padding-left: 0;
+	padding-right: 0;
+}
+.trv-guider p{
+	padding-bottom: 2px;
+}
+.trv-guider .sup-info{
+	text-align: center;
+	float: left;
+}
+.trv-guider .sup-info a{
+	display: inline-block;
+	margin-bottom: 5px;
+}
+.trv-guider .sup-info p{
+	display: block;
+}
+.trv-guider .sup-infonum{
+	width: 50%;
+	text-align: center;
+	float: left;
+}
+.trv-guider .sup-infonum a{
+	display: inline-block;
+}
+.trv-guider .sup-infonum p{
+	display: block;
+}
+.trv-guider a img{
+	margin: 0;
+}
+.sup-phone{
+	color: #ff5741;
+	font-weight: bold;
+	border-top: 1px dotted #d0d0d0;
+	padding-top: 4px;
+}
+.border-none{
+	border-left: none;
+}
+.sup-name{
+	filter: none;
+	background: #000;
+    background-color: rgba(0,0,0,0.4);
+    color: #fff;
+    width: 100%;
+    line-height: 22px;
+    padding: 0 10px;
+    position: absolute;
+    bottom: 0;
+}
+.thumbnail .caption{
+	overflow: hidden;
+	padding: 7px 1px 3px 1px;
+}
+/* 地图 */
+.mapArea {
+	border: 1px solid #d2e8ff;
+	overflow:hidden;
+}
+.wayList {
+	background: #f5faff;
+	height: 598px;
+}
+.wayMenu {
+	border-bottom: 1px solid #d2e8ff;
+}
+.wayMenu li {
+	border: 1px solid #d2e8ff;
+	border-bottom: none;
+	background: -moz-linear-gradient(center bottom, #e1eaf7, #ffffff);
+	*+background: #e1eaf7;
+	_background: #e1eaf7;
+}
+.wayMenu li.current {
+	border: 1px solid #79b7e9;
+	border-bottom: 1px solid #f5faff;
+	background: #D4E8FC;
+}
+.wayForm label {
+	color: #003b90;
+	float: left;
+	font-size: 14px;
+	padding: 5px 0;
+}
+.wayForm .sbtn {
+	background-color: #dcdcdc;
+}
+.wayDeatil thead th {
+	background-color: #D4E8FC;
+	border-right: 1px solid #ffffff;
+	border-bottom: 1px solid #D4E8FC;
+	line-height: 18px;
+	color: #0078b6;
+}
+.busTable .h td {
+	background-color: #f1f8ff;
+	border-top: 1px solid #cce0f5;
+	border-right: 1px solid #ffffff;
+	line-height: 18px;
+}
+.wayCon .startIcon {
+	border-color: #ffffff #ffffff #ffffff #0C0;
+}
+.wayCon .overIcon {
+	border-color: #e60012 #e60012 #e60012 #e60012;
+}
+.mapBox {
+	padding: 0;
+	overflow: hidden;
+}
+.mapBox .mapIn{
+	height: 598px;
+	overflow: hidden;
+	position: relative;
+}
+.wayList .inner {
+	height: 598px;
+	background-color: #f5faff;
+}
+.wayMenu {
+	height: 38px;
+	padding: 10px 0 0 1px;
+	overflow: hidden;
+}
+.wayMenu li {
+	float: left;
+	height: 30px;
+	line-height: 30px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 700;
+	margin-left: -1px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+.wayMenu li.current {
+	position: relative;
+}
+.wayMenu li a {
+	display: block;
+	padding: 0 6px;
+	color: #333;
+}
+.wayMenu li a:hover {
+	text-decoration: none;
+}
+.wayForm {
+	margin-top: 10px;
+}
+.wayForm li {
+	margin-bottom: 5px;
+}
+.wayForm li.last {
+	height: 36px;
+	line-height: 36px;
+	text-align: center;
+	overflow: hidden;
+}
+.wayForm li.last .miniloading {
+	position: relative;
+	left: 180px;
+	display: none;
+}
+.wayForm .sbtn {
+	width: 64px;
+	height: 23px;
+	overflow: visible;
+	font-weight: 700;
+	border: 0;
+	float: right;
+	cursor: pointer;
+	background-image: url(../images/retail/mapbtn.png);
+	background-repeat: no-repeat;
+}
+.wayDeatil {
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin-top: 5px;
+}
+.wayDeatil th,
+.wayDeatil td {
+	padding: 3px 4px;
+	font-size: 12px;
+	color: #666;
+}
+.wayDeatil thead th {
+	font-weight: normal;
+}
+.busTable .busNum {
+	font-weight: bold;
+}
+.busTable .last td {
+	padding-bottom: 10px !important;
+}
+.busTable i.tr-begin,
+.busTable i.tr-end {
+	background-image: url(../images/travel.gif);
+	background-repeat: no-repeat;
+	display: inline-block;
+	margin-right: 3px;
+}
+.busTable i.tr-begin {
+	background-position: -3px 0px;
+	width: 8px;
+	height: 14px;
+}
+.busTable i.tr-end {
+	background-position: -1px -16px;
+	width: 12px;
+	height: 12px;
+}
+.wayCon .startIcon,
+.wayCon .overIcon {
+	display: block;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	border-style: solid;
+}
+.wayCon .startIcon {
+	border-width: 8px;
+	margin-left: 10px;
+}
+.wayCon .overIcon {
+	border-width: 6px;
+	margin-left: 8px;
+}
+.wayCon .s {
+	font-weight: 700;
+	color: #333;
+}
+.wayCon .s strong {
+	float: left;
+}
+.wayCon .s .numall {
+	font-weight: normal;
+	float: right;
+}
+.wayCon h5 {
+	font-size: 16px;
+	padding: 0 0 8px 0;
+}
+.storeExplain {
+	border: 1px solid #ffcc7f;
+	padding: 10px;
+	margin-bottom: 10px;
+	background: #ffffe3;
+	margin-top: 10px;
+}
+.storeExplain em {
+	font-size: 14px;
+	font-weight: 700;
+	color: #f60;
+}
+#result .result-tips {
+	color: #f60;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	padding: 5px 0;
+	margin-top: 10px;
+	margin-left: 5px;
+	background: #ffffd6;
+	border: 1px solid #ffe0b4;
+	width: 281px;
+	display: block;
+}
+
+.way-list{
+	height: 24px;
+    overflow: hidden;
+    border-bottom-color: #d2e8ff;
+}
+.way-list li{
+	overflow: hidden;
+}
+.way-list li a{
+	text-align: center;
+	padding: 0;
+	line-height: 24px;
+	background: transparent;
+	margin-right: 0px;
+	border: 1px solid #d2e8ff;
+	border-radius: 4px 4px 0 0;
+}
+.way-list li a:hover{
+	background: #D4E8FC;
+	border: 1px solid #d2e8ff;
+}
+.way-list li.active{
+	border: 1px solid #79b7e9;
+    background: #D4E8FC;
+    border-radius: 4px 4px 0 0;
+}
+.way-list li.active a, .way-list li.active a:focus{
+	background: #D4E8FC;
+	border: 0;
+	font-weight: bold;
+	color: #333;
+}

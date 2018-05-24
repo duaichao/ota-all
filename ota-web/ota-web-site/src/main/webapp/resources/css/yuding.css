@@ -1,0 +1,205 @@
+.form-dt{
+	padding-top: 3px;
+}
+.form-input{
+	background-color: #fff;
+    border: 1px solid #d0d0d0;
+    padding: 3px 22px 3px 5px;
+    width: 125px;
+}
+.pay-total{
+	font-family: "microsoft yahei";
+}
+.pay-total h2{
+	color: #ff5741;
+	font-weight: bold;
+}
+a.order-add{
+	color: #ff5741;
+}
+a.order-add:hover{
+	text-decoration: underline;
+}
+a.order-link{
+	font-size: 14px;
+	color: #1569EC;
+}
+.list-group-item dl{
+	color: #666;
+}
+.list-group-item dl dt{
+	padding-top: 5px;
+	font-weight: normal;
+}
+.list-group-item dl dd{
+	padding: 5px 0;
+	border-bottom: 1px dotted #d0d0d0;
+}
+.list-group-item dl dd b{
+	color: #333;
+}
+
+.tour-conleft{
+	overflow: hidden;
+	padding-left: 0;
+}
+.tour-conright{
+	overflow: hidden;
+	padding-left: 0;
+}
+.mini-cal{
+	position: absolute;
+	z-index: 1;
+	width: 50%;
+	background: #fff;
+	border: 1px solid #e7e7e7;
+	padding: 15px 0 15px 15px;
+	box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+	-moz-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+    -webkit-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+}
+
+.order-info{
+    max-height: 400px;
+    _height: 400px;
+    overflow-y: scroll;
+    line-height: 22px;
+    color: #666;
+}
+.order-info p.strong{
+	background: #dff0d8;
+    display: inline-block;
+    font-weight: bold;
+    padding: 0 4px;
+    margin: 5px 0;
+    color: #333;
+}
+.order-info p.sectit{
+	padding: 0 4px;
+    margin: 5px 0;
+	color: #333;
+	font-weight: bold;
+	background: #f8f8f8;
+}
+.order-tit{
+	display: inline-block;
+}
+.order-dis{
+	display: inline-block;
+	float: right;
+	padding-top: 5px;
+	font-weight: bold;
+}
+.defary{
+	padding: 10px;
+	margin-top: 10px;
+	overflow: hidden;
+}
+.defary-total{
+	font-family: "microsoft yahei";
+	font-size: 14px;
+	color: #ff5741;
+	text-align: center;
+}
+.defary-total em{
+	font-size: 22px;
+}
+.table-price tr th{
+	text-align: center;
+	vertical-align: middle;
+}
+.mt-route{
+	margin-top: 40px;
+}
+.contact{
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 34px;
+}
+.contact-add{
+	text-align: right;
+}
+.contact-add a{
+	font-size: 14px;
+}
+/* 支付 */
+.paypay{
+	overflow: hidden;
+}
+.paypal .paypal-title{
+	overflow: hidden;
+	font-weight: bold;
+	font-size: 14px;
+	padding-top: 15px;
+}
+.paypal .paypal-info{
+	overflow: hidden;
+	font-size: 14px;
+}
+.paypal .paypal-info p, .paypal .paypal-info span, .paypal .paypal-title p{
+	padding-bottom: 15px;
+}
+.odr-trver{
+	overflow: hidden;
+	border-bottom: 1px solid #e7e7e7;
+}
+.odr-trver div{
+	padding-bottom: 10px;
+}
+.paypal .paypal-info .paypal-price{
+	color: #ff5741;
+	font-family: "microsoft yahei";
+}
+.paypal .paypal-info .paypal-price em{
+	font-size: 22px;
+}
+.paypal .paypal-bank{
+	overflow: hidden;
+	font-size: 14px;
+}
+.paypal .paypal-bank .paypal-box{
+	border: 1px dotted #e7e7e7;
+	background-color: #f8f8f8;
+	padding: 8px 8px 10px 8px;
+	display: inline-block;
+	cursor: pointer;
+	margin-bottom: 8px;
+}
+.paypal .paypal-bank .paypal-cur{
+	border-style: solid;
+	border-color: #ff5741;
+}
+
+.modal-dialog{
+	margin: 120px auto;
+}
+.table{
+	font-size: 14px;
+}
+.table>tbody>tr>td{
+	vertical-align: middle;
+}
+.panel-heading{
+	color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+.trver-img{
+	height: 60px;
+	height: 60px;
+}
+
+.usr-odr{
+	padding-top: 15px;
+	border-top: 1px dotted #ddd;
+}
+.m-odrint .form-control{
+	margin-bottom: 10px;
+}
+.m-table{
+	font-size: 14px;
+	width: 100%;
+}
+.table-price p{
+	font-size: 12px;
+}

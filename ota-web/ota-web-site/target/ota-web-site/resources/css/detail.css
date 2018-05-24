@@ -1,0 +1,434 @@
+.tour-main{
+	padding: 7px;
+	margin-bottom: 5px;
+	overflow: hidden;
+}
+.tour-tit h1{
+	font-size: 24px;
+	padding: 5px 0;
+}
+.tour-tit p{
+	color: #999999;
+}
+.tour-con{
+	padding: 10px 0 5px 0;
+	overflow: hidden;
+}
+.tour-conleft{
+	overflow: hidden;
+	padding-left: 0;
+	padding-right: 0;
+}
+.tour-conright{
+	overflow: hidden;
+	padding-right: 0;
+}
+.tour-conright .tour-intro{
+    border-top: 1px solid #f1f1f1;
+    border-bottom: 1px solid #f1f1f1;
+    padding: 10px 0;
+    margin-bottom: 5px;
+    width: 100%;
+    float: left;
+}
+.tour-conright .tour-intro .tour-intro-left{
+	width: 50%;
+	float: left;
+}
+.tour-conright .tour-intro .tour-intro-left .total-price{
+	color: #ff5741;
+	font-family: "microsoft yahei";
+	display: inline-block;
+}
+.tour-conright .tour-intro .tour-intro-left .total-price em{
+	font-size: 30px;
+}
+.tour-conright .tour-intro .tour-intro-left a.tip-price{
+	display: inline-block;
+	color: #999999;
+	text-decoration: underline;
+	margin-left: 10px;
+}
+.tour-conright .tour-intro .tour-intro-left .tooltip{
+	text-align: left;
+}
+.tour-conright .tour-intro .tour-intro-right{
+	width: 50%;
+	border-left: 1px solid #f1f1f1;
+	padding-left: 10px;
+	float: left;
+}
+.tour-conright .tour-intro .tour-intro-right span{
+	color: #999999;
+	display: inline-block;
+	margin-bottom: 5px;
+}
+.tour-conright .tour-intro .tour-intro-right span em{
+	color: #ff5741;
+	font-weight: bold;
+}
+.tour-conright dl{
+	zoom: 1;
+	padding: 5px 0;
+	float: left;
+}
+.tour-conright dt{
+	float: left;
+    display: inline;
+    margin-right: 5px;
+    color: #666;
+    text-align: right;
+}
+.tour-conright dd{
+	display: inline;
+}
+.tour-conright .select-date{
+	position: relative;
+	background: #f8f8f8;
+	padding: 20px;
+	width: 100%;
+	float: left;
+}
+.tour-conright .select-date .select-con{
+	position: relative;
+	height: 32px;
+    line-height: 32px;
+    background: #ffffff;
+    border: 1px solid #e7e7e7;
+    padding: 0 30px 0 10px;
+    cursor: pointer;
+}
+.tour-conright .select-date .select-con p{
+	text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.tour-conright .select-date .select-con span{
+	position: absolute;
+	top: 50%;
+	right: 8px;
+	margin-top: -6px;
+}
+.tour-conright .select-date .select-list{
+	position: absolute;
+    top: 32px;
+    left: 0;
+    border: 1px solid #e7e7e7;
+    border-top: 0 none;
+    background: #fff;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 146px;
+    z-index: 19;
+    width: 100%
+}
+.tour-conright .select-date .select-list li{
+	cursor: pointer;
+    height: 24px;
+    line-height: 24px;
+    overflow: hidden;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tour-conright .order-now{
+	overflow: hidden;
+	float: left;
+}
+.tour-conright .order-btn{
+	width: 100%;
+	background: #ff923c;
+	color: #ffffff;
+	font-size: 16px;
+	text-align: center;
+	padding: 10px 42px;
+	border-radius: 3px;
+	display: inline-block;
+	margin-top: 10px;
+}
+.tour-conright .btn-order{
+	background: #ff923c;
+	color: #ffffff;
+	font-size: 16px;
+	text-align: center;
+	padding: 10px 42px;
+	border-radius: 3px;
+	display: inline-block;
+	margin-top: 5px;
+}
+.tour-conright .order-btn:hover, .tour-conright .btn-order:hover{
+	background: #ff5741;
+	text-decoration: none;
+}
+.tour-conright .order-tel{
+	font-size: 18px;
+	color: #ff5741;
+	margin-left: 10px;
+	display: inline-block;
+}
+.tour-conright .order-kf{
+	padding: 12px 0 0 6px;
+	float: left;
+}
+.tour-conright .order-kf p{
+	height: 21px;
+	width: 100%;
+	display: block;
+}
+.tour-conright .order-kf p a{
+	float: left;
+	margin-left: 5px;
+}
+.tour-conright .order-kf p b{
+	color: #7e9dc3;
+	margin-left: 5px;
+	font-size: 14px;
+	float: left;
+}
+.tour-conright .perchoose{
+	padding: 0;
+	text-align: center;
+	line-height: 30px;
+}
+.tour-conright .recom-inner{
+	margin-top: 5px;
+	background: #f8f8f8;
+	padding: 5px 10px;
+	line-height: 22px;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 4;
+	overflow: hidden;
+	float: left;
+}
+
+/* tab菜单 */
+.navbar-wrapper{
+	position: relative;
+	z-index: 99;
+}
+.navwrapper{
+	height: 50px;
+}
+.navbar-inverse{
+	background: #f8f8f8;
+	border-bottom-width: 3px;
+    border-bottom-color: #1569EC;
+    margin-bottom: 5px;
+}
+.navbar-inverse .navbar-nav>li>a{
+	color: #666666;
+	font-size: 14px;
+}
+.navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus{
+	background: #1569EC;
+}
+.navbar-inverse .navbar-nav>.active>a{
+	color: #ffffff;
+	background: #1569EC;
+}
+.navbar-inverse .navbar-nav>.active>a:hover{
+	background: #1569EC;
+}
+.navwrapper .navbar-toggle{
+	background: #e7e7e7;
+}
+.navwrapper .navbar-toggle:hover, .navwrapper .navbar-toggle:focus{
+	background: #bbb;
+}
+.navwrapper .tab-order{
+	float: right;
+}
+.navwrapper .tab-order a.tab-btn{
+	background: #ff923c;
+	color: #ffffff;
+	font-size: 16px;
+	padding: 17px 42px;
+	border-radius: 3px;
+	display: inline-block;
+}
+.navwrapper .tab-order a.tab-btn:hover{
+	background: #ff5741;
+	text-decoration: none;
+}
+/* 景点介绍 */
+.sidebarDay{
+	width: 80px;
+	margin-left: -85px;
+	position: absolute;
+	z-index: 98;
+}
+.sidebarDay ul.sidebarList{
+	width: 80px;
+	height: auto;
+}
+.sidebarDay ul.sidebarList li{
+	background: #f9f9f9;
+	border: 1px dotted #e0e0e0;
+	margin-bottom: 2px;
+}
+.sidebarDay ul.sidebarList li a{
+	color: #666;
+	text-align: center;
+}
+.sidebarDay ul.sidebarList li.active{
+	background: #59a8ff;
+}
+.sidebarDay ul.sidebarList li.active a{
+	color: #fff;
+}
+.sidebarDay ul.sidebarList li.active a:focus, .sidebarDay ul.sidebarList li.active a:hover{
+	background: #59a8ff;
+	color: #fff;
+	
+}
+.trip-info{
+	margin-top: 7px;
+	display: block;
+}
+.trip-info .day-list{
+	margin-bottom: 5px;
+    border: 1px solid #e7e7e7;
+}
+.trip-info .day-list .day-place{
+	padding: 10px 20px;
+	border-bottom: 1px dotted #ccc;
+    background: #f8f8f8;
+    overflow: hidden;
+    font-size: 20px;
+}
+.trip-info .day-list .day-title{
+	padding: 10px 20px;
+    border-bottom: 1px solid #e7e7e7;
+    background: #f8f8f8;
+    overflow: hidden;
+}
+.trip-info .day-list .day-title span{
+	font-size: 18px;
+    overflow: hidden;
+    margin-right: 20px;
+}
+.trip-info .day-list .day-con{
+	padding: 0 20px;
+    overflow: hidden;
+}
+.trip-info .day-list .day-con .day-con-list{
+	overflow: hidden;
+}
+.day-con-list li{
+	color: #333;
+	margin-bottom: -1px;
+    padding: 5px 0;
+    border-bottom: 1px solid #e7e7e7;
+    overflow: hidden;
+}
+.day-con-list .time-list{
+    display: inline;
+    font-size: 16px;
+    line-height: 22px;
+    overflow: hidden;
+}
+.day-con-list .day-detail{
+    border-left: 1px dotted #d0d0d0;
+    position: relative;
+    padding-left: 30px;
+}
+.day-con-list .day-detail .icon-detail{
+	color: #1569EC;
+	background-color: #ffffff;
+	font-size: 22px;
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+}
+.day-con-list .day-detail p{
+	font-size: 14px;
+	line-height: 22px;
+	padding: 0 0 5px 0;
+}
+.day-con-list .day-detail .day-scene{
+    overflow: hidden;
+}
+.day-con-list .day-detail .day-scene img{
+	display: block;
+    max-width: 100%;
+    height: auto;
+}
+.day-con-list .day-detail .day-scene .scene-pic{
+	float: right;
+    display: inline-block;
+    padding-right: 0;
+}
+.day-con-list .day-detail .day-scene .scene-pic a{
+	display: inline-block;
+	margin-bottom: 10px;
+	position: relative;
+}
+.day-con-list .day-detail .day-scene .scene-pic img{
+	max-width: 100%;
+}
+.day-con-list .day-detail .day-scene .scene-pic .scene-picname{
+	filter: none;
+	background: #000;
+    background-color: rgba(0,0,0,0.4);
+    color: #fff;
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 10px;
+    position: absolute;
+    bottom: 0;
+}
+.trip-info .day-list .resource-title{
+	padding: 10px 20px;
+    background: #f8f8f8;
+    border-left: 3px solid #1569EC;
+    overflow: hidden;
+    display: inline;
+}
+.trip-info .day-list .resource-title span{
+	color: #333333;
+	font-size: 16px;
+	display: inline-block;
+}
+.trip-info .day-list .resource-info .resource-box{
+	border-bottom: 1px dotted #d0d0d0;
+	padding: 5px 0;
+}
+.trip-info .day-list .resource-info h4{
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 22px;
+	padding-bottom: 5px;
+}
+.trip-info .day-list .resource-info p{
+	font-size: 14px;
+	line-height: 22px;
+	padding-bottom: 5px;
+}
+.carousel-indicators li{
+	padding: 0;
+}
+
+.route-icon{
+    line-height: 24px;
+    padding-left: 35px;
+    background: url(../images/tour-icon.png) no-repeat;
+    height: 24px;
+}
+.plane{
+	background-position: 0 -125px;
+}
+.train{
+	background-position: 0 -154px;
+}
+.bus{
+	background-position: 0 -183px;
+}
+.liner{
+	background-position: 0 -212px;
+}
+#contents{
+	margin-bottom: 10px;
+}

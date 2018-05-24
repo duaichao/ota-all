@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" 
+	xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"> 
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>ota-admin</param-value>
+	</context-param>
+
+
+	<!--log4j-->
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:properties/log4j.properties</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+
+	<!-- 字符编码过滤器 -->  
+    <filter>  
+        <filter-name>encodingFilter</filter-name>  
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>  
+        <init-param>  
+            <param-name>encoding</param-name>  
+            <param-value>UTF-8</param-value>  
+        </init-param>  
+        <init-param>  
+            <param-name>forceEncoding</param-name>  
+            <param-value>true</param-value>  
+        </init-param>  
+    </filter>  
+      
+    <filter-mapping>  
+        <filter-name>encodingFilter</filter-name>  
+        <servlet-name>Spring MVC Dispatcher Servlet</servlet-name>  
+    </filter-mapping>  
+      
+    <!-- Spring 容器加载 -->  
+    <listener>  
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
+    </listener>  
+    <listener>
+	    <listener-class>cn.sd.security.SecurityListener</listener-class>		
+	</listener>
+	
+    <context-param>  
+        <param-name>contextConfigLocation</param-name>  
+        <param-value>classpath:applicationContext.xml,classpath:applicationContext-quartz.xml</param-value>
+    </context-param>  
+      
+    <!-- The front controller of this Spring Web application, responsible for handling all application requests -->  
+    <servlet>  
+        <servlet-name>Spring MVC Dispatcher Servlet</servlet-name>  
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>  
+        <init-param>  
+            <param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring-mvc.xml</param-value>
+        </init-param>  
+        <load-on-startup>1</load-on-startup>  
+    </servlet>  
+          
+    <!-- Map all *.spring requests to the DispatcherServlet for handling -->  
+    <servlet-mapping>  
+        <servlet-name>Spring MVC Dispatcher Servlet</servlet-name>  
+        <url-pattern>/</url-pattern>  
+    </servlet-mapping>  
+      
+    <session-config>  
+        <session-timeout>30</session-timeout>  
+    </session-config>
+
+
+
+	
+	<!-- 载入系统配置文件 -->
+	<servlet>
+		<servlet-name>configLoader</servlet-name>
+		<servlet-class>
+			cn.sd.core.config.ApplicationConfigLoader
+		</servlet-class>
+		<init-param>
+			<param-name>configFile</param-name>
+			<param-value>/WEB-INF/classes/applicationContext-init.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+ 	<servlet>
+ 		<servlet-name>remotesd</servlet-name>
+ 		<servlet-class>
+ 			cn.sd.rmi.CheckRemote
+ 		</servlet-class>
+ 		<load-on-startup>100</load-on-startup>
+ 	</servlet>
+	
+	
+	
+	<!-- 默认首页定义 -->
+	<welcome-file-list>
+		<welcome-file>/index.jsp</welcome-file>
+	</welcome-file-list>
+	<!-- Error Page定义 -->
+	<error-page>
+		<error-code>500</error-code>
+		<location>/commons/500.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/commons/404.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/commons/500.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/commons/500.jsp</location>
+	</error-page>
+</web-app>  
